@@ -1,0 +1,2872 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiche Technique</title>
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+/* ── VARIABLES ── */
+:root {
+  --green:        #1C1C1C;
+  --green-hover:  #383838;
+  --green-light:  #EFEFEF;
+  --gold:         #555555;
+  --red:          #C0392B;
+  --red-light:    #FDECEA;
+  --red-hover:    #A93226;
+  --bg:           #F4F4F4;
+  --surface:      #FFFFFF;
+  --surface-2:    #F9F9F9;
+  --border:       #DADADA;
+  --border-light: #EBEBEB;
+  --text:         #111111;
+  --text-2:       #444444;
+  --text-3:       #888888;
+  --sidebar-w:    250px;
+  --topbar-h:     68px;
+  --r:            8px;
+  --r-sm:         5px;
+  --shadow-md:    0 6px 20px rgba(0,0,0,.13);
+}
+
+/* ── BASE ── */
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+
+/* ── LAYOUT ── */
+.app  { display: flex; height: 100vh; overflow: hidden; }
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.view { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--green); color: #fff; display: flex; flex-direction: column; overflow-y: auto; }
+.sidebar-brand { padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; }
+
+.sidebar-nav { padding: 12px 10px 4px; display: flex; flex-direction: column; gap: 2px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 12px; border-radius: var(--r-sm); border: none; background: transparent; color: rgba(255,255,255,.78); cursor: pointer; font-size: 13.5px; font-weight: 500; width: 100%; text-align: left; transition: background .15s, color .15s; }
+.nav-item:hover  { background: rgba(255,255,255,.1);  color: #fff; }
+.nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
+.nav-icon  { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--gold); color: #fff; font-size: 11px; font-weight: 700; border-radius: 10px; padding: 1px 8px; min-width: 24px; text-align: center; }
+
+.sidebar-section { padding: 16px 10px 4px; }
+.sidebar-section-header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 8px; }
+.sidebar-section-title  { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; opacity: .45; }
+.nav-import-group { padding: 4px 10px 2px; }
+.nav-import-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.4); padding: 6px 12px 4px; }
+.sidebar-group-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.35); padding: 8px 12px 3px; border-top: 1px solid rgba(255,255,255,.08); margin-top: 6px; }
+.sidebar-group-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; background: transparent; border: none; cursor: pointer; padding: 8px 12px 5px; border-top: 1px solid rgba(255,255,255,.08); margin-top: 6px; color: rgba(255,255,255,.5); font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; transition: color .15s; }
+.sidebar-group-toggle:hover { color: rgba(255,255,255,.8); }
+.sidebar-group-toggle .sg-arrow { font-size: 10px; transition: transform .2s; }
+.sidebar-group-toggle.open .sg-arrow { transform: rotate(90deg); }
+.sidebar-group-cats { overflow: hidden; transition: max-height .25s ease; max-height: 0; }
+.sidebar-group-cats.open { max-height: 600px; }
+.nav-item-sub { padding-left: 22px; font-size: 13px; }
+
+.btn-cat-add { background: rgba(255,255,255,.15); border: none; color: #fff; width: 20px; height: 20px; border-radius: 4px; cursor: pointer; font-size: 16px; line-height: 1; display: flex; align-items: center; justify-content: center; transition: background .15s; }
+.btn-cat-add:hover { background: rgba(255,255,255,.28); }
+.filter-list { display: flex; flex-direction: column; gap: 1px; }
+.filter-item { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: var(--r-sm); border: none; background: transparent; color: rgba(255,255,255,.72); cursor: pointer; font-size: 13px; width: 100%; text-align: left; transition: background .15s, color .15s; }
+.filter-item:hover  { background: rgba(255,255,255,.1);  color: #fff; }
+.filter-item.active { background: rgba(255,255,255,.18); color: #fff; }
+.filter-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── TOPBAR ── */
+.topbar { height: var(--topbar-h); min-height: var(--topbar-h); background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
+.topbar-left  { display: flex; align-items: center; gap: 14px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+.page-title   { font-size: 18px; font-weight: 700; }
+.page-count   { font-size: 12.5px; color: var(--text-3); background: var(--bg); padding: 2px 10px; border-radius: 12px; }
+
+/* ── SEARCH ── */
+.search-wrap { position: relative; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-3); pointer-events: none; }
+.search-input { padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg); font-size: 13.5px; width: 220px; color: var(--text); transition: border .15s, box-shadow .15s; }
+.search-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+
+/* ── CONTENT ── */
+.content-area { flex: 1; overflow-y: auto; padding: 28px; }
+
+/* ── BUTTONS ── */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--r-sm); border: none; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; font-family: inherit; transition: background .15s; }
+.btn-primary        { background: var(--green); color: #fff; }
+.btn-primary:hover  { background: var(--green-hover); }
+.btn-outline        { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+.btn-outline:hover  { background: var(--bg); }
+.btn-danger         { background: var(--red); color: #fff; }
+.btn-danger:hover   { background: var(--red-hover); }
+.btn-danger-outline { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,.35); }
+.btn-danger-outline:hover { background: var(--red-light); }
+.btn-back { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 13.5px; padding: 6px 0; display: flex; align-items: center; gap: 4px; font-family: inherit; transition: color .15s; }
+.btn-back:hover { color: var(--text); }
+
+/* ── FICHE GRID ── */
+.fiches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+
+/* ── FICHE CARD ── */
+.fiche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; overflow: hidden; transition: box-shadow .18s, border-color .18s, transform .18s; position: relative; display: flex; flex-direction: column; }
+.fiche-card:hover { box-shadow: var(--shadow-md); border-color: #C5BEB4; transform: translateY(-2px); }
+.card-photo-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--r-sm); flex-shrink: 0; display: block; }
+.card-photo-placeholder { width: 80px; height: 80px; border-radius: var(--r-sm); background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; color: var(--text-3); }
+.card-body { padding: 16px 18px 14px; display: flex; flex-direction: row; gap: 14px; align-items: flex-start; flex: 1; }
+.card-body-right { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.card-title  { font-size: 14.5px; font-weight: 700; line-height: 1.3; flex: 1; }
+.card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; opacity: 0; transition: opacity .15s; pointer-events: none; }
+.fiche-card:hover .card-actions { opacity: 1; pointer-events: auto; }
+.card-action-btn { width: 28px; height: 28px; border-radius: var(--r-sm); border: 1px solid var(--border); background: rgba(255,255,255,.92); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: background .15s, border-color .15s; pointer-events: auto; }
+.card-action-btn:hover     { background: var(--bg); }
+.card-action-btn.del:hover { background: var(--red-light); border-color: var(--red); }
+.cat-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.card-prix { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.3px; margin-bottom: 10px; }
+.card-prix span { font-size: 11.5px; font-weight: 500; color: var(--text-3); margin-left: 4px; }
+.card-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; padding-top: 10px; border-top: 1px solid var(--border-light); }
+.card-meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-3); }
+.card-footer { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
+.card-date { font-size: 11px; color: var(--text-3); }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 80px 20px; }
+.empty-illus { font-size: 60px; margin-bottom: 20px; opacity: .35; }
+.empty-state h2 { font-size: 18px; color: var(--text-2); margin-bottom: 8px; }
+.empty-state p  { color: var(--text-3); margin-bottom: 24px; }
+
+/* ── DETAIL ── */
+.fiche-detail-wrapper { max-width: 820px; }
+.detail-hero { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; display: flex; align-items: stretch; }
+.detail-photo-col { width: 260px; flex-shrink: 0; }
+.detail-photo { width: 100%; height: 100%; min-height: 200px; object-fit: cover; display: block; }
+.detail-photo-none { width: 100%; height: 100%; min-height: 180px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 36px; }
+.detail-info-col { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; justify-content: center; }
+.detail-title { font-size: 24px; font-weight: 800; margin: 8px 0 6px; line-height: 1.2; }
+.detail-prix  { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: -.5px; margin: 4px 0 16px; }
+.detail-prix small { font-size: 14px; font-weight: 500; color: var(--text-3); margin-left: 6px; }
+.detail-meta-row  { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+.detail-meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-2); }
+.detail-meta-item strong { color: var(--text); }
+.detail-divider { border: none; border-top: 1px solid var(--border-light); margin: 14px 0; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } .detail-hero { flex-direction: column; } .detail-photo-col { width: 100%; height: 200px; } }
+.detail-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 22px 26px; margin-bottom: 14px; }
+.detail-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); margin-bottom: 14px; }
+.detail-footer { text-align: right; margin-top: 6px; color: var(--text-3); font-size: 11px; }
+
+/* ── TABLEAU INGRÉDIENTS ── */
+.ing-table { width: 100%; border-collapse: collapse; }
+.ing-table th { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); padding: 0 12px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+.ing-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); font-size: 13.5px; }
+.ing-table tr:last-child td { border-bottom: none; }
+.ing-table tr:hover td { background: var(--surface-2); }
+
+/* ── ÉTAPES ── */
+.etape-item { display: flex; gap: 16px; margin-bottom: 16px; }
+.etape-item:last-child { margin-bottom: 0; }
+.etape-num  { width: 28px; height: 28px; min-width: 28px; background: var(--green); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 1px; flex-shrink: 0; }
+.etape-text { font-size: 13.5px; line-height: 1.6; padding-top: 3px; }
+
+/* ── ALLERGÈNES ── */
+.allergene-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.allergene-tag  { background: #FFF8E1; color: #7D5A00; border: 1px solid #F5D060; font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
+
+/* ── FORMULAIRE ── */
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 28px; margin-bottom: 16px; max-width: 820px; }
+.form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin-bottom: 20px; }
+.form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-row.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.form-field { display: flex; flex-direction: column; gap: 6px; }
+.form-field label { font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.req { color: var(--red); }
+.form-field input, .form-field select, .form-field textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 13.5px; background: var(--surface); color: var(--text); transition: border .15s, box-shadow .15s; font-family: inherit; }
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.form-field textarea { resize: vertical; min-height: 72px; }
+
+/* ── PHOTO DANS LE FORMULAIRE ── */
+.form-photo-row { display: flex; gap: 20px; align-items: flex-start; }
+.form-photo-col { width: 120px; flex-shrink: 0; }
+.form-photo-zone { width: 120px; height: 120px; border-radius: var(--r-sm); border: 2px dashed var(--border); cursor: pointer; overflow: hidden; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; }
+.form-photo-zone:hover { border-color: var(--green); background: var(--green-light); }
+.form-photo-fields { flex: 1; min-width: 0; }
+
+/* ── INGRÉDIENTS FORM ── */
+.table-head-row { display: flex; gap: 8px; padding: 0 0 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin-bottom: 2px; align-items: center; }
+.ing-row { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-light); }
+.ing-row:last-child { border-bottom: none; }
+.ing-field { display: flex; flex-direction: column; }
+.ing-nom  { flex: 3; }
+.ing-qte  { flex: 1; }
+.ing-unite{ flex: 1; }
+.ing-prix { flex: 1.2; }
+.ing-field select, .ing-field input[type=text], .ing-field input[type=number] {
+  width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: var(--r-sm);
+  font-size: 13px; color: var(--text); font-family: inherit; background: var(--surface);
+  transition: border .15s; box-sizing: border-box;
+}
+.ing-field select:focus, .ing-field input:focus { outline: none; border-color: var(--green); }
+.ing-nom-text { margin-top: 4px; }
+.btn-remove { width: 30px; height: 30px; min-width: 30px; background: none; border: none; cursor: pointer; color: var(--text-3); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; transition: background .15s, color .15s; flex-shrink: 0; }
+.btn-remove:hover { background: var(--red-light); color: var(--red); }
+.cout-auto-display { background: var(--green-light); border: 1.5px solid var(--green); border-radius: var(--r-sm); padding: 8px 14px; font-size: 15px; font-weight: 700; color: #1A7A3C; }
+.cout-auto-label { font-size: 11px; color: var(--text-3); margin-top: 3px; }
+
+/* ── ÉTAPES FORM ── */
+.etape-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.etape-num-badge { width: 28px; height: 28px; min-width: 28px; background: var(--green-light); color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 8px; flex-shrink: 0; }
+.etape-row .form-field { flex: 1; margin-bottom: 0; }
+.etape-row .btn-remove { margin-top: 8px; }
+.btn-add-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 7px 14px; background: var(--bg); border: 1px dashed var(--border); border-radius: var(--r-sm); color: var(--text-3); cursor: pointer; font-size: 13px; font-family: inherit; transition: background .15s, border-color .15s, color .15s; }
+.btn-add-row:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+/* ── ALLERGÈNES FORM ── */
+.allergenes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 8px; }
+.allergene-check { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; transition: background .15s, border-color .15s; }
+.allergene-check:hover   { background: var(--surface-2); }
+.allergene-check.checked { background: #FFF8E6; border-color: #E8C660; }
+.allergene-check input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
+.allergene-label { font-size: 13px; cursor: pointer; flex: 1; }
+.allergen-add-row { display: flex; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light); align-items: center; }
+.allergen-add-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface); transition: border .15s; }
+.allergen-add-row input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.allergen-del-btn { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 15px; padding: 2px 4px; border-radius: 3px; flex-shrink: 0; }
+.allergen-del-btn:hover { color: var(--red); background: var(--red-light); }
+
+/* ── MATÉRIELS FORM ── */
+.materiel-row { display: flex; gap: 10px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border-light); }
+.materiel-row:last-child { border-bottom: none; }
+.materiel-row input { flex: 1; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 13.5px; color: var(--text); font-family: inherit; background: var(--surface); transition: border .15s; }
+.materiel-row input:focus { outline: none; border-color: var(--green); }
+
+/* ── APPARENCE ── */
+.apparence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .apparence-grid { grid-template-columns: 1fr; } }
+.apparence-box { border-radius: var(--r-sm); padding: 14px 16px; }
+.apparence-box-normale  { background: #EAF7EE; border: 1px solid #A8D9B5; }
+.apparence-box-anormale { background: #FDECEA; border: 1px solid rgba(192,57,43,.3); }
+.apparence-box-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 10px; display: block; }
+.apparence-box-normale  .apparence-box-label { color: #1A7A3C; }
+.apparence-box-anormale .apparence-box-label { color: var(--red); }
+.apparence-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12.5px; font-weight: 500; margin: 3px 4px 3px 0; }
+.apparence-tag-ok  { background: #D4EDDA; color: #1A7A3C; }
+.apparence-tag-err { background: #FDECEA; color: var(--red); }
+
+/* ── MODAL CATÉGORIES ── */
+.cat-modal-list { margin-bottom: 20px; display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
+.cat-modal-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); }
+.cat-modal-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.cat-modal-nom  { flex: 1; font-size: 13.5px; font-weight: 500; }
+.cat-modal-actions { display: flex; gap: 4px; }
+.cat-modal-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; padding: 3px 8px; font-size: 12px; color: var(--text-2); transition: background .15s; }
+.cat-modal-btn:hover     { background: var(--bg); }
+.cat-modal-btn.del:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
+.cat-add-form { border-top: 1px solid var(--border); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.cat-add-row  { display: flex; gap: 10px; align-items: flex-end; }
+.cat-color-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+.color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s, border-color .15s; }
+.color-swatch:hover  { transform: scale(1.15); }
+.color-swatch.active { border-color: var(--text); transform: scale(1.15); }
+
+/* ── COEFFICIENT / PRIX ── */
+.prix-vente-display { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 15px; font-weight: 700; color: var(--text-3); background: var(--surface-2); min-height: 40px; display: flex; align-items: center; }
+.coeff-alert  { padding: 10px 14px; border-radius: var(--r-sm); font-size: 13px; margin-top: 12px; line-height: 1.5; }
+.coeff-danger { background: #FDECEA; color: var(--red); border: 1px solid rgba(192,57,43,.3); }
+.coeff-warn   { background: #FFF8E1; color: #7D5A00; border: 1px solid #F5D060; }
+.coeff-ok     { background: #EAF7EE; color: #1A7A3C; border: 1px solid #A8D9B5; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 28px; right: 28px; background: #1C1C1C; color: #fff; padding: 12px 20px; border-radius: var(--r); font-size: 13.5px; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; pointer-events: none; z-index: 1000; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 900; }
+.modal { background: var(--surface); border-radius: var(--r); padding: 28px 32px; max-width: 420px; width: 90%; box-shadow: var(--shadow-md); }
+.modal h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.modal p  { color: var(--text-2); font-size: 13.5px; line-height: 1.6; margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── PARAMÈTRES ── */
+.param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; max-width: 900px; }
+.param-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: box-shadow .18s, border-color .18s, transform .15s; }
+.param-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.09); border-color: var(--green); transform: translateY(-2px); }
+.param-card-icon { font-size: 32px; line-height: 1; }
+.param-card-title { font-size: 16px; font-weight: 700; color: var(--text); }
+.param-card-desc { font-size: 13px; color: var(--text-3); line-height: 1.5; }
+.param-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); margin: 28px 0 12px; }
+.param-section-title:first-child { margin-top: 0; }
+
+/* ── MODAL PROFIL ── */
+.profile-modal-body { display: flex; flex-direction: column; gap: 22px; }
+.profile-logo-zone { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 24px; border: 2px dashed var(--border); border-radius: var(--r); background: var(--bg); cursor: pointer; transition: border-color .2s, background .2s; }
+.profile-logo-zone:hover { border-color: var(--green); background: #f0f9f2; }
+.profile-logo-preview { width: 96px; height: 96px; object-fit: contain; border-radius: 8px; border: 1px solid var(--border); background: #fff; padding: 4px; }
+.profile-logo-hint { font-size: 12px; color: var(--text-3); text-align: center; line-height: 1.5; }
+.profile-logo-btn { font-size: 13px; font-weight: 600; color: var(--green); background: none; border: none; cursor: pointer; text-decoration: underline; }
+.profile-logo-btn:hover { color: var(--green-dark,#1a6e3c); }
+.profile-reset-logo { font-size: 11.5px; color: var(--text-3); background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 2px; }
+.profile-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+
+/* ── GESTION UTILISATEURS ── */
+.user-row { display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--bg); border:1px solid var(--border); border-radius:var(--r-sm); }
+.user-row-avatar { width:36px; height:36px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+.user-row-info { flex:1; min-width:0; }
+.user-row-name { font-size:14px; font-weight:600; color:var(--text); }
+.user-row-meta { font-size:12px; color:var(--text-3); margin-top:2px; }
+.user-role-badge { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:.05em; }
+.user-role-badge.admin { background:#fef3c7; color:#92400e; }
+.user-role-badge.user  { background:#dbeafe; color:#1e40af; }
+.user-status-badge { display:inline-block; font-size:10px; padding:1px 7px; border-radius:20px; margin-left:6px; }
+.user-status-badge.active   { background:#d1fae5; color:#065f46; }
+.user-status-badge.inactive { background:#fee2e2; color:#991b1b; }
+.user-row-actions { display:flex; gap:6px; flex-shrink:0; }
+.btn-user-edit   { background:none; border:1px solid var(--border); border-radius:6px; padding:5px 10px; font-size:12px; cursor:pointer; color:var(--text-2); }
+.btn-user-edit:hover { border-color:var(--green); color:var(--green); }
+.btn-user-del    { background:none; border:1px solid #fca5a5; border-radius:6px; padding:5px 10px; font-size:12px; cursor:pointer; color:#dc2626; }
+.btn-user-del:hover { background:#fee2e2; }
+
+/* ── HISTORIQUE ── */
+.hist-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.hist-timeline { display: flex; flex-direction: column; gap: 0; max-width: 700px; }
+.hist-item { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
+.hist-item:last-child { border-bottom: none; }
+.hist-icon { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; margin-top: 2px; }
+.hist-icon-creer    { background: #EAF7EE; }
+.hist-icon-modifier { background: #EBF5FB; }
+.hist-icon-suppr    { background: #FDECEA; }
+.hist-body { flex: 1; min-width: 0; }
+.hist-nom { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-nom-link { cursor: pointer; color: var(--text); text-decoration: none; }
+.hist-nom-link:hover { text-decoration: underline; color: var(--green-hover); }
+.hist-action { font-size: 12px; margin-top: 3px; }
+.hist-action-creer    { color: #1A7A3C; }
+.hist-action-modifier { color: #1A5276; }
+.hist-action-suppr    { color: var(--red); }
+.hist-date { font-size: 12px; color: var(--text-3); white-space: nowrap; flex-shrink: 0; margin-top: 4px; }
+.hist-details { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+.hist-tag { font-size: 11.5px; padding: 2px 9px; border-radius: 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text-2); }
+.hist-change { font-size: 11.5px; padding: 4px 10px; border-radius: var(--r-sm); background: #FFFBE6; border: 1px solid #F5D060; color: #6D4C00; display: flex; align-items: center; gap: 5px; }
+.hist-change-arrow { color: var(--text-3); font-size: 10px; }
+.hist-change-champ { font-weight: 700; }
+.hist-empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
+.hist-empty-icon { font-size: 48px; margin-bottom: 12px; opacity: .3; }
+.hist-par { font-size: 11px; color: var(--text-3); font-style: italic; margin-left: 6px; }
+
+/* ── RESPONSIVE : TABLETTE (≤ 1024px) ── */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 220px; }
+  .fiches-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .form-row.cols-3 { grid-template-columns: 1fr 1fr; }
+  .detail-hero { flex-direction: column; }
+  .detail-photo-col { width: 100%; height: 200px; }
+  .detail-info-col { padding: 20px 22px; }
+  .search-input { width: 180px; }
+}
+
+/* ── RESPONSIVE : MOBILE (≤ 768px) ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; --topbar-h: 56px; }
+
+  /* Sidebar en tiroir */
+  .sidebar { position: fixed; left: 0; top: 0; height: 100%; z-index: 800;
+             width: 270px; min-width: 270px;
+             transform: translateX(-100%);
+             transition: transform .25s cubic-bezier(.4,0,.2,1);
+             box-shadow: none; }
+  .sidebar.mobile-open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.25); }
+  .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+                     z-index: 799; }
+  .sidebar-overlay.show { display: block; }
+
+  /* Bouton hamburger */
+  .btn-hamburger { display: flex; }
+
+  /* Topbar */
+  .topbar { padding: 0 14px; gap: 8px; }
+  .page-title { font-size: 15px; }
+  .search-wrap { display: none; }
+  .topbar-right .btn { padding: 6px 10px; font-size: 12px; }
+  .topbar-right .btn span:not(.nav-icon) { display: none; }
+
+  /* Grille cartes : 1 colonne */
+  .fiches-grid { grid-template-columns: 1fr; }
+  .content-area { padding: 14px; }
+
+  /* Formulaire */
+  .form-card { padding: 16px 14px; }
+  .form-row { flex-direction: column; gap: 12px; }
+  .form-row.cols-3 { grid-template-columns: 1fr; }
+  .form-photo-row { flex-direction: column; align-items: center; }
+  .form-photo-col { width: 100%; display: flex; justify-content: center; }
+
+  /* Détail */
+  .detail-hero { flex-direction: column; }
+  .detail-photo-col { width: 100%; height: 180px; }
+  .detail-info-col { padding: 16px; }
+  .detail-title { font-size: 19px; }
+  .detail-prix  { font-size: 22px; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .detail-section { padding: 16px; }
+
+  /* Cards */
+  .card-body { padding: 12px 14px; }
+  .card-photo-thumb, .card-photo-placeholder { width: 64px; height: 64px; }
+
+  /* Modal */
+  .modal { padding: 20px 18px; width: 95%; }
+  .modal-actions { flex-direction: column-reverse; }
+  .modal-actions .btn { width: 100%; justify-content: center; }
+
+  /* Paramètres */
+  .param-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .param-card { padding: 18px 14px; }
+
+  /* Topbar détail */
+  .topbar-right .btn-danger-outline,
+  .topbar-right .btn-outline:not(#btn-dl-pdf) { font-size: 0; padding: 7px 10px; }
+  .topbar-right .btn-danger-outline::before { content: '🗑'; font-size: 15px; }
+  .topbar-right #btn-edit-top::before { content: '✏️'; font-size: 15px; }
+}
+
+/* ── RESPONSIVE : PETIT MOBILE (≤ 480px) ── */
+@media (max-width: 480px) {
+  .param-grid { grid-template-columns: 1fr; }
+  .allergenes-grid { grid-template-columns: 1fr 1fr; }
+  .detail-title { font-size: 17px; }
+}
+
+/* ── CROSS-BROWSER ── */
+/* Firefox : barre de défilement fine */
+* { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.2) transparent; }
+/* WebKit : barre de défilement fine */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,.2); border-radius: 3px; }
+/* iOS Safari : éviter le rebond */
+.content-area { -webkit-overflow-scrolling: touch; }
+/* Safari : gap en flexbox */
+.topbar-left, .topbar-right { gap: 8px; }
+/* Bouton hamburger (caché par défaut, visible mobile) */
+.btn-hamburger { display: none; background: none; border: none; cursor: pointer;
+                 color: var(--text-2); padding: 6px; border-radius: var(--r-sm);
+                 font-size: 20px; line-height: 1; align-items: center; justify-content: center; }
+.btn-hamburger:hover { background: var(--bg); }
+
+/* ── IMPRESSION ── */
+@media print {
+  .sidebar, .topbar, #toast, .modal-overlay { display: none !important; }
+  .main { display: block; overflow: visible; }
+  .view { height: auto; overflow: visible; }
+  .content-area { padding: 0; overflow: visible; }
+  .fiche-detail-wrapper { max-width: 100%; }
+  body { background: #fff; font-size: 12px; }
+  .detail-section   { break-inside: avoid; page-break-inside: avoid; }
+  .detail-hero      { break-inside: avoid; page-break-inside: avoid; }
+  .detail-grid      { break-inside: avoid; page-break-inside: avoid; }
+  .etape-item       { break-inside: avoid; page-break-inside: avoid; }
+  .ing-table tr     { break-inside: avoid; page-break-inside: avoid; }
+  .apparence-box    { break-inside: avoid; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand" onclick="showView('parametres')" title="Personnaliser" style="cursor:pointer">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+        <div style="width:72px;height:72px;background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.18);padding:6px;box-sizing:border-box">
+          <img id="brand-logo" src="/static/logo.png" alt="Logo" style="width:100%;height:100%;object-fit:contain">
+        </div>
+        <span id="brand-name" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.85)">Fiche Technique</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" id="nav-liste" onclick="showView('liste')">
+        <span class="nav-icon">☰</span>Toutes les fiches
+        <span class="nav-badge" id="nav-badge">0</span>
+      </button>
+      <button class="nav-item" onclick="showForm(null)">
+        <span class="nav-icon">+</span>Nouvelle fiche
+      </button>
+    </nav>
+    <div class="sidebar-section">
+      <div class="sidebar-section-header">
+        <span class="sidebar-section-title">Catégories</span>
+      </div>
+      <div class="filter-list" id="sidebar-cats"></div>
+    </div>
+    <div style="padding:8px 10px 16px;border-top:1px solid rgba(255,255,255,.1)">
+      <button class="nav-item" id="nav-parametres" onclick="showView('parametres')">
+        <span class="nav-icon">⚙</span>Paramètres
+      </button>
+      <div id="sidebar-user-info" style="font-size:12px;color:rgba(255,255,255,.55);padding:4px 12px 8px;display:flex;align-items:center;gap:6px">
+        <span style="font-size:16px">👤</span>
+        <span id="sidebar-username">—</span>
+        <span id="sidebar-role-badge" style="font-size:10px;background:rgba(255,255,255,.15);border-radius:4px;padding:1px 6px;margin-left:2px"></span>
+      </div>
+      <button class="nav-item" onclick="doLogout()" style="color:rgba(255,100,100,.85)">
+        <span class="nav-icon">⏻</span>Déconnexion
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay mobile sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- VUE LISTE -->
+    <div id="view-liste" class="view">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" id="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <h1 class="page-title">Fiches Techniques</h1>
+          <span class="page-count" id="count-label">0 fiche</span>
+        </div>
+        <div class="topbar-right">
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input type="text" id="search-input" class="search-input" placeholder="Rechercher une recette…" oninput="renderListe()">
+          </div>
+          <button class="btn btn-primary" onclick="showForm(null)">+ Nouvelle fiche</button>
+        </div>
+      </header>
+      <div class="content-area">
+        <div id="fiches-grid" class="fiches-grid"></div>
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-illus">📋</div>
+          <h2>Aucune fiche technique</h2>
+          <p>Créez votre première fiche pour commencer.</p>
+          <button class="btn btn-primary" onclick="showForm(null)">+ Créer une fiche</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE DÉTAIL -->
+    <div id="view-detail" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('liste')">← Retour</button>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
+          <button class="btn btn-outline" id="btn-dl-pdf" onclick="downloadPDF()">⬇ PDF</button>
+          <button class="btn btn-outline" id="btn-edit-top">✏️ Modifier</button>
+          <button class="btn btn-danger-outline" id="btn-delete-top">🗑 Supprimer</button>
+        </div>
+      </header>
+      <div class="content-area"><div id="detail-content"></div></div>
+    </div>
+
+    <!-- VUE FORMULAIRE -->
+    <div id="view-form" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('liste')">← Retour</button>
+          <h1 class="page-title" id="form-title">Nouvelle fiche technique</h1>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-outline" onclick="showView('liste')">Annuler</button>
+          <button class="btn btn-primary" onclick="document.getElementById('fiche-form').requestSubmit()">💾 Enregistrer</button>
+        </div>
+      </header>
+      <div class="content-area">
+        <form id="fiche-form" onsubmit="saveFiche(event)">
+
+          <!-- 1. INFORMATIONS GÉNÉRALES -->
+          <div class="form-card">
+            <h2 class="form-section-title">Informations générales</h2>
+            <div class="form-photo-row">
+              <div class="form-photo-col">
+                <div class="form-photo-zone" onclick="document.getElementById('f-photo-input').click()" title="Cliquer pour ajouter une photo">
+                  <img id="photo-preview" src="" alt="Photo" hidden style="width:100%;height:100%;object-fit:cover;border-radius:var(--r-sm)">
+                  <div id="photo-placeholder" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:6px">
+                    <span style="font-size:30px">📷</span>
+                    <span style="font-size:11px;color:var(--text-3);text-align:center">Ajouter<br>une photo</span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-outline" style="width:100%;margin-top:6px;font-size:11px;padding:5px 0" id="photo-clear-btn" hidden onclick="clearPhoto()">🗑 Supprimer</button>
+                <input type="file" id="f-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+                <input type="hidden" id="f-photo">
+              </div>
+              <div class="form-photo-fields">
+                <div class="form-row">
+                  <div class="form-field" style="flex:1">
+                    <label>Nom de la recette <span class="req">*</span></label>
+                    <input type="text" id="f-nom" required placeholder="Ex : Tarte tatin aux pommes">
+                  </div>
+                </div>
+                <div class="form-row cols-3" style="grid-template-columns: 1.8fr 1.8fr 1fr">
+                  <div class="form-field">
+                    <label>Catégorie <span class="req">*</span></label>
+                    <select id="f-categorie" required onchange="updateCatBadge()"><option value="">Sélectionner…</option></select>
+                    <span id="cat-type-badge" style="display:none;margin-top:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px"></span>
+                  </div>
+                  <div class="form-field">
+                    <label>Quantité <span class="req">*</span></label>
+                    <div style="display:flex;gap:8px">
+                      <input type="number" id="f-quantite" min="1" required placeholder="4" style="flex:1">
+                      <select id="f-unite" style="flex:1.2">
+                        <option value="personnes">personnes</option>
+                        <option value="portions">portions</option>
+                        <option value="pièces">pièces</option>
+                        <option value="kg">kg</option>
+                        <option value="g">g</option>
+                        <option value="L">L</option>
+                        <option value="cl">cl</option>
+                        <option value="ml">ml</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-field" id="cout-field-wrap">
+                    <label id="cout-field-label">Coût matière / unité (Ar)</label>
+                    <input type="number" id="f-cout" step="1" min="0" placeholder="Ex : 1500" oninput="updatePrixVente()">
+                    <div id="cout-auto-display" class="cout-auto-display" hidden></div>
+                    <div id="cout-auto-label" class="cout-auto-label" hidden>Calculé depuis les ingrédients</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 1b. TARIFICATION & CONSERVATION -->
+          <div class="form-card" id="tarif-card">
+            <h2 class="form-section-title">Tarification &amp; Conservation</h2>
+            <div class="form-row cols-3">
+              <div class="form-field">
+                <label>Coefficient de vente</label>
+                <input type="number" id="f-coefficient" step="0.1" min="0.1" placeholder="2" oninput="updatePrixVente()">
+                <span style="font-size:11px;color:var(--text-3)">Norme recommandée : 2</span>
+              </div>
+              <div class="form-field">
+                <label>Prix de vente / unité (Ar)</label>
+                <div class="prix-vente-display" id="prix-vente-display">—</div>
+              </div>
+              <div class="form-field">
+                <label>Délai de conservation</label>
+                <div style="display:flex;gap:8px">
+                  <input type="number" id="f-conservation-val" min="0" placeholder="3" style="flex:1">
+                  <select id="f-conservation-unite" style="flex:1.2">
+                    <option value="heures">heures</option>
+                    <option value="jours">jours</option>
+                    <option value="semaines">semaines</option>
+                    <option value="mois">mois</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div id="coeff-alert" class="coeff-alert" hidden></div>
+          </div>
+
+          <!-- 2. INGRÉDIENTS -->
+          <div class="form-card">
+            <h2 class="form-section-title">Ingrédients</h2>
+            <div class="table-head-row">
+              <span style="flex:3">Ingrédient</span><span style="flex:1">Quantité</span><span style="flex:1">Unité</span><span style="flex:1.2">Prix (Ar)</span><span style="width:34px"></span>
+            </div>
+            <div id="ingredients-list"></div>
+            <button type="button" class="btn-add-row" onclick="addIngredient()">+ Ajouter un ingrédient</button>
+          </div>
+
+          <!-- 3. TEMPS ET CUISSON -->
+          <div class="form-card">
+            <h2 class="form-section-title">Temps et cuisson</h2>
+            <div class="form-row cols-3">
+              <div class="form-field"><label>Préparation (min)</label><input type="number" id="f-prep" min="0" placeholder="30"></div>
+              <div class="form-field"><label>Cuisson (min)</label><input type="number" id="f-cuisson" min="0" placeholder="45"></div>
+              <div class="form-field"><label>Température (°C)</label><input type="number" id="f-temperature" min="0" max="500" placeholder="180"></div>
+            </div>
+          </div>
+
+          <!-- 4. ÉTAPES DE PRÉPARATION -->
+          <div class="form-card">
+            <h2 class="form-section-title">Étapes de préparation</h2>
+            <div id="etapes-list"></div>
+            <button type="button" class="btn-add-row" onclick="addEtape()">+ Ajouter une étape</button>
+          </div>
+
+          <!-- 5. ALLERGÈNES -->
+          <div class="form-card">
+            <h2 class="form-section-title">Allergènes</h2>
+            <div class="allergenes-grid" id="allergenes-grid"></div>
+            <div class="allergen-add-row">
+              <input type="text" id="allergen-input" placeholder="Ajouter un allergène personnalisé…" maxlength="40" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomAllergen()}">
+              <button type="button" class="btn btn-outline" style="font-size:12.5px;padding:7px 12px" onclick="addCustomAllergen()">+ Ajouter</button>
+            </div>
+          </div>
+
+          <!-- 6. DESCRIPTION -->
+          <div class="form-card">
+            <h2 class="form-section-title">Description</h2>
+            <div class="form-field">
+              <label>Description générale</label>
+              <textarea id="f-description" rows="3" placeholder="Décrivez brièvement ce plat, son origine, ses caractéristiques…"></textarea>
+            </div>
+          </div>
+
+          <!-- 7. MATÉRIELS -->
+          <div class="form-card" id="materiels-card">
+            <h2 class="form-section-title">Matériels &amp; Équipements</h2>
+            <div id="materiels-list"></div>
+            <button type="button" class="btn-add-row" onclick="addMateriel()">+ Ajouter un matériel</button>
+          </div>
+
+          <!-- 8. NOTES (champs cachés pour compatibilité) -->
+          <input type="hidden" id="f-apparence-normale">
+          <input type="hidden" id="f-apparence-anormale">
+          <input type="hidden" id="f-utilisations">
+
+          <div class="form-card">
+            <h2 class="form-section-title">Notes</h2>
+            <div class="form-row">
+              <div class="form-field" style="flex:1">
+                <label>Notes du Préparateur</label>
+                <textarea id="f-notes-preparateur" rows="3" placeholder="Remarques techniques, astuces, points de vigilance…"></textarea>
+              </div>
+            </div>
+            <div class="form-row" id="notes-service-row" style="margin-top:14px">
+              <div class="form-field" style="flex:1">
+                <label>Notes de service</label>
+                <textarea id="f-notes-services" rows="3" placeholder="Comment servir ce plat, quantité, accompagnements, sauces…"></textarea>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- VUE HISTORIQUE -->
+    <div id="view-historique" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('parametres')">← Retour</button>
+          <h1 class="page-title">Journal d'activité</h1>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-danger-outline" onclick="clearHistorique()">🗑 Effacer tout</button>
+        </div>
+      </header>
+      <div class="content-area">
+        <div id="hist-content"></div>
+      </div>
+    </div>
+
+    <!-- VUE PARAMÈTRES -->
+    <div id="view-parametres" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('liste')">← Retour</button>
+          <h1 class="page-title">Paramètres</h1>
+        </div>
+      </header>
+      <div class="content-area">
+
+        <!-- ── Application ── -->
+        <p class="param-section-title">Application</p>
+        <div class="param-grid">
+          <div class="param-card" onclick="openProfileModal()">
+            <div class="param-card-icon">🏷️</div>
+            <div class="param-card-title">Profil &amp; Logo</div>
+            <div class="param-card-desc">Changer le nom et le logo affiché dans la barre latérale</div>
+          </div>
+          <div class="param-card" onclick="openAccountsModal()">
+            <div class="param-card-icon">👥</div>
+            <div class="param-card-title">Comptes &amp; Accès</div>
+            <div class="param-card-desc">Gérer les utilisateurs, les rôles et votre mot de passe</div>
+          </div>
+          <div class="param-card" onclick="showView('historique')">
+            <div class="param-card-icon">🕐</div>
+            <div class="param-card-title">Journal d'activité</div>
+            <div class="param-card-desc">Historique des créations, modifications et suppressions de fiches</div>
+          </div>
+          <div class="param-card" onclick="openCatModal()">
+            <div class="param-card-icon">📂</div>
+            <div class="param-card-title">Catégories</div>
+            <div class="param-card-desc">Ajouter, modifier ou supprimer les catégories de fiches techniques</div>
+          </div>
+          <div class="param-card" onclick="openIngCatalogueModal()">
+            <div class="param-card-icon">🧂</div>
+            <div class="param-card-title">Catalogue Ingrédients</div>
+            <div class="param-card-desc">Gérer la liste des ingrédients disponibles lors de la saisie des fiches</div>
+          </div>
+        </div>
+
+        <!-- ── Export ── -->
+        <p class="param-section-title">Exporter</p>
+        <div class="param-grid">
+          <div class="param-card" onclick="exportExcel()">
+            <div class="param-card-icon">📊</div>
+            <div class="param-card-title">Excel (.xlsx)</div>
+            <div class="param-card-desc">Télécharger toutes les fiches au format Excel</div>
+          </div>
+          <div class="param-card" onclick="exportAllPDF()">
+            <div class="param-card-icon">📄</div>
+            <div class="param-card-title">PDF</div>
+            <div class="param-card-desc">Télécharger toutes les fiches au format PDF</div>
+          </div>
+        </div>
+
+        <!-- ── Import & Sync ── -->
+        <p class="param-section-title">Importer &amp; Synchroniser</p>
+        <div class="param-grid">
+          <div class="param-card" onclick="syncHACCP()">
+            <div class="param-card-icon">🔄</div>
+            <div class="param-card-title">Sync / Importer Excel</div>
+            <div class="param-card-desc">Importer ou mettre à jour les fiches depuis un fichier Excel (format HACCP ou export application)</div>
+          </div>
+          <div class="param-card" onclick="importPDF()">
+            <div class="param-card-icon">📋</div>
+            <div class="param-card-title">Importer PDF</div>
+            <div class="param-card-desc">Importer des fiches depuis un fichier PDF</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Inputs cachés -->
+<input type="file" id="import-pdf-input"   accept=".pdf"       style="display:none" onchange="handleImportPDF(event)">
+<input type="file" id="sync-haccp-input"   accept=".xlsx,.xls" style="display:none" onchange="handleSyncHACCP(event)">
+<input type="file" id="logo-upload-input"  accept="image/*"    style="display:none" onchange="handleLogoUpload(event)">
+
+<!-- ── ÉCRAN DE LOGIN ────────────────────────────────────────────────────── -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--green);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:40px 36px;width:340px;box-shadow:0 20px 60px rgba(0,0,0,.25)">
+    <div style="text-align:center;margin-bottom:28px">
+      <img id="login-logo" src="/static/logo.png" alt="Logo" style="height:64px;object-fit:contain;margin-bottom:12px">
+      <h1 id="login-app-name" style="font-size:18px;font-weight:800;color:var(--green);margin:0;text-transform:uppercase;letter-spacing:.08em">Fiche Technique</h1>
+      <p style="font-size:12.5px;color:var(--text-3);margin:4px 0 0">Connectez-vous pour accéder à l'application</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-field">
+        <label>Nom d'utilisateur</label>
+        <input type="text" id="login-username" placeholder="admin" autocomplete="username" onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()">
+      </div>
+      <div class="form-field">
+        <label>Mot de passe</label>
+        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="login-error" style="font-size:12.5px;color:#c0392b;text-align:center;min-height:18px"></div>
+      <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:11px;font-size:14px;margin-top:4px">Se connecter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Comptes & Accès (unifié) -->
+<div id="accounts-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeAccountsModal()">
+  <div class="modal" style="max-width:640px">
+
+    <!-- En-tête -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <h3 style="margin:0">Comptes &amp; Accès</h3>
+      <button id="acc-add-btn" class="btn btn-primary" style="font-size:13px;padding:7px 16px" onclick="openAccountForm(null)">+ Ajouter</button>
+    </div>
+
+    <!-- Liste des utilisateurs -->
+    <div id="accounts-list" style="display:flex;flex-direction:column;gap:10px"></div>
+
+    <!-- Formulaire unifié (ajout / modification + mot de passe) -->
+    <div id="account-form-wrap" hidden style="border-top:1px solid var(--border);padding-top:20px;margin-top:16px">
+      <p id="account-form-title" style="font-size:13px;font-weight:700;color:var(--text-2);margin-bottom:16px">Nouvel utilisateur</p>
+
+      <!-- Infos du compte -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-field">
+          <label>Nom d'utilisateur</label>
+          <input type="text" id="acc-username" placeholder="Ex : jean.dupont">
+        </div>
+        <div class="form-field" id="acc-role-wrap">
+          <label>Rôle</label>
+          <select id="acc-role">
+            <option value="user">Utilisateur</option>
+            <option value="admin">Administrateur</option>
+          </select>
+        </div>
+        <div class="form-field" id="acc-status-wrap">
+          <label>Statut</label>
+          <select id="acc-active">
+            <option value="1">Actif</option>
+            <option value="0">Inactif</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Séparateur mot de passe -->
+      <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin:18px 0 12px">Mot de passe</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-field" id="acc-oldpwd-wrap">
+          <label>Ancien mot de passe</label>
+          <input type="password" id="acc-old-password" placeholder="••••••••">
+        </div>
+        <div class="form-field">
+          <label id="acc-pwd-label">Nouveau mot de passe</label>
+          <input type="password" id="acc-password" placeholder="Min. 4 caractères">
+        </div>
+        <div class="form-field">
+          <label>Confirmer le mot de passe</label>
+          <input type="password" id="acc-password-confirm" placeholder="••••••••">
+        </div>
+      </div>
+
+      <div id="acc-form-error" style="font-size:12.5px;color:#c0392b;min-height:18px;margin-top:10px"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+        <button class="btn btn-secondary" onclick="closeAccountForm()">Annuler</button>
+        <button class="btn btn-primary" id="acc-save-btn" onclick="submitAccountForm()">Enregistrer</button>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn btn-secondary" onclick="closeAccountsModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Profil & Logo -->
+<div id="profile-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeProfileModal()">
+  <div class="modal" style="max-width:460px">
+    <h3 style="margin-bottom:20px">Profil &amp; Logo</h3>
+    <div class="profile-modal-body">
+
+      <!-- Logo -->
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--text-2);display:block;margin-bottom:8px">Logo</label>
+        <div class="profile-logo-zone" onclick="document.getElementById('logo-upload-input').click()">
+          <img id="profile-logo-preview" src="/static/logo.png" alt="Logo" class="profile-logo-preview">
+          <span class="profile-logo-hint">Cliquer pour choisir une image<br><span style="font-size:11px">(PNG, JPG, SVG — recommandé 200×200 px)</span></span>
+        </div>
+        <button class="profile-reset-logo" onclick="resetLogo()">↺ Réinitialiser le logo par défaut</button>
+      </div>
+
+      <!-- Nom -->
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--text-2);display:block;margin-bottom:6px">Nom de l'application</label>
+        <input type="text" id="profile-name-input" maxlength="40" placeholder="Ex : Fiche Technique" style="width:100%;box-sizing:border-box">
+        <p style="font-size:11.5px;color:var(--text-3);margin-top:6px">Ce nom apparaît dans la barre latérale et les exports PDF.</p>
+      </div>
+
+    </div>
+    <div class="profile-modal-actions">
+      <button class="btn btn-secondary" onclick="closeProfileModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveProfileSettings()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<!-- Modal catégories -->
+<div id="cat-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeCatModal()">
+  <div class="modal" style="max-width:500px">
+    <h3>Gérer les catégories</h3>
+    <div class="cat-modal-list" id="cat-modal-list"></div>
+    <div class="cat-add-form">
+      <p style="font-size:12.5px;font-weight:600;color:var(--text-2)" id="cat-form-label">Nouvelle catégorie</p>
+      <div class="cat-add-row">
+        <div class="form-field" style="flex:1">
+          <label style="font-size:12px">Nom</label>
+          <input type="text" id="cat-nom-input" placeholder="Ex : Amuse-bouche" maxlength="30">
+        </div>
+        <div class="form-field" style="flex:1">
+          <label style="font-size:12px">Type</label>
+          <select id="cat-groupe-input" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px">
+            <option value="PRODUCTION">Production</option>
+            <option value="PREPA">Préparation (PREPA)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label style="font-size:12px">Couleur</label>
+        <div class="cat-color-picker" id="cat-color-picker"></div>
+      </div>
+      <div class="modal-actions" style="margin-top:4px">
+        <button class="btn btn-outline" onclick="closeCatModal()">Fermer</button>
+        <button class="btn btn-primary" id="cat-save-btn" onclick="saveCat()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal catalogue ingrédients -->
+<div id="ing-catalogue-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeIngCatalogueModal()">
+  <div class="modal" style="max-width:580px;width:95%;padding:24px 24px 20px">
+    <h3 style="margin:0 0 12px">Catalogue des ingrédients</h3>
+    <input type="text" id="ing-cat-search" placeholder="🔍 Rechercher…" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;box-sizing:border-box;margin-bottom:10px" oninput="filterIngCatalogue()">
+    <div class="cat-modal-list" id="ing-catalogue-list" style="max-height:200px;margin-bottom:14px"></div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <p style="font-size:12px;font-weight:700;color:var(--text-2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em" id="ing-cat-form-label">Nouvel ingrédient</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:12px;font-weight:600;color:var(--text-2)">Nom <span class="req">*</span></label>
+          <input type="text" id="ing-cat-nom" placeholder="Ex : Farine" maxlength="60" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+            <label style="font-size:12px;font-weight:600;color:var(--text-2)">Unité</label>
+            <input type="text" id="ing-cat-unite" placeholder="g, kg, L…" maxlength="20" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+            <label style="font-size:12px;font-weight:600;color:var(--text-2)">Prix (Ar)</label>
+            <input type="number" id="ing-cat-prix" min="0" step="1" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin:0">
+        <button class="btn btn-outline" onclick="closeIngCatalogueModal()">Fermer</button>
+        <button class="btn btn-outline" onclick="resetIngCatForm()">Annuler</button>
+        <button class="btn btn-primary" id="ing-cat-save-btn" onclick="saveIngCatalogue()">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal import PDF -->
+<div id="pdf-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePDFModal()">
+  <div class="modal" style="max-width:680px;width:95%">
+    <h3 id="pdf-modal-title">Importer depuis PDF</h3>
+    <p id="pdf-modal-subtitle" style="margin-bottom:16px"></p>
+    <div id="pdf-modal-body" style="max-height:380px;overflow-y:auto;margin-bottom:20px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closePDFModal()">Annuler</button>
+      <button class="btn btn-primary" id="pdf-import-btn" onclick="confirmImportPDF()">📥 Importer la sélection</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal confirmation -->
+<div id="modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3 id="modal-title">Confirmer</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-danger" id="modal-confirm-btn">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+// ── ÉTAT ──────────────────────────────────────────────────────────────────────
+let fiches              = [];
+let categories          = [];
+let allAllergens        = [];
+let ingredientsCatalogue = [];   // [{nom, prix}]
+let currentFicheId = null;
+let activeCategory = 'all';
+
+const COEFF_MIN  = 1.5;
+const COEFF_NORM = 2;
+
+const CAT_COLORS = [
+  '#27AE60','#E67E22','#C0399A','#2980B9','#E74C3C',
+  '#8E44AD','#16A085','#F39C12','#2C3E50','#95A5A6',
+];
+
+// ── AUTH STATE ────────────────────────────────────────────────────────────────
+let authToken = localStorage.getItem('auth_token') || '';
+let currentUser = null;
+
+async function handleApiResponse(r) {
+  if (r.status === 401) { doLogout(); throw new Error('401'); }
+  if (!r.ok) throw r;
+  return r.json();
+}
+
+// ── API HELPER ────────────────────────────────────────────────────────────────
+function bearerHeaders()      { return {'Authorization': `Bearer ${authToken}`}; }
+function jsonHeaders()        { return {'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json'}; }
+
+const api = {
+  get:    url     => fetch(url, {headers: bearerHeaders()}).then(handleApiResponse),
+  post:   (url,d) => fetch(url, {method:'POST',   headers: jsonHeaders(), body:JSON.stringify(d)}).then(handleApiResponse),
+  put:    (url,d) => fetch(url, {method:'PUT',    headers: jsonHeaders(), body:JSON.stringify(d)}).then(handleApiResponse),
+  delete: url     => fetch(url, {method:'DELETE', headers: bearerHeaders()}).then(handleApiResponse),
+};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    [categories, allAllergens, fiches, ingredientsCatalogue] = await Promise.all([
+      api.get('/api/categories'),
+      api.get('/api/allergenes'),
+      api.get('/api/fiches'),
+      api.get('/api/ingredients/catalogue'),
+    ]);
+    buildAllergenesForm();
+    renderSidebarCats();
+    renderListe();
+    showView('liste');
+  } catch(e) {
+    if (e?.message === '401') return; // géré par handleApiResponse → doLogout
+    document.body.innerHTML = `<div style="padding:40px;font-family:sans-serif;color:#C0392B">
+      <h2>Impossible de contacter le serveur</h2>
+      <p>Vérifiez que <code>main.py</code> est bien lancé (double-cliquez sur <strong>start.bat</strong>).</p>
+    </div>`;
+  }
+}
+
+// ── DÉMARRAGE AVEC AUTH ────────────────────────────────────────────────────────
+async function start() {
+  loadBrandSettings();
+  const ok = await checkAuth();
+  if (ok) await init();
+}
+
+async function loadFiches() {
+  fiches = await api.get('/api/fiches');
+  renderListe();
+}
+
+// ── PRIX DE VENTE ─────────────────────────────────────────────────────────────
+function updatePrixVente() {
+  const cout  = parseFloat(document.getElementById('f-cout')?.value) || 0;
+  const coeff = parseFloat(document.getElementById('f-coefficient')?.value) || 0;
+  const display = document.getElementById('prix-vente-display');
+  const alert   = document.getElementById('coeff-alert');
+  if (!display) return;
+  if (cout > 0 && coeff > 0) {
+    const prix = Math.round(cout * coeff);
+    display.textContent = prix.toLocaleString('fr-FR') + ' Ar';
+    if (coeff < COEFF_MIN) {
+      alert.hidden = false; alert.className = 'coeff-alert coeff-danger';
+      alert.innerHTML = `⛔ Coefficient <strong>${coeff}</strong> trop bas ! Minimum : ${COEFF_MIN}.`;
+    } else if (coeff < COEFF_NORM) {
+      alert.hidden = false; alert.className = 'coeff-alert coeff-warn';
+      alert.innerHTML = `⚠️ Coefficient <strong>${coeff}</strong> en dessous de la norme (${COEFF_NORM}).`;
+    } else {
+      alert.hidden = false; alert.className = 'coeff-alert coeff-ok';
+      alert.innerHTML = `✅ Coefficient <strong>${coeff}</strong> — Prix de vente : ${prix.toLocaleString('fr-FR')} Ar.`;
+    }
+  } else {
+    display.textContent = '—'; if (alert) alert.hidden = true;
+  }
+}
+
+// ── PHOTO ─────────────────────────────────────────────────────────────────────
+function handlePhotoUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('f-photo').value = ev.target.result;
+    document.getElementById('photo-preview').src = ev.target.result;
+    document.getElementById('photo-preview').hidden = false;
+    document.getElementById('photo-placeholder').hidden = true;
+    document.getElementById('photo-clear-btn').hidden = false;
+  };
+  reader.readAsDataURL(file);
+}
+function clearPhoto() {
+  document.getElementById('f-photo').value = '';
+  document.getElementById('photo-preview').src = '';
+  document.getElementById('photo-preview').hidden = true;
+  document.getElementById('photo-placeholder').hidden = false;
+  document.getElementById('photo-clear-btn').hidden = true;
+  document.getElementById('f-photo-input').value = '';
+}
+
+// ── AUTHENTIFICATION ──────────────────────────────────────────────────────────
+function showLoginScreen() {
+  const saved = localStorage.getItem('brand_logo');
+  if (saved) document.getElementById('login-logo').src = saved;
+  const name = localStorage.getItem('brand_name') || 'Fiche Technique';
+  document.getElementById('login-app-name').textContent = name;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-error').textContent = '';
+  setTimeout(() => document.getElementById('login-username').focus(), 100);
+}
+
+function hideLoginScreen() {
+  document.getElementById('login-screen').style.display = 'none';
+}
+
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  if (!username || !password) { errEl.textContent = 'Veuillez remplir tous les champs.'; return; }
+  errEl.textContent = '';
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      errEl.textContent = err.detail || 'Identifiants incorrects.';
+      return;
+    }
+    const data = await res.json();
+    authToken   = data.token;
+    currentUser = data.user;
+    localStorage.setItem('auth_token', authToken);
+    hideLoginScreen();
+    applyUserContext();
+    await init();
+  } catch(e) {
+    errEl.textContent = 'Impossible de contacter le serveur.';
+  }
+}
+
+function doLogout() {
+  fetch('/api/auth/logout', {method:'POST', headers: {'Authorization': `Bearer ${authToken}`}}).catch(()=>{});
+  authToken   = '';
+  currentUser = null;
+  localStorage.removeItem('auth_token');
+  showLoginScreen();
+}
+
+function isAdmin() { return currentUser && currentUser.role === 'admin'; }
+
+function applyUserContext() {
+  if (!currentUser) return;
+  document.getElementById('sidebar-username').textContent = currentUser.username;
+  const rb = document.getElementById('sidebar-role-badge');
+  rb.textContent  = isAdmin() ? 'Admin' : 'Utilisateur';
+  rb.style.background = isAdmin() ? 'rgba(255,200,50,.25)' : 'rgba(255,255,255,.15)';
+
+  // Masquer Paramètres pour les non-admins
+  const navParam = document.getElementById('nav-parametres');
+  if (navParam) navParam.hidden = !isAdmin();
+
+  // Désactiver le clic logo → Paramètres pour les non-admins
+  const brand = document.querySelector('.sidebar-brand');
+  if (brand) {
+    if (isAdmin()) {
+      brand.setAttribute('onclick', "showView('parametres')");
+      brand.style.cursor = 'pointer';
+    } else {
+      brand.removeAttribute('onclick');
+      brand.style.cursor = 'default';
+      brand.title = '';
+    }
+  }
+}
+
+async function checkAuth() {
+  if (!authToken) { showLoginScreen(); return false; }
+  try {
+    const res = await fetch('/api/auth/me', {headers: {'Authorization': `Bearer ${authToken}`}});
+    if (!res.ok) { showLoginScreen(); return false; }
+    currentUser = await res.json();
+    applyUserContext();
+    return true;
+  } catch(e) { showLoginScreen(); return false; }
+}
+
+// ── COMPTES & ACCÈS (modal unifié) ───────────────────────────────────────────
+let _accEditingId   = null;  // null = création, number = id utilisateur édité
+let _accEditingSelf = false; // true si on modifie son propre compte
+const _usersMap     = {};    // id → user, pour éviter XSS via onclick+JSON
+
+async function openAccountsModal() {
+  closeAccountForm();
+  document.getElementById('accounts-modal-overlay').hidden = false;
+  document.getElementById('acc-add-btn').hidden = (currentUser?.role !== 'admin');
+  // Délégation d'événements — évite XSS via onclick+JSON
+  const list = document.getElementById('accounts-list');
+  list.onclick = function(ev) {
+    const editBtn = ev.target.closest('.btn-user-edit');
+    const delBtn  = ev.target.closest('.btn-user-del');
+    if (editBtn) {
+      const uid  = parseInt(editBtn.dataset.uid);
+      openAccountForm(_usersMap[uid] || null);
+    } else if (delBtn) {
+      const uid   = parseInt(delBtn.dataset.uid);
+      const uname = delBtn.dataset.uname;
+      deleteAccount(uid, uname);
+    }
+  };
+  await refreshAccountsList();
+}
+
+function closeAccountsModal() {
+  document.getElementById('accounts-modal-overlay').hidden = true;
+  closeAccountForm();
+}
+
+async function refreshAccountsList() {
+  const list = document.getElementById('accounts-list');
+  list.innerHTML = '<p style="color:var(--text-3);font-size:13px">Chargement…</p>';
+  try {
+    let users;
+    if (currentUser?.role === 'admin') {
+      users = await api.get('/api/users');
+    } else {
+      // utilisateur normal : seulement lui-même
+      const me = await api.get('/api/auth/me');
+      users = [{ id: me.id, username: me.username, role: me.role, is_active: 1 }];
+    }
+    list.innerHTML = '';
+    users.forEach(u => {
+      const isMe  = currentUser && u.id === currentUser.id;
+      const isAdmin = currentUser?.role === 'admin';
+      const div   = document.createElement('div');
+      div.className = 'user-row';
+      div.innerHTML = `
+        <div class="user-row-avatar">${(u.username[0]||'?').toUpperCase()}</div>
+        <div class="user-row-info">
+          <div class="user-row-name">${esc(u.username)}${isMe ? ' <span style="font-size:11px;color:var(--green)">(vous)</span>' : ''}</div>
+          <div class="user-row-meta">
+            <span class="user-role-badge ${u.role}">${u.role === 'admin' ? 'Administrateur' : 'Utilisateur'}</span>
+            <span class="user-status-badge ${u.is_active ? 'active' : 'inactive'}">${u.is_active ? 'Actif' : 'Inactif'}</span>
+          </div>
+        </div>
+        <div class="user-row-actions">
+          <button class="btn-user-edit" data-uid="${u.id}">Modifier</button>
+          ${isAdmin && !isMe ? `<button class="btn-user-del" data-uid="${u.id}" data-uname="${esc(u.username)}">Supprimer</button>` : ''}
+        </div>`;
+      _usersMap[u.id] = u;
+      list.appendChild(div);
+    });
+  } catch(e) {
+    list.innerHTML = '<p style="color:#dc2626;font-size:13px">Erreur de chargement.</p>';
+  }
+}
+
+function openAccountForm(user) {
+  const isAdmin    = currentUser?.role === 'admin';
+  const isSelf     = user && currentUser && user.id === currentUser.id;
+  const isNew      = !user;
+  _accEditingId    = user ? user.id : null;
+  _accEditingSelf  = isSelf;
+
+  document.getElementById('account-form-title').textContent =
+    isNew ? 'Nouvel utilisateur' : (isSelf ? 'Mon compte' : `Modifier "${user.username}"`);
+
+  // Champs infos
+  document.getElementById('acc-username').value   = user ? user.username : '';
+  document.getElementById('acc-username').readOnly = isSelf && !isAdmin ? true : false;
+  document.getElementById('acc-role').value        = user ? user.role : 'user';
+  document.getElementById('acc-active').value      = user ? String(user.is_active) : '1';
+
+  // Rôle & statut : cachés si l'utilisateur modifie lui-même et n'est pas admin
+  document.getElementById('acc-role-wrap').hidden   = isSelf && !isAdmin;
+  document.getElementById('acc-status-wrap').hidden = isSelf || !isAdmin;
+
+  // Mot de passe
+  document.getElementById('acc-old-password').value    = '';
+  document.getElementById('acc-password').value        = '';
+  document.getElementById('acc-password-confirm').value= '';
+  // "Ancien mot de passe" : obligatoire uniquement quand on change son propre mot de passe
+  document.getElementById('acc-oldpwd-wrap').hidden = !isSelf;
+  document.getElementById('acc-pwd-label').textContent =
+    isNew ? 'Mot de passe' : 'Nouveau mot de passe (laisser vide = inchangé)';
+
+  document.getElementById('acc-form-error').textContent = '';
+  document.getElementById('acc-save-btn').textContent   = isNew ? 'Créer' : 'Enregistrer';
+  document.getElementById('account-form-wrap').hidden   = false;
+  document.getElementById('acc-username').focus();
+}
+
+function closeAccountForm() {
+  document.getElementById('account-form-wrap').hidden = true;
+  _accEditingId   = null;
+  _accEditingSelf = false;
+}
+
+async function submitAccountForm() {
+  const username  = document.getElementById('acc-username').value.trim();
+  const role      = document.getElementById('acc-role').value;
+  const is_active = parseInt(document.getElementById('acc-active').value);
+  const oldPwd    = document.getElementById('acc-old-password').value;
+  const newPwd    = document.getElementById('acc-password').value;
+  const confirm   = document.getElementById('acc-password-confirm').value;
+  const errEl     = document.getElementById('acc-form-error');
+  errEl.textContent = '';
+
+  if (!username) { errEl.textContent = 'Le nom d\'utilisateur est requis.'; return; }
+  if (!_accEditingId && !newPwd) { errEl.textContent = 'Le mot de passe est requis pour un nouvel utilisateur.'; return; }
+  if (newPwd && newPwd.length < 4) { errEl.textContent = 'Le mot de passe doit contenir au moins 4 caractères.'; return; }
+  if (newPwd && newPwd !== confirm) { errEl.textContent = 'Les mots de passe ne correspondent pas.'; return; }
+  if (_accEditingSelf && newPwd && !oldPwd) { errEl.textContent = 'Veuillez saisir votre ancien mot de passe.'; return; }
+
+  try {
+    if (!_accEditingId) {
+      // Création
+      await api.post('/api/users', { username, role, is_active, password: newPwd });
+      showToast('Utilisateur créé ✓');
+    } else if (_accEditingSelf) {
+      // Modification de soi-même : username via users API, mot de passe via change-password
+      await api.put(`/api/users/${_accEditingId}`, { username, role, is_active, password: undefined });
+      if (newPwd) {
+        await api.put('/api/auth/change-password', { old_password: oldPwd, new_password: newPwd });
+      }
+      currentUser.username = username;
+      document.getElementById('sidebar-username').textContent = username;
+      showToast('Compte mis à jour ✓');
+    } else {
+      // Admin modifie un autre utilisateur
+      await api.put(`/api/users/${_accEditingId}`, { username, role, is_active, password: newPwd || undefined });
+      showToast('Utilisateur mis à jour ✓');
+    }
+    closeAccountForm();
+    await refreshAccountsList();
+  } catch(e) {
+    const msg = await e.json?.().then(d => d.detail).catch(() => 'Erreur.');
+    errEl.textContent = msg;
+  }
+}
+
+async function deleteAccount(id, username) {
+  if (!confirm(`Supprimer l'utilisateur "${username}" ? Cette action est irréversible.`)) return;
+  try {
+    await api.delete(`/api/users/${id}`);
+    showToast('Utilisateur supprimé ✓');
+    await refreshAccountsList();
+  } catch(e) {
+    const msg = await e.json?.().then(d => d.detail).catch(() => 'Erreur.');
+    showToast('Erreur : ' + msg);
+  }
+}
+
+// ── PROFIL & LOGO ─────────────────────────────────────────────────────────────
+let _pendingLogoDataUrl = null;
+
+function loadBrandSettings() {
+  const name = localStorage.getItem('brand_name');
+  const logo = localStorage.getItem('brand_logo');
+  if (name) {
+    document.getElementById('brand-name').textContent = name;
+    document.title = name;
+  }
+  if (logo) document.getElementById('brand-logo').src = logo;
+}
+
+function openProfileModal() {
+  _pendingLogoDataUrl = null;
+  const savedName = localStorage.getItem('brand_name') || 'Fiche Technique';
+  const savedLogo = localStorage.getItem('brand_logo') || '/static/logo.png';
+  document.getElementById('profile-name-input').value = savedName;
+  document.getElementById('profile-logo-preview').src = savedLogo;
+  document.getElementById('logo-upload-input').value = '';
+  document.getElementById('profile-modal-overlay').hidden = false;
+}
+
+function closeProfileModal() {
+  document.getElementById('profile-modal-overlay').hidden = true;
+  _pendingLogoDataUrl = null;
+}
+
+function handleLogoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Image trop grande (max 2 Mo)'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _pendingLogoDataUrl = ev.target.result;
+    document.getElementById('profile-logo-preview').src = _pendingLogoDataUrl;
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetLogo() {
+  _pendingLogoDataUrl = '__reset__';
+  document.getElementById('profile-logo-preview').src = '/static/logo.png';
+  document.getElementById('logo-upload-input').value = '';
+}
+
+function saveProfileSettings() {
+  const name = document.getElementById('profile-name-input').value.trim() || 'Fiche Technique';
+  localStorage.setItem('brand_name', name);
+  document.getElementById('brand-name').textContent = name;
+  document.title = name;
+
+  if (_pendingLogoDataUrl === '__reset__') {
+    localStorage.removeItem('brand_logo');
+    document.getElementById('brand-logo').src = '/static/logo.png';
+  } else if (_pendingLogoDataUrl) {
+    localStorage.setItem('brand_logo', _pendingLogoDataUrl);
+    document.getElementById('brand-logo').src = _pendingLogoDataUrl;
+  }
+
+  closeProfileModal();
+  showToast('Profil mis à jour ✓');
+}
+
+// ── EXPORT / IMPORT EXCEL ────────────────────────────────────────────────────
+function exportExcel() {
+  if (typeof XLSX === 'undefined') { showToast('Connexion internet requise'); return; }
+  const fichesSheet = fiches.map(f => ({
+    'Nom': f.nom, 'Catégorie': getCatLabel(f.categorie),
+    'Quantité': f.quantite || '', 'Unité': f.unite || 'personnes',
+    'Coût matière (Ar)': f.cout || '', 'Coefficient': f.coefficient || COEFF_NORM,
+    'Prix vente (Ar)': (f.cout && f.coefficient) ? Math.round(parseFloat(f.cout)*parseFloat(f.coefficient)) : '',
+    'Conservation': f.conservation_val ? `${f.conservation_val} ${f.conservation_unite}` : '',
+    'Préparation (min)': f.prep || '', 'Cuisson (min)': f.cuisson || '',
+    'Température (°C)': f.temperature || '',
+    'Allergènes': (f.allergenes||[]).join(', '),
+    'Apparence normale': f.apparence_normale || '',
+    'Apparence anormale': f.apparence_anormale || '',
+    'Matériels': (f.materiels||[]).join(', '),
+    'Utilisations': f.utilisations || '',
+    'Notes de services': f.notes_services || '',
+    'Notes préparateur': f.notes_preparateur || '',
+    'ID': f.id, 'Mise à jour': formatDate(f.updatedAt),
+  }));
+  const ingSheet = [];
+  fiches.forEach(f => (f.ingredients||[]).forEach(i => ingSheet.push({Fiche:f.nom,Ingrédient:i.nom,Quantité:i.qte,Unité:i.unite})));
+  const etapesSheet = [];
+  fiches.forEach(f => (f.etapes||[]).forEach((e,i) => etapesSheet.push({Fiche:f.nom,Étape:i+1,Description:e})));
+  const matSheet = [];
+  fiches.forEach(f => (f.materiels||[]).forEach(m => matSheet.push({Fiche:f.nom,Matériel:m})));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(fichesSheet), 'Fiches');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ingSheet),    'Ingrédients');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(etapesSheet), 'Étapes');
+  if (matSheet.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matSheet), 'Matériels');
+  XLSX.writeFile(wb, 'fiches-bogota-' + new Date().toISOString().slice(0,10) + '.xlsx');
+  showToast('Export Excel téléchargé ✓');
+}
+
+function importPDF()   { document.getElementById('import-pdf-input').click(); }
+
+// ── IMPORT PDF ────────────────────────────────────────────────────────────────
+let pdfRecettes = [];
+
+async function handleImportPDF(e) {
+  const file = e.target.files[0]; if (!file) return;
+  e.target.value = '';
+  showToast('Analyse du PDF en cours…');
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const res = await fetch('/api/import/pdf', {method:'POST', headers: bearerHeaders(), body: fd});
+    if (!res.ok) { const err = await res.json(); showToast('Erreur : ' + (err.detail||'PDF invalide')); return; }
+    const data = await res.json();
+    pdfRecettes = data.recettes || [];
+    if (!pdfRecettes.length) { showToast('Aucune recette trouvée dans ce PDF'); return; }
+    showPDFModal(file.name, data.total_pages);
+  } catch(err) { console.error(err); showToast('Erreur lors de l\'analyse du PDF'); }
+}
+
+function showPDFModal(filename, totalPages) {
+  document.getElementById('pdf-modal-title').textContent = 'Importer depuis PDF';
+  document.getElementById('pdf-modal-subtitle').textContent =
+    `Fichier : "${filename}" — ${totalPages} page(s) — ${pdfRecettes.length} recette(s) trouvée(s)`;
+
+  const body = document.getElementById('pdf-modal-body');
+  body.innerHTML = `
+    <div style="margin-bottom:10px;display:flex;gap:10px;align-items:center">
+      <label style="font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="pdf-check-all" checked onchange="toggleAllPDF(this.checked)"> Tout sélectionner
+      </label>
+      <span style="font-size:12px;color:var(--text-3)">(vous pouvez décocher les recettes à ignorer)</span>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border)">
+          <th style="padding:6px 8px;text-align:left;width:32px"></th>
+          <th style="padding:6px 8px;text-align:left">Recette</th>
+          <th style="padding:6px 8px;text-align:left">Catégorie</th>
+          <th style="padding:6px 8px;text-align:right">C.R (Ar)</th>
+          <th style="padding:6px 8px;text-align:right">Ingréd.</th>
+          <th style="padding:6px 8px;text-align:right">Page</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${pdfRecettes.map((r,i) => `
+          <tr style="border-bottom:1px solid var(--border-light)" id="pdf-row-${i}">
+            <td style="padding:7px 8px"><input type="checkbox" class="pdf-cb" data-idx="${i}" checked></td>
+            <td style="padding:7px 8px;font-weight:600">${esc(r.nom)}</td>
+            <td style="padding:7px 8px;color:var(--text-2)">${esc(r.categorie||'—')}</td>
+            <td style="padding:7px 8px;text-align:right">${r.cout ? Number(r.cout).toLocaleString('fr-FR') : '—'}</td>
+            <td style="padding:7px 8px;text-align:right">${(r.ingredients||[]).length}</td>
+            <td style="padding:7px 8px;text-align:right;color:var(--text-3)">${r.page}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>`;
+
+  document.getElementById('pdf-modal-overlay').hidden = false;
+}
+
+function toggleAllPDF(checked) {
+  document.querySelectorAll('.pdf-cb').forEach(cb => cb.checked = checked);
+}
+
+function closePDFModal() {
+  document.getElementById('pdf-modal-overlay').hidden = true;
+  pdfRecettes = [];
+}
+
+async function confirmImportPDF() {
+  const selected = [...document.querySelectorAll('.pdf-cb:checked')].map(cb => parseInt(cb.dataset.idx));
+  if (!selected.length) { showToast('Aucune recette sélectionnée'); return; }
+
+  const btn = document.getElementById('pdf-import-btn');
+  btn.disabled = true; btn.textContent = '⏳ Importation…';
+
+  // Mapper les catégories PDF vers les IDs de catégories en base
+  const catMap = {};
+  categories.forEach(c => { catMap[c.nom.toLowerCase()] = c.id; catMap[c.id] = c.id; });
+
+  let ok = 0, err = 0;
+  for (const idx of selected) {
+    const r = pdfRecettes[idx];
+    const catId = catMap[r.categorie] || catMap[(r.categorie||'').toLowerCase()] || null;
+    const data = {
+      nom:               r.nom,
+      categorie:         catId,
+      quantite:          r.quantite || null,
+      unite:             r.unite    || 'portions',
+      cout:              r.cout     || null,
+      coefficient:       COEFF_NORM,
+      prep:              r.prep     || null,
+      ingredients:       (r.ingredients || []).map(i => ({nom:i.nom, qte:String(i.qte), unite:i.unite||''})),
+      etapes:            r.etapes   || [],
+      allergenes:        [],
+      materiels:         r.materiels || [],
+      apparence_normale:  r.apparence_normale  || null,
+      apparence_anormale: r.apparence_anormale || null,
+      utilisations:       r.utilisations       || null,
+      notes_services:     r.notes_services     || null,
+      notes_preparateur:  r.conservation       || null,
+    };
+    try { await api.post('/api/fiches', data); ok++; }
+    catch(e) { err++; console.error('Erreur import', r.nom, e); }
+  }
+
+  closePDFModal();
+  await loadFiches();
+  showToast(`Import PDF : ${ok} fiche(s) créée(s)${err ? `, ${err} erreur(s)` : ''} ✓`);
+  btn.disabled = false; btn.textContent = '📥 Importer la sélection';
+}
+
+// ── SYNC / IMPORTER EXCEL ────────────────────────────────────────────────────
+function syncHACCP() { document.getElementById('sync-haccp-input').click(); }
+
+async function handleSyncHACCP(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  confirmModal(
+    'Sync / Importer Excel',
+    `Le fichier "${file.name}" va mettre à jour les fiches existantes et créer les nouvelles recettes (format HACCP ou export application).\n\nContinuer ?`,
+    async () => {
+      showToast('Import en cours…');
+      try {
+        const form = new FormData();
+        form.append('file', file);
+        const res = await fetch('/api/sync/haccp', { method: 'POST', headers: bearerHeaders(), body: form });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          showToast('Erreur : ' + (err.detail || res.statusText));
+          return;
+        }
+        const r = await res.json();
+        await loadFiches();
+        showToast(`Import Excel : ${r.updated} mis à jour, ${r.created} créé(s) ✓`);
+      } catch(err) {
+        console.error(err);
+        showToast('Erreur lors de l\'import');
+      }
+    },
+    'Importer', false
+  );
+}
+
+// ── VUES ──────────────────────────────────────────────────────────────────────
+function showView(name) {
+  if (!isAdmin() && (name === 'parametres' || name === 'historique')) return;
+  closeMobileSidebar();
+  ['liste','detail','form','historique','parametres'].forEach(v =>
+    document.getElementById('view-'+v).hidden = v !== name
+  );
+  document.getElementById('nav-liste').classList.toggle('active', name === 'liste');
+  document.getElementById('nav-parametres').classList.toggle('active', name === 'parametres');
+  if (name === 'liste') renderListe();
+  if (name === 'historique') loadHistorique();
+}
+
+function exportAllPDF() {
+  if (typeof html2pdf === 'undefined') { showToast('Connexion internet requise pour le PDF'); return; }
+  if (!fiches.length) { showToast('Aucune fiche à exporter'); return; }
+  showToast('Génération PDF en cours…');
+  fiches.forEach((f, i) => {
+    setTimeout(() => {
+      const host = document.createElement('div');
+      host.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:24px 28px';
+      host.appendChild(buildPDFEl(f));
+      document.body.appendChild(host);
+      html2pdf().set({
+        margin: 10, filename: `${f.nom}.pdf`,
+        image: {type:'jpeg', quality:.92},
+        html2canvas: {scale:2, useCORS:true}, jsPDF: {unit:'mm', format:'a4'}
+      }).from(host).save().then(() => {
+        document.body.removeChild(host);
+        if (i === fiches.length - 1) showToast(`${fiches.length} PDF exportés ✓`);
+      });
+    }, i * 300);
+  });
+}
+
+// ── SIDEBAR CATÉGORIES ────────────────────────────────────────────────────────
+let sidebarGroupOpen = { prepa: false, prod: false };
+
+function toggleSidebarGroup(group) {
+  sidebarGroupOpen[group] = !sidebarGroupOpen[group];
+  renderSidebarCats();
+}
+
+function renderSidebarCats() {
+  const list = document.getElementById('sidebar-cats');
+  const prepa = categories.filter(c => c.groupe === 'PREPA');
+  const prod  = categories.filter(c => c.groupe !== 'PREPA');
+
+  // Auto-ouvre le groupe si une catégorie active est dedans
+  if (activeCategory !== 'all') {
+    const inPrepa = prepa.some(c => c.id === activeCategory);
+    const inProd  = prod.some(c => c.id === activeCategory);
+    if (inPrepa) sidebarGroupOpen.prepa = true;
+    if (inProd)  sidebarGroupOpen.prod  = true;
+  }
+
+  const btnAll = `<button class="filter-item ${activeCategory==='all'?'active':''}" onclick="setCategory('all')"><span class="filter-dot" style="background:#8A8480"></span> Toutes</button>`;
+
+  const sectionPrepa = prepa.length ? `
+    <button class="sidebar-group-toggle ${sidebarGroupOpen.prepa?'open':''}" onclick="toggleSidebarGroup('prepa')">
+      <span>Semi-fini (PREPA)</span>
+      <span class="sg-arrow">▶</span>
+    </button>
+    <div class="sidebar-group-cats ${sidebarGroupOpen.prepa?'open':''}">
+      ${prepa.map(c => `<button class="filter-item ${activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')"><span class="filter-dot" style="background:${c.couleur}"></span> ${esc(c.nom)}</button>`).join('')}
+    </div>
+  ` : '';
+
+  const sectionProd = prod.length ? `
+    <button class="sidebar-group-toggle ${sidebarGroupOpen.prod?'open':''}" onclick="toggleSidebarGroup('prod')">
+      <span>Production (Fini)</span>
+      <span class="sg-arrow">▶</span>
+    </button>
+    <div class="sidebar-group-cats ${sidebarGroupOpen.prod?'open':''}">
+      ${prod.map(c => `<button class="filter-item ${activeCategory===c.id?'active':''}" onclick="setCategory('${c.id}')"><span class="filter-dot" style="background:${c.couleur}"></span> ${esc(c.nom)}</button>`).join('')}
+    </div>
+  ` : '';
+
+  list.innerHTML = btnAll + sectionPrepa + sectionProd;
+}
+
+function setCategory(cat) { activeCategory = cat; renderSidebarCats(); renderListe(); }
+
+// ── MODAL CATÉGORIES ──────────────────────────────────────────────────────────
+let editingCatId = null;
+let selectedColor = CAT_COLORS[0];
+
+// ── CATALOGUE INGRÉDIENTS ─────────────────────────────────────────────────────
+let ingCatalogueData  = [];   // entrées manuelles [{id, nom, unite, prix}]
+let ingTousData       = [];   // tous les noms depuis les fiches [{nom, dans_catalogue}]
+let editingIngCatId   = null;
+
+async function openIngCatalogueModal() {
+  editingIngCatId    = null;
+  editingIngFicheNom = null;
+  document.getElementById('ing-cat-nom').value    = '';
+  document.getElementById('ing-cat-unite').value  = '';
+  document.getElementById('ing-cat-prix').value   = '';
+  document.getElementById('ing-cat-search').value = '';
+  document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
+  document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+  await renderIngCatalogueList();
+  document.getElementById('ing-catalogue-modal-overlay').hidden = false;
+
+  // Délégation d'événements sur la liste
+  document.getElementById('ing-catalogue-list').onclick = function(ev) {
+    const editBtn      = ev.target.closest('.ing-edit-btn');
+    const delBtn       = ev.target.closest('.ing-del-btn');
+    const ficheEditBtn = ev.target.closest('.ing-fiche-edit-btn');
+    const ficheDelBtn  = ev.target.closest('.ing-fiche-del-btn');
+    if (editBtn) {
+      startEditIngCat(
+        parseInt(editBtn.dataset.id),
+        editBtn.dataset.nom,
+        editBtn.dataset.unite,
+        editBtn.dataset.prix
+      );
+    } else if (delBtn) {
+      deleteIngCat(parseInt(delBtn.dataset.id));
+    } else if (ficheEditBtn) {
+      startEditIngFiche(ficheEditBtn.dataset.nom, ficheEditBtn.dataset.unite, ficheEditBtn.dataset.prix);
+    } else if (ficheDelBtn) {
+      deleteIngFiche(ficheDelBtn.dataset.nom);
+    }
+  };
+}
+
+function closeIngCatalogueModal() {
+  document.getElementById('ing-catalogue-modal-overlay').hidden = true;
+}
+
+async function renderIngCatalogueList() {
+  [ingCatalogueData, ingredientsCatalogue] = await Promise.all([
+    api.get('/api/ingredients/catalogue/manuel'),
+    api.get('/api/ingredients/catalogue'),
+  ]);
+  // Construire ingTousData depuis les fiches déjà en mémoire
+  const map = {};
+  fiches.forEach(f => {
+    (f.ingredients || []).forEach(ing => {
+      if (!ing.nom || !ing.nom.trim()) return;
+      const nom = ing.nom.trim();
+      if (!map[nom]) map[nom] = {nom, unite: null, prix: null};
+      if (ing.unite && ing.unite.trim() && !map[nom].unite) map[nom].unite = ing.unite.trim();
+      if (ing.prix && ing.prix > 0 && !map[nom].prix)      map[nom].prix  = ing.prix;
+    });
+  });
+  // Compléter unite/prix depuis le catalogue (fiches PREPA + catalogue manuel) — comparaison insensible à la casse
+  Object.values(map).forEach(item => {
+    if (!item.unite || !item.prix) {
+      const nomLow = item.nom.toLowerCase();
+      const cat = ingredientsCatalogue.find(e => e.nom.toLowerCase() === nomLow);
+      if (cat) {
+        if (!item.unite && cat.unite) item.unite = cat.unite;
+        if (!item.prix  && cat.prix)  item.prix  = cat.prix;
+      }
+    }
+  });
+  ingTousData = Object.values(map).sort((a,b) => a.nom.localeCompare(b.nom, 'fr'));
+  filterIngCatalogue();
+}
+
+function filterIngCatalogue() {
+  const q = (document.getElementById('ing-cat-search')?.value || '').toLowerCase();
+  const list = document.getElementById('ing-catalogue-list');
+
+  // Fusionner : d'abord les entrées manuelles (éditables), puis les noms de fiches non encore dans catalogue
+  const manuelNoms = new Set(ingCatalogueData.map(e => e.nom));
+  const fichesSeulement = ingTousData.filter(e => !manuelNoms.has(e.nom));
+
+  const allItems = [
+    ...ingCatalogueData.map(e => ({...e, source: 'manuel'})),
+    ...fichesSeulement.map(e => ({nom: e.nom, unite: e.unite, prix: e.prix, source: 'fiche'}))
+  ].filter(e => !q || e.nom.toLowerCase().includes(q));
+
+  if (!allItems.length) {
+    list.innerHTML = '<p style="color:var(--text-3);font-size:13px;padding:8px 0">Aucun ingrédient trouvé.</p>';
+    return;
+  }
+
+  list.innerHTML = allItems.map(e => {
+    if (e.source === 'manuel') {
+      return `<div class="cat-modal-item">
+        <span style="font-size:10px;background:var(--green-light);color:var(--green);border-radius:3px;padding:1px 5px;font-weight:600;margin-right:6px">CATALOGUE</span>
+        <span class="cat-modal-nom">${esc(e.nom)}${e.unite ? ' <span style="color:var(--text-3);font-size:12px">('+esc(e.unite)+')</span>' : ''}${e.prix ? ' — <span style="color:var(--green);font-size:12px">'+Number(e.prix).toLocaleString('fr-FR')+' Ar</span>' : ''}</span>
+        <div class="cat-modal-actions">
+          <button class="cat-modal-btn ing-edit-btn"
+            data-id="${e.id}" data-nom="${esc(e.nom)}" data-unite="${esc(e.unite||'')}" data-prix="${e.prix != null ? e.prix : ''}">✏️</button>
+          <button class="cat-modal-btn del ing-del-btn" data-id="${e.id}">🗑</button>
+        </div>
+      </div>`;
+    } else {
+      const hasInfo = e.unite || e.prix;
+      return `<div class="cat-modal-item">
+        <span style="font-size:10px;background:var(--bg-2,#f0f0f0);color:var(--text-3);border-radius:3px;padding:1px 5px;font-weight:600;margin-right:6px">FICHE</span>
+        <span class="cat-modal-nom">${esc(e.nom)}${e.unite ? ' <span style="color:var(--text-3);font-size:12px">('+esc(e.unite)+')</span>' : ''}${e.prix ? ' — <span style="color:var(--text-2);font-size:12px">'+Number(e.prix).toLocaleString('fr-FR')+' Ar</span>' : ''}</span>
+        <div class="cat-modal-actions">
+          ${!hasInfo ? `<button class="cat-modal-btn ing-fiche-edit-btn" style="font-size:11px;color:var(--green)" data-nom="${esc(e.nom)}" data-unite="" data-prix="">+ Prix</button>` : ''}
+          <button class="cat-modal-btn ing-fiche-edit-btn"
+            data-nom="${esc(e.nom)}" data-unite="${esc(e.unite||'')}" data-prix="${e.prix != null ? e.prix : ''}">✏️</button>
+          <button class="cat-modal-btn del ing-fiche-del-btn" data-nom="${esc(e.nom)}">🗑</button>
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+
+function resetIngCatForm() {
+  editingIngCatId    = null;
+  editingIngFicheNom = null;
+  document.getElementById('ing-cat-nom').value   = '';
+  document.getElementById('ing-cat-unite').value = '';
+  document.getElementById('ing-cat-prix').value  = '';
+  document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
+  document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+}
+
+function prefillIngCat(nom) {
+  document.getElementById('ing-cat-nom').value   = nom;
+  document.getElementById('ing-cat-unite').value = '';
+  document.getElementById('ing-cat-prix').value  = '';
+  document.getElementById('ing-cat-form-label').textContent = 'Ajouter au catalogue';
+  document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+  editingIngCatId = null;
+  document.getElementById('ing-cat-unite').focus();
+}
+
+let editingIngFicheNom = null;
+
+function startEditIngFiche(nom, unite, prix) {
+  editingIngFicheNom = nom;
+  editingIngCatId    = null;
+  document.getElementById('ing-cat-nom').value   = nom   || '';
+  document.getElementById('ing-cat-unite').value = unite || '';
+  document.getElementById('ing-cat-prix').value  = prix  || '';
+  document.getElementById('ing-cat-form-label').textContent = 'Modifier l\'ingrédient';
+  document.getElementById('ing-cat-save-btn').textContent   = 'Enregistrer';
+  document.getElementById('ing-cat-nom').focus();
+}
+
+async function deleteIngFiche(nom) {
+  if (!confirm(`Supprimer "${nom}" de toutes les fiches ?\nCette action est irréversible.`)) return;
+  const res = await api.post('/api/ingredients/fiche/supprimer', {nom});
+  await renderIngCatalogueList();
+  ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+  [fiches] = await Promise.all([api.get('/api/fiches')]);
+  renderListe();
+}
+
+function startEditIngCat(id, nom, unite, prix) {
+  editingIngCatId    = id;
+  editingIngFicheNom = null;
+  document.getElementById('ing-cat-nom').value   = nom   || '';
+  document.getElementById('ing-cat-unite').value = unite || '';
+  document.getElementById('ing-cat-prix').value  = prix  || '';
+  document.getElementById('ing-cat-form-label').textContent = "Modifier l'ingrédient";
+  document.getElementById('ing-cat-save-btn').textContent   = 'Enregistrer';
+  document.getElementById('ing-cat-nom').focus();
+}
+
+async function saveIngCatalogue() {
+  const nom   = document.getElementById('ing-cat-nom').value.trim();
+  const unite = document.getElementById('ing-cat-unite').value.trim();
+  const prix  = parseFloat(document.getElementById('ing-cat-prix').value) || null;
+  if (!nom) { alert('Le nom est obligatoire.'); return; }
+  try {
+    if (editingIngFicheNom) {
+      // Renommer dans toutes les fiches
+      if (nom !== editingIngFicheNom) {
+        await api.put('/api/ingredients/fiche/renommer', {ancien: editingIngFicheNom, nouveau: nom});
+        fiches = await api.get('/api/fiches');
+        renderListe();
+      }
+      // Si unité ou prix renseignés → ajouter/mettre à jour dans le catalogue
+      if (unite || prix) {
+        const existing = ingCatalogueData.find(e => e.nom === nom || e.nom === editingIngFicheNom);
+        if (existing) {
+          await api.put('/api/ingredients/catalogue/manuel/' + existing.id, {nom, unite: unite||null, prix});
+        } else {
+          try { await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix}); } catch(e) {}
+        }
+      }
+      editingIngFicheNom = null;
+    } else if (editingIngCatId) {
+      await api.put('/api/ingredients/catalogue/manuel/' + editingIngCatId, {nom, unite: unite||null, prix});
+    } else {
+      await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix});
+    }
+    editingIngCatId = null;
+    document.getElementById('ing-cat-nom').value   = '';
+    document.getElementById('ing-cat-unite').value = '';
+    document.getElementById('ing-cat-prix').value  = '';
+    document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
+    document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+    await renderIngCatalogueList();
+    ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+  } catch(err) {
+    alert(err.message || 'Erreur lors de l\'enregistrement.');
+  }
+}
+
+async function deleteIngCat(id) {
+  if (!confirm('Supprimer cet ingrédient du catalogue ?')) return;
+  await api.delete('/api/ingredients/catalogue/manuel/' + id);
+  await renderIngCatalogueList();
+  ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+}
+
+function openCatModal() {
+  editingCatId = null; selectedColor = CAT_COLORS[0];
+  document.getElementById('cat-nom-input').value    = '';
+  document.getElementById('cat-groupe-input').value = 'PRODUCTION';
+  document.getElementById('cat-form-label').textContent = 'Nouvelle catégorie';
+  document.getElementById('cat-save-btn').textContent   = 'Ajouter';
+  renderCatColorPicker(); renderCatList();
+  document.getElementById('cat-modal-overlay').hidden = false;
+}
+function closeCatModal() { document.getElementById('cat-modal-overlay').hidden = true; }
+function selectColor(c) { selectedColor = c; renderCatColorPicker(); }
+function renderCatColorPicker() {
+  document.getElementById('cat-color-picker').innerHTML = CAT_COLORS.map(c =>
+    `<div class="color-swatch ${c===selectedColor?'active':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+}
+function renderCatList() {
+  document.getElementById('cat-modal-list').innerHTML = categories.map(c =>
+    `<div class="cat-modal-item">
+      <span class="cat-modal-dot" style="background:${c.couleur}"></span>
+      <span class="cat-modal-nom">${esc(c.nom)}</span>
+      <span style="font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;margin-left:4px;${c.groupe==='PREPA'?'background:var(--green-light);color:var(--green)':'background:var(--bg-2);color:var(--text-3)'}">${c.groupe==='PREPA'?'PREPA':'PROD'}</span>
+      <div class="cat-modal-actions">
+        <button class="cat-modal-btn" onclick="startEditCat('${c.id}')">✏️</button>
+        <button class="cat-modal-btn del" onclick="deleteCat('${c.id}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+function startEditCat(id) {
+  const cat = categories.find(c => c.id === id); if (!cat) return;
+  editingCatId = id; selectedColor = cat.couleur;
+  document.getElementById('cat-nom-input').value    = cat.nom;
+  document.getElementById('cat-groupe-input').value = cat.groupe || 'PRODUCTION';
+  document.getElementById('cat-form-label').textContent = 'Modifier la catégorie';
+  document.getElementById('cat-save-btn').textContent   = 'Enregistrer';
+  renderCatColorPicker();
+}
+async function saveCat() {
+  const nom    = document.getElementById('cat-nom-input').value.trim();
+  const groupe = document.getElementById('cat-groupe-input').value || 'PRODUCTION';
+  if (!nom) { showToast('Saisissez un nom'); return; }
+  try {
+    if (editingCatId) {
+      const updated = await api.put('/api/categories/' + editingCatId, {nom, couleur: selectedColor, groupe});
+      const idx = categories.findIndex(c => c.id === editingCatId);
+      if (idx >= 0) categories[idx] = updated;
+      showToast('Catégorie modifiée ✓');
+      editingCatId = null;
+      document.getElementById('cat-form-label').textContent = 'Nouvelle catégorie';
+      document.getElementById('cat-save-btn').textContent   = 'Ajouter';
+    } else {
+      const created = await api.post('/api/categories', {nom, couleur: selectedColor, groupe});
+      categories.push(created);
+      showToast('Catégorie ajoutée ✓');
+    }
+    document.getElementById('cat-nom-input').value    = '';
+    document.getElementById('cat-groupe-input').value = 'PRODUCTION';
+    selectedColor = CAT_COLORS[0];
+    renderCatColorPicker(); renderCatList(); renderSidebarCats(); updateFormCategories();
+  } catch(e) { showToast('Erreur lors de la sauvegarde'); }
+}
+function deleteCat(id) {
+  const cat = categories.find(c => c.id === id);
+  confirmModal('Supprimer la catégorie', `Supprimer "${cat?.nom}" ?`, async () => {
+    await api.delete('/api/categories/' + id);
+    categories = categories.filter(c => c.id !== id);
+    renderCatList(); renderSidebarCats(); updateFormCategories();
+    showToast('Catégorie supprimée');
+  }, 'Supprimer');
+}
+function updateFormCategories() {
+  const sel = document.getElementById('f-categorie'); if (!sel) return;
+  const current = sel.value;
+  const prepa = categories.filter(c => c.groupe === 'PREPA');
+  const prod  = categories.filter(c => c.groupe !== 'PREPA');
+  let html = '<option value="">Sélectionner…</option>';
+  if (prepa.length) {
+    html += '<optgroup label="⚙ Semi-fini (PREPA)">';
+    html += prepa.map(c => `<option value="${c.id}" ${current===c.id?'selected':''}>${esc(c.nom)}</option>`).join('');
+    html += '</optgroup>';
+  }
+  if (prod.length) {
+    html += '<optgroup label="🍽 Produit fini (PRODUCTION)">';
+    html += prod.map(c => `<option value="${c.id}" ${current===c.id?'selected':''}>${esc(c.nom)}</option>`).join('');
+    html += '</optgroup>';
+  }
+  sel.innerHTML = html;
+  updateCatBadge();
+}
+
+function updateCatBadge() {
+  const sel   = document.getElementById('f-categorie');
+  const badge = document.getElementById('cat-type-badge');
+  if (!sel || !badge) return;
+  const cat = categories.find(c => c.id === sel.value);
+  if (!cat) { badge.style.display = 'none'; adaptFormToCategory(null); return; }
+  const isPrepa = cat.groupe === 'PREPA';
+  badge.textContent      = isPrepa ? '⚙ Semi-fini (PREPA)' : '🍽 Produit fini (PRODUCTION)';
+  badge.style.display    = 'inline-block';
+  badge.style.background = isPrepa ? '#FEF3E2' : '#E8F5E9';
+  badge.style.color      = isPrepa ? '#E67E22' : '#1A7A3C';
+  adaptFormToCategory(cat);
+}
+
+function adaptFormToCategory(cat) {
+  const isPrepa      = cat && cat.groupe === 'PREPA';
+  const isProduction = cat && cat.groupe !== 'PREPA';
+  const coutInput    = document.getElementById('f-cout');
+  const coutLabel    = document.getElementById('cout-field-label');
+  const coutWrap     = document.getElementById('cout-field-wrap');
+  const tarifCard    = document.getElementById('tarif-card');
+  const materielsCard   = document.getElementById('materiels-card');
+  const notesServiceRow = document.getElementById('notes-service-row');
+  const uniteSelect  = document.getElementById('f-unite');
+
+  if (isPrepa) {
+    // PREPA : coût saisi manuellement
+    if (coutWrap)  coutWrap.hidden = false;
+    if (coutInput) { coutInput.readOnly = false; coutInput.placeholder = 'Ex : 1500'; coutInput.style.background = ''; coutInput.style.color = ''; }
+    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
+  } else if (isProduction) {
+    // PRODUCTION : coût auto-calculé depuis les ingrédients
+    if (coutWrap)  coutWrap.hidden = false;
+    if (coutInput) { coutInput.readOnly = true; coutInput.placeholder = 'Calculé auto…'; coutInput.style.background = 'var(--bg-2,#f5f5f5)'; coutInput.style.color = 'var(--text-3,#999)'; }
+    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
+  } else {
+    // Aucune catégorie sélectionnée
+    if (coutWrap)  coutWrap.hidden = false;
+    if (coutInput) { coutInput.readOnly = false; coutInput.placeholder = 'Ex : 1500'; coutInput.style.background = ''; coutInput.style.color = ''; }
+    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
+  }
+
+  // PREPA : Tarification, Matériels et Notes de service masqués
+  if (tarifCard)       tarifCard.hidden       = !!isPrepa;
+  if (materielsCard)   materielsCard.hidden   = !!isPrepa;
+  if (notesServiceRow) notesServiceRow.hidden = !!isPrepa;
+
+  // Unité par défaut selon le type
+  if (uniteSelect && !uniteSelect.value) {
+    uniteSelect.value = isPrepa ? 'g' : 'personnes';
+  }
+
+  // Recalculer le coût si des prix sont déjà saisis
+  calcCout();
+}
+
+// ── LISTE ─────────────────────────────────────────────────────────────────────
+function renderListe() {
+  const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  let list = [...fiches];
+  if (activeCategory !== 'all') list = list.filter(f => f.categorie === activeCategory);
+  if (query) list = list.filter(f => f.nom.toLowerCase().includes(query));
+  const grid  = document.getElementById('fiches-grid');
+  const empty = document.getElementById('empty-state');
+  document.getElementById('nav-badge').textContent   = fiches.length;
+  document.getElementById('count-label').textContent = list.length + (list.length <= 1 ? ' fiche' : ' fiches');
+  if (!list.length) { grid.hidden = true; empty.hidden = false; return; }
+  grid.hidden = false; empty.hidden = true;
+  grid.innerHTML = list.map(ficheCard).join('');
+}
+
+function getCatLabel(id) { const c = categories.find(c => c.id === id); return c ? c.nom : (id || ''); }
+function getCatColor(id) { const c = categories.find(c => c.id === id); return c ? c.couleur : '#8A8480'; }
+
+function ficheCard(f) {
+  const t = (f.prep||0)+(f.cuisson||0), a = (f.allergenes||[]).length;
+  const col = getCatColor(f.categorie);
+  const qty = f.quantite || '', unit = f.unite || 'personnes';
+  const coeff = f.coefficient != null ? parseFloat(f.coefficient) : COEFF_NORM;
+  const cout  = parseFloat(f.cout) || 0;
+  const prix  = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
+  let badge = '';
+  if (cout > 0 && coeff > 0) {
+    if (coeff < COEFF_MIN) badge = `<span style="background:#FDECEA;color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">⛔ Coeff ${coeff}</span>`;
+    else if (coeff < COEFF_NORM) badge = `<span style="background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">⚠️ Coeff ${coeff}</span>`;
+    else badge = `<span style="background:#EAF7EE;color:#1A7A3C;border:1px solid #A8D9B5;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">✅ Coeff ${coeff}</span>`;
+  }
+  const photo = f.photo ? `<img src="${f.photo}" class="card-photo-thumb" alt="${esc(f.nom)}">` : `<div class="card-photo-placeholder">🍽</div>`;
+  return `<div class="fiche-card" onclick="showDetail('${f.id}')">
+    <div class="card-actions">
+      <button class="card-action-btn" onclick="event.stopPropagation();showForm('${f.id}')">✏️</button>
+      <button class="card-action-btn del" onclick="event.stopPropagation();confirmDelete('${f.id}')">🗑</button>
+    </div>
+    <div class="card-body">
+      ${photo}
+      <div class="card-body-right">
+        <div class="card-header">
+          <div class="card-title">${esc(f.nom)}</div>
+          <span class="cat-badge" style="background:${col}22;color:${col}">${esc(getCatLabel(f.categorie))}</span>
+        </div>
+        ${prix ? `<div class="card-prix">${prix.toLocaleString('fr-FR')} Ar<span>prix de vente</span></div>` : cout ? `<div class="card-prix">${Math.round(cout).toLocaleString('fr-FR')} Ar<span>coût</span></div>` : ''}
+        <div class="card-meta">
+          ${qty ? `<div class="card-meta-item">👥 ${qty} ${esc(unit)}</div>` : ''}
+          ${t   ? `<div class="card-meta-item">⏱ ${t} min</div>` : ''}
+          ${f.temperature ? `<div class="card-meta-item">🌡 ${f.temperature}°C</div>` : ''}
+          ${a   ? `<div class="card-meta-item">⚠️ ${a} allergène${a>1?'s':''}</div>` : ''}
+          ${f.conservation_val ? `<div class="card-meta-item">🕐 ${f.conservation_val} ${esc(f.conservation_unite||'jours')}</div>` : ''}
+        </div>
+        <div class="card-footer">
+          <span class="card-date">Maj ${formatDate(f.updatedAt)}</span>${badge}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── DÉTAIL ────────────────────────────────────────────────────────────────────
+function showDetail(id) {
+  currentFicheId = id;
+  const f = fiches.find(x => x.id === id); if (!f) return;
+  document.getElementById('btn-edit-top').onclick   = () => showForm(id);
+  document.getElementById('btn-delete-top').onclick = () => confirmDelete(id);
+  const t = (f.prep||0)+(f.cuisson||0);
+  const ingHtml = f.ingredients?.length
+    ? `<table class="ing-table"><thead><tr><th>Ingrédient</th><th>Quantité</th><th>Unité</th></tr></thead><tbody>${f.ingredients.map(i=>`<tr><td>${esc(i.nom)}</td><td>${esc(i.qte)}</td><td>${esc(i.unite)}</td></tr>`).join('')}</tbody></table>`
+    : '<p style="color:var(--text-3);font-size:13px">Aucun ingrédient.</p>';
+  const etapesHtml = f.etapes?.length
+    ? f.etapes.map((e,i)=>`<div class="etape-item"><div class="etape-num">${i+1}</div><div class="etape-text">${esc(e)}</div></div>`).join('')
+    : '<p style="color:var(--text-3);font-size:13px">Aucune étape.</p>';
+  const allergHtml = f.allergenes?.length
+    ? `<div class="allergene-tags">${f.allergenes.map(a=>`<span class="allergene-tag">⚠️ ${esc(a)}</span>`).join('')}</div>`
+    : '<p style="color:var(--text-3);font-size:13px">Aucun allergène.</p>';
+  const qty = f.quantite || '', unit = f.unite || 'personnes';
+  const coeff = f.coefficient != null ? parseFloat(f.coefficient) : COEFF_NORM;
+  const cout  = parseFloat(f.cout) || 0;
+  const prix  = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
+  const col   = getCatColor(f.categorie);
+  let alertHtml = '';
+  if (cout > 0 && coeff > 0) {
+    if (coeff < COEFF_MIN) alertHtml = `<div class="coeff-alert coeff-danger">⛔ Coefficient <strong>${coeff}</strong> trop bas ! Min : ${COEFF_MIN}. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
+    else if (coeff < COEFF_NORM) alertHtml = `<div class="coeff-alert coeff-warn">⚠️ Coefficient <strong>${coeff}</strong> sous la norme. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
+    else alertHtml = `<div class="coeff-alert coeff-ok">✅ Coeff <strong>${coeff}</strong> — Prix de vente : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
+  }
+  const photoCol = f.photo
+    ? `<div class="detail-photo-col"><img src="${f.photo}" class="detail-photo" alt="${esc(f.nom)}"></div>`
+    : `<div class="detail-photo-col"><div class="detail-photo-none">🍽</div></div>`;
+  document.getElementById('detail-content').innerHTML = `
+    <div class="fiche-detail-wrapper">
+      <div class="detail-hero">
+        ${photoCol}
+        <div class="detail-info-col">
+          <span class="cat-badge" style="background:${col}22;color:${col}">${esc(getCatLabel(f.categorie))}</span>
+          <h1 class="detail-title">${esc(f.nom)}</h1>
+          ${prix ? `<div class="detail-prix">${prix.toLocaleString('fr-FR')} Ar<small>prix de vente</small></div>` : cout ? `<div class="detail-prix">${Math.round(cout).toLocaleString('fr-FR')} Ar<small>coût</small></div>` : ''}
+          <hr class="detail-divider">
+          <div class="detail-meta-row">
+            ${qty ? `<div class="detail-meta-item">👥 <strong>${qty} ${esc(unit)}</strong></div>` : ''}
+            ${f.temperature ? `<div class="detail-meta-item">🌡 <strong>${f.temperature}°C</strong></div>` : ''}
+          </div>
+          <div class="detail-meta-row" style="margin-top:6px">
+            ${f.prep    ? `<div class="detail-meta-item">🥄 Prép. <strong>${f.prep} min</strong></div>` : ''}
+            ${f.cuisson ? `<div class="detail-meta-item">🔥 Cuisson <strong>${f.cuisson} min</strong></div>` : ''}
+            ${t         ? `<div class="detail-meta-item">⏱ Total <strong>${t} min</strong></div>` : ''}
+          </div>
+          <div class="detail-meta-row" style="margin-top:6px">
+            ${cout ? `<div class="detail-meta-item">💸 Coût : <strong>${Math.round(cout).toLocaleString('fr-FR')} Ar</strong></div>` : ''}
+            ${cout && coeff ? `<div class="detail-meta-item">✖ <strong>${coeff}</strong></div>` : ''}
+          </div>
+          ${f.conservation_val ? `<div class="detail-meta-row" style="margin-top:6px"><div class="detail-meta-item">🕐 Conservation : <strong>${f.conservation_val} ${esc(f.conservation_unite||'jours')}</strong></div></div>` : ''}
+          ${f.description ? `<p style="margin-top:12px;font-size:13.5px;color:var(--text-2);line-height:1.6;font-style:italic">${esc(f.description)}</p>` : ''}
+          ${alertHtml ? `<div style="margin-top:14px">${alertHtml}</div>` : ''}
+        </div>
+      </div>
+      <div class="detail-grid">
+        <div class="detail-section"><div class="detail-section-title">Ingrédients</div>${ingHtml}</div>
+        <div class="detail-section"><div class="detail-section-title">Étapes de préparation</div>${etapesHtml}</div>
+      </div>
+      <div class="detail-section"><div class="detail-section-title">Allergènes</div>${allergHtml}</div>
+      ${(() => {
+        const hasMat = f.materiels?.length > 0;
+        const hasApp = !!(f.apparence_normale || f.apparence_anormale);
+        if (!hasMat && !hasApp) return '';
+        const matHtml = hasMat ? `<div class="detail-section"><div class="detail-section-title">Matériels &amp; Équipements</div><ul style="margin:0;padding-left:18px">${f.materiels.map(m=>`<li style="font-size:13.5px;padding:3px 0">${esc(m)}</li>`).join('')}</ul></div>` : '';
+        const appHtml = hasApp ? `<div class="detail-section"><div class="detail-section-title">Apparence du plat</div>${f.apparence_normale ? `<div class="apparence-box apparence-box-normale" style="margin-bottom:10px"><span class="apparence-box-label">✅ Apparence normale</span>${f.apparence_normale.split('\n').filter(Boolean).map(l=>`<span class="apparence-tag apparence-tag-ok">${esc(l)}</span>`).join('')}</div>` : ''}${f.apparence_anormale ? `<div class="apparence-box apparence-box-anormale"><span class="apparence-box-label">⛔ Apparence anormale</span>${f.apparence_anormale.split('\n').filter(Boolean).map(l=>`<span class="apparence-tag apparence-tag-err">${esc(l)}</span>`).join('')}</div>` : ''}</div>` : '';
+        return (hasMat && hasApp) ? `<div class="detail-grid">${matHtml}${appHtml}</div>` : matHtml + appHtml;
+      })()}
+      ${(f.utilisations || f.notes_services || f.notes_preparateur) ? `
+      <div class="detail-section">
+        <div class="detail-section-title">Utilisations &amp; Notes</div>
+        ${f.utilisations ? `<div style="margin-bottom:14px"><p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Utilisations</p><p style="font-size:13.5px;line-height:1.6">${esc(f.utilisations)}</p></div>` : ''}
+        ${f.notes_services ? `<div style="margin-bottom:14px"><p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Notes de services</p><p style="font-size:13.5px;line-height:1.6;white-space:pre-line">${esc(f.notes_services)}</p></div>` : ''}
+        ${f.notes_preparateur ? `<div><p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Notes du Préparateur</p><p style="font-size:13.5px;line-height:1.6;white-space:pre-line">${esc(f.notes_preparateur)}</p></div>` : ''}
+      </div>` : ''}
+      <div class="detail-footer">Créée le ${formatDate(f.createdAt)} · Mise à jour le ${formatDate(f.updatedAt)}</div>
+    </div>`;
+  showView('detail');
+}
+
+// ── FORMULAIRE ────────────────────────────────────────────────────────────────
+function showForm(id) {
+  currentFicheId = id;
+  const f = id ? fiches.find(x => x.id === id) : null;
+  document.getElementById('form-title').textContent = f ? 'Modifier la fiche' : 'Nouvelle fiche technique';
+  updateFormCategories();
+  const v = id => document.getElementById(id);
+  v('f-nom').value                = f?.nom          || '';
+  v('f-categorie').value          = f?.categorie    || '';
+  v('f-quantite').value           = f?.quantite     || '';
+  v('f-unite').value              = f?.unite        || 'personnes';
+  v('f-cout').value               = f?.cout         || '';
+  v('f-coefficient').value        = f?.coefficient  != null ? f.coefficient : COEFF_NORM;
+  v('f-conservation-val').value   = f?.conservation_val   || '';
+  v('f-conservation-unite').value = f?.conservation_unite || 'jours';
+  v('f-prep').value               = f?.prep         || '';
+  v('f-cuisson').value            = f?.cuisson      || '';
+  v('f-temperature').value        = f?.temperature  || '';
+  if (f?.photo) {
+    v('f-photo').value = f.photo;
+    v('photo-preview').src = f.photo; v('photo-preview').hidden = false;
+    v('photo-placeholder').hidden = true; v('photo-clear-btn').hidden = false;
+  } else clearPhoto();
+  document.getElementById('ingredients-list').innerHTML = '';
+  (f?.ingredients?.length ? f.ingredients : [{nom:'',qte:'',unite:'',prix:null}]).forEach(addIngredientRow);
+  document.getElementById('etapes-list').innerHTML = '';
+  (f?.etapes?.length ? f.etapes : ['']).forEach(addEtapeRow);
+  document.getElementById('materiels-list').innerHTML = '';
+  (f?.materiels?.length ? f.materiels : ['']).forEach(addMaterielRow);
+  v('f-description').value        = f?.description        || '';
+  v('f-apparence-normale').value  = f?.apparence_normale  || '';
+  v('f-apparence-anormale').value = f?.apparence_anormale || '';
+  v('f-utilisations').value       = f?.utilisations       || '';
+  v('f-notes-services').value     = f?.notes_services     || '';
+  v('f-notes-preparateur').value  = f?.notes_preparateur  || '';
+  document.querySelectorAll('.allergene-check input[type="checkbox"]').forEach(cb => {
+    const checked = (f?.allergenes||[]).includes(cb.value);
+    cb.checked = checked;
+    cb.closest('.allergene-check').classList.toggle('checked', checked);
+  });
+  updatePrixVente();
+  updateCatBadge();
+  showView('form');
+}
+
+function buildIngOptions(selected) {
+  let html = '<option value="">Choisir un ingrédient…</option>';
+  ingredientsCatalogue.forEach(i => {
+    const sel = i.nom === selected ? 'selected' : '';
+    html += `<option value="${esc(i.nom)}" ${sel}>${esc(i.nom)}</option>`;
+  });
+  html += `<option value="__autre__" ${selected === '__autre__' ? 'selected' : ''}>✏ Saisir manuellement…</option>`;
+  return html;
+}
+
+function addIngredient() { addIngredientRow({nom:'',qte:'',unite:'',prix:null}); }
+function addIngredientRow(ing) {
+  const d = document.createElement('div');
+  d.className = 'ing-row';
+  const prixVal = ing.prix != null ? ing.prix : '';
+  const inCatalogue = ing.nom && ingredientsCatalogue.some(i => i.nom === ing.nom);
+  const selectVal = ing.nom ? (inCatalogue ? ing.nom : '__autre__') : '';
+  const showText = ing.nom && !inCatalogue;
+
+  d.innerHTML = `
+    <div class="ing-field ing-nom">
+      <select class="ing-nom-select" onchange="onIngSelect(this)">
+        ${buildIngOptions(selectVal)}
+      </select>
+      <input class="ing-nom-text" type="text" placeholder="Nom de l'ingrédient"
+        value="${esc(showText ? (ing.nom||'') : '')}"
+        style="display:${showText ? '' : 'none'}">
+    </div>
+    <div class="ing-field ing-qte">
+      <input type="text" placeholder="Qté" value="${esc(ing.qte||'')}">
+    </div>
+    <div class="ing-field ing-unite">
+      <input type="text" placeholder="Unité" value="${esc(ing.unite||'')}">
+    </div>
+    <div class="ing-field ing-prix">
+      <input type="number" placeholder="Prix (Ar)" value="${prixVal}" min="0" step="1" oninput="calcCout()">
+    </div>
+    <button type="button" class="btn-remove" onclick="this.closest('.ing-row').remove();calcCout()">×</button>`;
+  document.getElementById('ingredients-list').appendChild(d);
+}
+
+function onIngSelect(sel) {
+  const row       = sel.closest('.ing-row');
+  const textInput = row.querySelector('.ing-nom-text');
+  const qteInput  = row.querySelector('.ing-qte input');
+  const uniteInput= row.querySelector('.ing-unite input');
+  const prixInput = row.querySelector('.ing-prix input');
+
+  if (sel.value === '__autre__') {
+    textInput.style.display = '';
+    textInput.focus();
+    textInput.value = '';
+    qteInput.value   = '';
+    uniteInput.value = '';
+    prixInput.value  = '';
+  } else {
+    textInput.style.display = 'none';
+    textInput.value = '';
+    if (sel.value) {
+      const cat = ingredientsCatalogue.find(i => i.nom === sel.value);
+      if (cat) {
+        if (cat.qte   != null) qteInput.value   = cat.qte;
+        if (cat.unite != null) uniteInput.value  = cat.unite;
+        if (cat.prix  != null) prixInput.value   = cat.prix;
+        calcCout();
+      }
+    }
+  }
+}
+
+function calcCout() {
+  const rows = [...document.querySelectorAll('.ing-row')];
+  const prix = rows.map(r => parseFloat(r.querySelector('.ing-prix input').value) || 0);
+  const total = prix.reduce((a, b) => a + b, 0);
+  const hasPrix = prix.some(p => p > 0);
+  const cat = categories.find(c => c.id === document.getElementById('f-categorie').value);
+  const isProduction = cat && cat.groupe !== 'PREPA';
+
+  const autoDisplay = document.getElementById('cout-auto-display');
+  const autoLabel   = document.getElementById('cout-auto-label');
+  const coutInput   = document.getElementById('f-cout');
+
+  if (hasPrix) {
+    autoDisplay.textContent = Math.round(total).toLocaleString('fr-FR') + ' Ar';
+    autoDisplay.hidden = false;
+    autoLabel.hidden   = false;
+    if (isProduction) {
+      coutInput.value = Math.round(total);
+      updatePrixVente();
+    }
+  } else {
+    autoDisplay.hidden = true;
+    autoLabel.hidden   = true;
+  }
+}
+function addEtape() { addEtapeRow(''); }
+function addEtapeRow(text) {
+  const list = document.getElementById('etapes-list');
+  const d = document.createElement('div'); d.className = 'etape-row';
+  d.innerHTML = `<div class="etape-num-badge">${list.children.length+1}</div>
+    <div class="form-field"><textarea placeholder="Décrivez cette étape…" rows="2">${esc(text||'')}</textarea></div>
+    <button type="button" class="btn-remove" onclick="removeEtape(this)">×</button>`;
+  list.appendChild(d);
+}
+function removeEtape(btn) {
+  btn.closest('.etape-row').remove();
+  document.querySelectorAll('.etape-row .etape-num-badge').forEach((el,i) => el.textContent = i+1);
+}
+
+function addMateriel() { addMaterielRow(''); }
+function addMaterielRow(text) {
+  const d = document.createElement('div'); d.className = 'materiel-row';
+  d.innerHTML = `<input type="text" placeholder="Ex : casserole, couteau…" value="${esc(text||'')}">
+    <button type="button" class="btn-remove" onclick="this.closest('.materiel-row').remove()">×</button>`;
+  document.getElementById('materiels-list').appendChild(d);
+}
+
+// ── ALLERGÈNES ────────────────────────────────────────────────────────────────
+function buildAllergenesForm(currentChecked=[]) {
+  document.getElementById('allergenes-grid').innerHTML = allAllergens.map(a => {
+    const chk = currentChecked.includes(a);
+    return `<label class="allergene-check${chk?' checked':''}">
+      <input type="checkbox" value="${esc(a)}" ${chk?'checked':''} onchange="this.closest('.allergene-check').classList.toggle('checked',this.checked)">
+      <span class="allergene-label">${esc(a)}</span>
+      <button type="button" class="allergen-del-btn" onclick="deleteAllergen('${esc(a)}',event)">×</button>
+    </label>`;
+  }).join('');
+}
+async function addCustomAllergen() {
+  const input = document.getElementById('allergen-input');
+  const nom   = input.value.trim();
+  if (!nom) { showToast('Saisissez un nom'); return; }
+  if (allAllergens.some(a => a.toLowerCase() === nom.toLowerCase())) { showToast('Existe déjà'); return; }
+  const checked = [...document.querySelectorAll('#allergenes-grid .allergene-check input:checked')].map(cb => cb.value);
+  await api.post('/api/allergenes', {nom});
+  allAllergens.push(nom);
+  input.value = '';
+  buildAllergenesForm(checked);
+  showToast('Allergène ajouté ✓');
+}
+function deleteAllergen(nom, evt) {
+  evt.preventDefault(); evt.stopPropagation();
+  const checked = [...document.querySelectorAll('#allergenes-grid .allergene-check input:checked')].map(cb => cb.value);
+  confirmModal('Supprimer l\'allergène', `Supprimer "${nom}" ?`, async () => {
+    await api.delete('/api/allergenes/' + encodeURIComponent(nom));
+    allAllergens = allAllergens.filter(a => a !== nom);
+    buildAllergenesForm(checked.filter(c => c !== nom));
+    showToast('Allergène supprimé');
+  }, 'Supprimer');
+}
+
+// ── SAUVEGARDE FICHE ──────────────────────────────────────────────────────────
+async function saveFiche(e) {
+  e.preventDefault();
+  const existing = currentFicheId ? fiches.find(x => x.id === currentFicheId) : null;
+  const v = id => document.getElementById(id).value;
+  const data = {
+    nom:                v('f-nom').trim(),
+    categorie:          v('f-categorie'),
+    quantite:           v('f-quantite') ? parseInt(v('f-quantite')) : null,
+    unite:              v('f-unite'),
+    cout:               v('f-cout') ? parseFloat(v('f-cout')) : null,
+    coefficient:        v('f-coefficient') ? parseFloat(v('f-coefficient')) : COEFF_NORM,
+    conservation_val:   v('f-conservation-val') ? parseInt(v('f-conservation-val')) : null,
+    conservation_unite: v('f-conservation-unite') || 'jours',
+    photo:              document.getElementById('f-photo').value || null,
+    prep:               v('f-prep')        ? parseInt(v('f-prep'))        : null,
+    cuisson:            v('f-cuisson')     ? parseInt(v('f-cuisson'))     : null,
+    temperature:        v('f-temperature') ? parseInt(v('f-temperature')) : null,
+    ingredients: [...document.querySelectorAll('.ing-row')].map(r => {
+      const sel = r.querySelector('.ing-nom-select');
+      const txt = r.querySelector('.ing-nom-text');
+      const nom = (sel.value === '__autre__' || sel.value === '')
+        ? txt.value.trim()
+        : sel.value.trim();
+      return {
+        nom,
+        qte:   r.querySelector('.ing-qte input').value.trim(),
+        unite: r.querySelector('.ing-unite input').value.trim(),
+        prix:  parseFloat(r.querySelector('.ing-prix input').value) || null,
+      };
+    }).filter(i => i.nom),
+    etapes:    [...document.querySelectorAll('.etape-row textarea')].map(t => t.value.trim()).filter(Boolean),
+    allergenes:[...document.querySelectorAll('.allergene-check input:checked')].map(cb => cb.value),
+    description:        document.getElementById('f-description').value.trim() || null,
+    materiels: [...document.querySelectorAll('.materiel-row input')].map(i => i.value.trim()).filter(Boolean),
+    apparence_normale:  document.getElementById('f-apparence-normale').value.trim()  || null,
+    apparence_anormale: document.getElementById('f-apparence-anormale').value.trim() || null,
+    utilisations:       document.getElementById('f-utilisations').value.trim()        || null,
+    notes_services:     document.getElementById('f-notes-services').value.trim()      || null,
+    notes_preparateur:  document.getElementById('f-notes-preparateur').value.trim()   || null,
+  };
+  try {
+    if (existing) await api.put('/api/fiches/' + existing.id, data);
+    else await api.post('/api/fiches', data);
+    showToast(existing ? 'Fiche modifiée ✓' : 'Fiche créée ✓');
+    [fiches, ingredientsCatalogue] = await Promise.all([
+      api.get('/api/fiches'),
+      api.get('/api/ingredients/catalogue'),
+    ]);
+    renderListe();
+    showView('liste');
+  } catch(err) { showToast('Erreur lors de la sauvegarde'); }
+}
+
+// ── SUPPRESSION ───────────────────────────────────────────────────────────────
+function confirmModal(title, msg, cb, confirmLabel, danger) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-msg').textContent   = msg;
+  const btn = document.getElementById('modal-confirm-btn');
+  btn.textContent = confirmLabel || 'Confirmer';
+  btn.className   = 'btn ' + (danger === false ? 'btn-primary' : 'btn-danger');
+  document.getElementById('modal-overlay').hidden = false;
+  btn.onclick = async () => { closeModal(); await cb(); };
+}
+function closeModal() { document.getElementById('modal-overlay').hidden = true; }
+
+function confirmDelete(id) {
+  confirmModal('Confirmer la suppression', 'Supprimer cette fiche ? Action irréversible.', async () => {
+    await api.delete('/api/fiches/' + id);
+    await loadFiches();
+    showView('liste');
+    showToast('Fiche supprimée');
+  }, 'Supprimer');
+}
+
+// ── PDF ───────────────────────────────────────────────────────────────────────
+function buildPDFEl(f) {
+  const col   = getCatColor(f.categorie);
+  const t     = (f.prep||0) + (f.cuisson||0);
+  const coeff = f.coefficient != null ? parseFloat(f.coefficient) : COEFF_NORM;
+  const cout  = parseFloat(f.cout) || 0;
+  const prix  = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
+
+  // ── Blocs de contenu ──────────────────────────────────────────────────────
+  const ingHtml = f.ingredients?.length
+    ? `<table class="pt"><thead><tr><th>Ingrédient</th><th>Quantité</th><th>Unité</th></tr></thead><tbody>
+        ${f.ingredients.map(i=>`<tr><td>${esc(i.nom)}</td><td>${esc(i.qte)}</td><td>${esc(i.unite)}</td></tr>`).join('')}
+       </tbody></table>`
+    : `<p class="pe">Aucun ingrédient.</p>`;
+
+  const etapesHtml = f.etapes?.length
+    ? f.etapes.map((e,i)=>`<div class="pe-step avoid"><span class="pe-num">${i+1}</span><span class="pe-txt">${esc(e)}</span></div>`).join('')
+    : `<p class="pe">Aucune étape.</p>`;
+
+  const allergHtml = f.allergenes?.length
+    ? f.allergenes.map(a=>`<span class="ptag-warn">⚠️ ${esc(a)}</span>`).join('')
+    : `<p class="pe">Aucun allergène.</p>`;
+
+  const matHtml = f.materiels?.length
+    ? `<ul class="pm-list">${f.materiels.map(m=>`<li>${esc(m)}</li>`).join('')}</ul>` : '';
+
+  const appHtml = (f.apparence_normale || f.apparence_anormale) ? `
+    ${f.apparence_normale  ? `<div class="app-box app-ok avoid"><span class="app-lbl">✅ Apparence normale</span>${f.apparence_normale.split('\n').filter(Boolean).map(l=>`<span class="ptag-ok">${esc(l)}</span>`).join('')}</div>`  : ''}
+    ${f.apparence_anormale ? `<div class="app-box app-err avoid"><span class="app-lbl">⛔ Apparence anormale</span>${f.apparence_anormale.split('\n').filter(Boolean).map(l=>`<span class="ptag-err">${esc(l)}</span>`).join('')}</div>` : ''}` : '';
+
+  let alertHtml = '';
+  if (cout > 0 && coeff > 0) {
+    if (coeff < COEFF_MIN)  alertHtml = `<div class="pa-warn">⛔ Coefficient ${coeff} trop bas. Prix de vente : <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+    else if (coeff < COEFF_NORM) alertHtml = `<div class="pa-info">⚠️ Coefficient ${coeff} sous la norme. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+    else alertHtml = `<div class="pa-ok">✅ Coefficient ${coeff} — Prix de vente : <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+  }
+
+  // ── DOM ───────────────────────────────────────────────────────────────────
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body,div,p,span,td,th,li{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;line-height:1.55}
+.avoid{break-inside:avoid;page-break-inside:avoid}
+/* ── En-tête ── */
+.ph{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:2px solid #1C1C1C;margin-bottom:14px}
+.ph-logo{height:42px;width:auto;object-fit:contain}
+.ph-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#888}
+/* ── Hero ── */
+.hero{display:flex;gap:14px;margin-bottom:14px;break-inside:avoid;page-break-inside:avoid}
+.hero-photo{width:150px;flex-shrink:0}
+.hero-photo img{width:150px;height:150px;object-fit:cover;border-radius:6px;display:block}
+.hero-info{flex:1;min-width:0}
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:9px;font-weight:700;margin-bottom:6px}
+.h-title{font-size:21px;font-weight:800;margin:4px 0 6px;line-height:1.15}
+.h-prix{font-size:16px;font-weight:800;margin:4px 0 8px}
+.h-prix small{font-size:10px;font-weight:400;color:#888;margin-left:5px}
+.h-desc{font-size:10.5px;color:#555;font-style:italic;line-height:1.6;margin-bottom:8px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px}
+.meta span{font-size:10.5px;color:#444}
+.meta strong{color:#111}
+/* ── Alertes coefficient ── */
+.pa-ok,.pa-warn,.pa-info{padding:7px 10px;border-radius:4px;font-size:10px;margin:8px 0;line-height:1.4}
+.pa-ok  {background:#EAF7EE;color:#1A7A3C;border:1px solid #A8D9B5}
+.pa-warn{background:#FDECEA;color:#C0392B;border:1px solid rgba(192,57,43,.3)}
+.pa-info{background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060}
+/* ── Sections ── */
+.ps{margin-bottom:14px;break-inside:avoid;page-break-inside:avoid}
+.ps-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#999;padding-bottom:4px;border-bottom:1px solid #e0e0e0;margin-bottom:8px}
+/* ── Tableau ingrédients ── */
+.pt{width:100%;border-collapse:collapse}
+.pt th{background:#f5f5f5;padding:5px 8px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;border-bottom:1px solid #ddd}
+.pt td{padding:6px 8px;border-bottom:1px solid #eee;font-size:11px;break-inside:avoid}
+.pt tr:last-child td{border-bottom:none}
+/* ── Étapes ── */
+.pe-step{display:flex;gap:10px;margin-bottom:9px}
+.pe-num{width:20px;height:20px;min-width:20px;background:#1C1C1C;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;margin-top:1px}
+.pe-txt{font-size:11px;line-height:1.6;padding-top:1px}
+.pe{color:#999;font-size:10.5px}
+/* ── Tags ── */
+.ptag-ok  {display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;margin:2px 3px 2px 0;background:#D4EDDA;color:#1A7A3C}
+.ptag-err {display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;margin:2px 3px 2px 0;background:#FDECEA;color:#C0392B}
+.ptag-warn{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;margin:2px 3px 2px 0;background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060}
+/* ── Apparence ── */
+.app-box{padding:9px 12px;border-radius:5px;margin-bottom:8px}
+.app-ok {background:#EAF7EE;border:1px solid #A8D9B5}
+.app-err{background:#FDECEA;border:1px solid rgba(192,57,43,.3)}
+.app-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:5px}
+.app-ok  .app-lbl{color:#1A7A3C}
+.app-err .app-lbl{color:#C0392B}
+/* ── Matériels ── */
+.pm-list{margin:0;padding-left:16px}
+.pm-list li{padding:2px 0;font-size:11px}
+/* ── Pied de page ── */
+.pf{margin-top:18px;padding-top:8px;border-top:1px solid #e0e0e0;text-align:right;font-size:9px;color:#bbb}
+</style>
+
+<!-- En-tête -->
+<div class="ph avoid">
+  <img class="ph-logo" src="/static/logo.png" alt="BOGOTA">
+  <span class="ph-label">Fiche Technique</span>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+  ${f.photo ? `<div class="hero-photo"><img src="${f.photo}" alt="${esc(f.nom)}"></div>` : ''}
+  <div class="hero-info">
+    <span class="badge" style="background:${col}22;color:${col}">${esc(getCatLabel(f.categorie))}</span>
+    <div class="h-title">${esc(f.nom)}</div>
+    ${f.description ? `<p class="h-desc">${esc(f.description)}</p>` : ''}
+    ${prix  ? `<div class="h-prix">${prix.toLocaleString('fr-FR')} Ar<small>prix de vente</small></div>`
+     : cout ? `<div class="h-prix">${Math.round(cout).toLocaleString('fr-FR')} Ar<small>coût matière</small></div>` : ''}
+    ${alertHtml}
+    <div class="meta">
+      ${f.quantite      ? `<span>👥 <strong>${f.quantite} ${esc(f.unite||'portions')}</strong></span>` : ''}
+      ${f.prep          ? `<span>🥄 Prép. <strong>${f.prep} min</strong></span>` : ''}
+      ${f.cuisson       ? `<span>🔥 Cuisson <strong>${f.cuisson} min</strong></span>` : ''}
+      ${t               ? `<span>⏱ Total <strong>${t} min</strong></span>` : ''}
+      ${f.temperature   ? `<span>🌡 <strong>${f.temperature}°C</strong></span>` : ''}
+      ${f.conservation_val ? `<span>🕐 Conservation : <strong>${f.conservation_val} ${esc(f.conservation_unite||'jours')}</strong></span>` : ''}
+    </div>
+  </div>
+</div>
+
+<!-- Ingrédients -->
+<div class="ps">
+  <div class="ps-title">Ingrédients</div>
+  ${ingHtml}
+</div>
+
+<!-- Étapes -->
+<div class="ps">
+  <div class="ps-title">Étapes de préparation</div>
+  ${etapesHtml}
+</div>
+
+${f.allergenes?.length ? `<div class="ps avoid"><div class="ps-title">Allergènes</div>${allergHtml}</div>` : ''}
+${matHtml  ? `<div class="ps avoid"><div class="ps-title">Matériels &amp; Équipements</div>${matHtml}</div>`  : ''}
+${appHtml  ? `<div class="ps"><div class="ps-title">Apparence du plat</div>${appHtml}</div>`  : ''}
+
+${(f.utilisations || f.notes_services || f.notes_preparateur) ? `
+<div class="ps">
+  <div class="ps-title">Utilisations &amp; Notes</div>
+  ${f.utilisations     ? `<div class="avoid" style="margin-bottom:8px"><p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#999;margin-bottom:3px">Utilisations</p><p style="font-size:11px;line-height:1.6">${esc(f.utilisations)}</p></div>` : ''}
+  ${f.notes_services   ? `<div class="avoid" style="margin-bottom:8px"><p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#999;margin-bottom:3px">Notes de services</p><p style="font-size:11px;line-height:1.6;white-space:pre-line">${esc(f.notes_services)}</p></div>` : ''}
+  ${f.notes_preparateur? `<div class="avoid"><p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#999;margin-bottom:3px">Notes du Préparateur</p><p style="font-size:11px;line-height:1.6;white-space:pre-line">${esc(f.notes_preparateur)}</p></div>` : ''}
+</div>` : ''}
+
+<div class="pf">${localStorage.getItem('brand_name')||'Fiche Technique'} · Créée le ${formatDate(f.createdAt)} · Mise à jour le ${formatDate(f.updatedAt)}</div>
+`;
+  return wrap;
+}
+
+async function downloadPDF() {
+  if (typeof html2pdf === 'undefined') { showToast('Connexion internet requise'); return; }
+  const f = fiches.find(x => x.id === currentFicheId); if (!f) return;
+  const slug = (f.nom||'fiche').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  const btn  = document.getElementById('btn-dl-pdf');
+  btn.textContent = '…'; btn.disabled = true;
+
+  // Conteneur hors-écran à largeur A4 (794 px ≈ 210 mm @96 dpi)
+  const host = document.createElement('div');
+  host.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:24px 28px';
+  const el = buildPDFEl(f);
+  host.appendChild(el);
+  document.body.appendChild(host);
+
+  try {
+    await html2pdf().set({
+      margin:      [10, 12, 10, 12],
+      filename:    slug + '.pdf',
+      image:       { type: 'jpeg', quality: 0.97 },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:   { mode: ['css', 'avoid-all'] },
+    }).from(el).save();
+    showToast('PDF téléchargé ✓');
+  } catch(e) { console.error(e); showToast('Erreur PDF'); }
+  finally {
+    document.body.removeChild(host);
+    btn.textContent = '⬇ PDF'; btn.disabled = false;
+  }
+}
+
+// ── HISTORIQUE ────────────────────────────────────────────────────────────────
+async function loadHistorique() {
+  try {
+    const rows = await api.get('/api/historique');
+    renderHistorique(rows);
+  } catch(e) { showToast('Erreur chargement historique'); }
+}
+
+function renderHistorique(rows) {
+  const el = document.getElementById('hist-content');
+  if (!rows.length) {
+    el.innerHTML = `<div class="hist-empty"><div class="hist-empty-icon">🕐</div><p>Aucune activité enregistrée.</p></div>`;
+    return;
+  }
+
+  // Config par type d'entité × action
+  function getCfg(type_, action) {
+    const T = {
+      fiche:        { creer:'Fiche créée',          modifier:'Fiche modifiée',          supprimer:'Fiche supprimée' },
+      categorie:    { creer:'Catégorie créée',       modifier:'Catégorie modifiée',      supprimer:'Catégorie supprimée' },
+      utilisateur:  { creer:'Utilisateur créé',      modifier:'Utilisateur modifié',     supprimer:'Utilisateur supprimé' },
+      allergene:    { creer:'Allergène ajouté',       modifier:'Allergène modifié',       supprimer:'Allergène supprimé' },
+      auth:         { connexion:'Connexion',          modifier:'Mot de passe changé' },
+    };
+    const ICONS = {
+      créer:     { icon:'➕', cls:'hist-icon-creer',    acls:'hist-action-creer' },
+      modifier:  { icon:'✏️', cls:'hist-icon-modifier', acls:'hist-action-modifier' },
+      supprimer: { icon:'🗑', cls:'hist-icon-suppr',    acls:'hist-action-suppr' },
+      connexion: { icon:'🔐', cls:'hist-icon-modifier', acls:'hist-action-creer' },
+    };
+    const key = action === 'créer' ? 'creer' : action;
+    const label = (T[type_] || {})[key] || action;
+    return { ...(ICONS[action] || { icon:'•', cls:'', acls:'' }), label };
+  }
+
+  const items = rows.map(h => {
+    const d     = h.details || {};
+    const type_ = d.type || 'fiche';
+    const cfg   = getCfg(type_, h.action);
+    const par   = d.par ? `<span class="hist-par">par ${esc(d.par)}</span>` : '';
+
+    // Nom / lien selon le type
+    let nomEl;
+    if (type_ === 'fiche') {
+      const fiche = fiches.find(f => f.id === h.fiche_id);
+      nomEl = fiche
+        ? `<span class="hist-nom-link" onclick="showDetail('${h.fiche_id}')">${esc(h.fiche_nom)}</span>`
+        : `<span style="color:var(--text-3);text-decoration:line-through">${esc(h.fiche_nom)}</span>`;
+    } else {
+      const typeLabels = { categorie:'📂', utilisateur:'👤', allergene:'⚠️', auth:'🔐' };
+      nomEl = `<span>${typeLabels[type_]||''} ${esc(h.fiche_nom)}</span>`;
+    }
+
+    // Détails
+    let detailsHtml = '';
+    if (type_ === 'fiche' && (h.action === 'créer' || h.action === 'supprimer')) {
+      const tags = [];
+      if (d.categorie)          tags.push(`📂 ${esc(getCatLabel(d.categorie))}`);
+      if (d.cout)               tags.push(`💰 ${Number(d.cout).toLocaleString('fr-FR')} Ar`);
+      if (d.nb_ingredients!=null) tags.push(`🥬 ${d.nb_ingredients} ingrédient${d.nb_ingredients>1?'s':''}`);
+      if (d.nb_etapes>0)        tags.push(`📋 ${d.nb_etapes} étape${d.nb_etapes>1?'s':''}`);
+      if (tags.length) detailsHtml = `<div class="hist-details">${tags.map(t=>`<span class="hist-tag">${t}</span>`).join('')}</div>`;
+    } else if (h.action === 'modifier' && d.changes?.length) {
+      const chips = d.changes.map(c =>
+        `<span class="hist-change"><span class="hist-change-champ">${esc(c.champ)}</span><span class="hist-change-arrow">›</span><span>${esc(String(c.avant))}</span><span class="hist-change-arrow">→</span><span>${esc(String(c.apres))}</span></span>`
+      ).join('');
+      detailsHtml = `<div class="hist-details">${chips}</div>`;
+    } else if (h.action === 'modifier' && Array.isArray(d.changes) && d.changes.length === 0) {
+      detailsHtml = `<div class="hist-details"><span class="hist-tag" style="color:var(--text-3)">Aucun champ modifié</span></div>`;
+    } else if (type_ === 'auth' && h.action === 'connexion') {
+      detailsHtml = `<div class="hist-details"><span class="hist-tag">rôle : ${esc(d.role||'')}</span></div>`;
+    }
+
+    return `
+      <div class="hist-item">
+        <div class="hist-icon ${cfg.cls}">${cfg.icon}</div>
+        <div class="hist-body">
+          <div class="hist-nom">${nomEl} ${par}</div>
+          <div class="hist-action ${cfg.acls}">${cfg.label}</div>
+          ${detailsHtml}
+        </div>
+        <div class="hist-date">${formatDateTime(h.horodatage)}</div>
+      </div>`;
+  }).join('');
+  el.innerHTML = `<div class="hist-timeline">${items}</div>`;
+}
+
+async function clearHistorique() {
+  if (!confirm('Effacer tout l\'historique ?')) return;
+  await api.delete('/api/historique');
+  loadHistorique();
+  showToast('Historique effacé');
+}
+
+// ── UTILITAIRES ───────────────────────────────────────────────────────────────
+function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function formatDate(iso) { if (!iso) return '—'; return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}); }
+function formatDateTime(iso) {
+  if (!iso) return '—';
+  // Le timestamp est stocké en UTC avec suffixe Z — JS le convertit en heure locale automatiquement
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;  // fallback si format inattendu
+  const now = new Date();
+  const diff = Math.floor((now - d) / 1000);
+  const heure   = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
+  if (diff < 0)     return dateStr + ' à ' + heure;
+  if (diff < 60)    return `À l'instant · ${heure}`;
+  if (diff < 3600)  return `Il y a ${Math.floor(diff / 60)} min · ${heure}`;
+  if (diff < 86400) return `Aujourd'hui à ${heure}`;
+  if (diff < 172800) return `Hier à ${heure}`;
+  return dateStr + ' à ' + heure;
+}
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── SIDEBAR MOBILE ────────────────────────────────────────────────────────────
+function openMobileSidebar() {
+  document.querySelector('.sidebar').classList.add('mobile-open');
+  document.getElementById('sidebar-overlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileSidebar() {
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+  document.getElementById('sidebar-overlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// Fermer sidebar mobile quand on appuie sur Échap
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileSidebar(); });
+
+// ── DÉMARRAGE ─────────────────────────────────────────────────────────────────
+start();
+</script>
+</body>
+</html>
