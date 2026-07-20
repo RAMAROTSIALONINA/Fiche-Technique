@@ -1,0 +1,18 @@
+# Installateur compilé (trop lourd pour git)
+installer-output/
+
+# Build PyInstaller
+build/
+dist/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Base de données locale
+fiches_bogota.db
+
+# Fichiers système
+.DS_Store
+Thumbs.db
