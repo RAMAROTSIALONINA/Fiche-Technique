@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fiche Technique</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
 <style>
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,19 +19,24 @@
   --red:          #C0392B;
   --red-light:    #FDECEA;
   --red-hover:    #A93226;
-  --bg:           #F4F4F4;
+  --bg:           #F5F5F5;
   --surface:      #FFFFFF;
-  --surface-2:    #F9F9F9;
-  --border:       #DADADA;
-  --border-light: #EBEBEB;
+  --surface-2:    #FAFAFA;
+  --border:       #E0E0E0;
+  --border-light: #ECECEC;
   --text:         #111111;
   --text-2:       #444444;
   --text-3:       #888888;
-  --sidebar-w:    250px;
-  --topbar-h:     68px;
-  --r:            8px;
-  --r-sm:         5px;
-  --shadow-md:    0 6px 20px rgba(0,0,0,.13);
+  --sidebar-w:    256px;
+  --topbar-h:     64px;
+  --r:            10px;
+  --r-sm:         6px;
+  --shadow-md:    0 6px 24px rgba(0,0,0,.11);
+  --shadow-sm:    0 1px 4px rgba(0,0,0,.07);
+  /* accent – vrai vert pour états financiers / succès */
+  --accent:       #1A7A3C;
+  --accent-light: #EAF7EE;
+  --accent-dark:  #14622F;
 }
 
 /* ── BASE ── */
@@ -50,7 +56,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .nav-item:hover  { background: rgba(255,255,255,.1);  color: #fff; }
 .nav-item.active { background: rgba(255,255,255,.18); color: #fff; }
 .nav-icon  { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
-.nav-badge { margin-left: auto; background: var(--gold); color: #fff; font-size: 11px; font-weight: 700; border-radius: 10px; padding: 1px 8px; min-width: 24px; text-align: center; }
+.nav-badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; border-radius: 10px; padding: 1px 8px; min-width: 24px; text-align: center; }
 
 .sidebar-section { padding: 16px 10px 4px; }
 .sidebar-section-header { display: flex; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 8px; }
@@ -85,7 +91,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .search-wrap { position: relative; }
 .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--text-3); pointer-events: none; }
 .search-input { padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: var(--r); background: var(--bg); font-size: 13.5px; width: 220px; color: var(--text); transition: border .15s, box-shadow .15s; }
-.search-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.search-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,122,60,.12); }
 
 /* ── CONTENT ── */
 .content-area { flex: 1; overflow-y: auto; padding: 28px; }
@@ -98,6 +104,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn-outline:hover  { background: var(--bg); }
 .btn-danger         { background: var(--red); color: #fff; }
 .btn-danger:hover   { background: var(--red-hover); }
+.btn-save           { background: var(--accent); color: #fff; font-weight: 600; }
+.btn-save:hover     { background: var(--accent-dark); }
 .btn-danger-outline { background: transparent; color: var(--red); border: 1px solid rgba(192,57,43,.35); }
 .btn-danger-outline:hover { background: var(--red-light); }
 .btn-back { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 13.5px; padding: 6px 0; display: flex; align-items: center; gap: 4px; font-family: inherit; transition: color .15s; }
@@ -107,8 +115,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .fiches-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 
 /* ── FICHE CARD ── */
-.fiche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; overflow: hidden; transition: box-shadow .18s, border-color .18s, transform .18s; position: relative; display: flex; flex-direction: column; }
-.fiche-card:hover { box-shadow: var(--shadow-md); border-color: #C5BEB4; transform: translateY(-2px); }
+.fiche-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; overflow: hidden; transition: box-shadow .2s, border-color .2s, transform .2s; position: relative; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); }
+.fiche-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,.13); border-color: #C0C0C0; transform: translateY(-3px); }
 .card-photo-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--r-sm); flex-shrink: 0; display: block; }
 .card-photo-placeholder { width: 80px; height: 80px; border-radius: var(--r-sm); background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; color: var(--text-3); }
 .card-body { padding: 16px 18px 14px; display: flex; flex-direction: row; gap: 14px; align-items: flex-start; flex: 1; }
@@ -121,8 +129,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .card-action-btn:hover     { background: var(--bg); }
 .card-action-btn.del:hover { background: var(--red-light); border-color: var(--red); }
 .cat-badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-.card-prix { font-size: 17px; font-weight: 800; color: var(--text); letter-spacing: -.3px; margin-bottom: 10px; }
-.card-prix span { font-size: 11.5px; font-weight: 500; color: var(--text-3); margin-left: 4px; }
+.card-prix { font-size: 18px; font-weight: 800; color: var(--text); letter-spacing: -.4px; margin-bottom: 10px; }
+.card-prix span { font-size: 11px; font-weight: 500; color: var(--text-3); margin-left: 5px; text-transform: uppercase; letter-spacing: .04em; }
 .card-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; padding-top: 10px; border-top: 1px solid var(--border-light); }
 .card-meta-item { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text-3); }
 .card-footer { margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -142,8 +150,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .detail-photo-none { width: 100%; height: 100%; min-height: 180px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; color: var(--text-3); font-size: 36px; }
 .detail-info-col { flex: 1; padding: 28px 32px; display: flex; flex-direction: column; justify-content: center; }
 .detail-title { font-size: 24px; font-weight: 800; margin: 8px 0 6px; line-height: 1.2; }
-.detail-prix  { font-size: 28px; font-weight: 900; color: var(--text); letter-spacing: -.5px; margin: 4px 0 16px; }
-.detail-prix small { font-size: 14px; font-weight: 500; color: var(--text-3); margin-left: 6px; }
+.detail-prix  { font-size: 30px; font-weight: 900; color: var(--text); letter-spacing: -.6px; margin: 6px 0 16px; }
+.detail-prix small { font-size: 13px; font-weight: 500; color: var(--text-3); margin-left: 8px; text-transform: uppercase; letter-spacing: .04em; }
 .detail-meta-row  { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
 .detail-meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text-2); }
 .detail-meta-item strong { color: var(--text); }
@@ -151,7 +159,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
 @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } .detail-hero { flex-direction: column; } .detail-photo-col { width: 100%; height: 200px; } }
 .detail-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 22px 26px; margin-bottom: 14px; }
-.detail-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-3); margin-bottom: 14px; }
+.detail-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-2); margin-bottom: 14px; padding-left: 9px; border-left: 3px solid var(--accent); }
 .detail-footer { text-align: right; margin-top: 6px; color: var(--text-3); font-size: 11px; }
 
 /* ── TABLEAU INGRÉDIENTS ── */
@@ -172,23 +180,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .allergene-tag  { background: #FFF8E1; color: #7D5A00; border: 1px solid #F5D060; font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
 
 /* ── FORMULAIRE ── */
-.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 28px; margin-bottom: 16px; max-width: 820px; }
-.form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-3); margin-bottom: 20px; }
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 26px 30px; margin-bottom: 16px; max-width: 840px; box-shadow: var(--shadow-sm); }
+.form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-2); margin-bottom: 22px; padding-left: 10px; border-left: 3px solid var(--accent); }
 .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
 .form-row:last-child { margin-bottom: 0; }
 .form-row.cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
-.form-field label { font-size: 12.5px; font-weight: 600; color: var(--text-2); }
+.form-field label { font-size: 12px; font-weight: 600; color: var(--text-2); letter-spacing: .01em; }
 .req { color: var(--red); }
-.form-field input, .form-field select, .form-field textarea { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 13.5px; background: var(--surface); color: var(--text); transition: border .15s, box-shadow .15s; font-family: inherit; }
-.form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.form-field input, .form-field select, .form-field textarea { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 13.5px; background: var(--surface); color: var(--text); transition: border .15s, box-shadow .15s; font-family: inherit; }
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,122,60,.1); }
 .form-field textarea { resize: vertical; min-height: 72px; }
 
 /* ── PHOTO DANS LE FORMULAIRE ── */
 .form-photo-row { display: flex; gap: 20px; align-items: flex-start; }
 .form-photo-col { width: 120px; flex-shrink: 0; }
 .form-photo-zone { width: 120px; height: 120px; border-radius: var(--r-sm); border: 2px dashed var(--border); cursor: pointer; overflow: hidden; transition: border-color .15s, background .15s; display: flex; align-items: center; justify-content: center; }
-.form-photo-zone:hover { border-color: var(--green); background: var(--green-light); }
+.form-photo-zone:hover { border-color: var(--accent); background: var(--accent-light); }
 .form-photo-fields { flex: 1; min-width: 0; }
 
 /* ── INGRÉDIENTS FORM ── */
@@ -205,8 +213,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   font-size: 13px; color: var(--text); font-family: inherit; background: var(--surface);
   transition: border .15s; box-sizing: border-box;
 }
-.ing-field select:focus, .ing-field input:focus { outline: none; border-color: var(--green); }
+.ing-field select:focus, .ing-field input:not([readonly]):focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,122,60,.1); }
 .ing-nom-text { margin-top: 4px; }
+.ing-prix-display { width:100%; padding:7px 9px; border:1px dashed var(--border); border-radius:var(--r-sm); font-size:13px; color:var(--text-3); background:var(--surface-2); box-sizing:border-box; min-height:33px; display:flex; align-items:center; cursor:default; user-select:none; }
 .btn-remove { width: 30px; height: 30px; min-width: 30px; background: none; border: none; cursor: pointer; color: var(--text-3); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 18px; line-height: 1; transition: background .15s, color .15s; flex-shrink: 0; }
 .btn-remove:hover { background: var(--red-light); color: var(--red); }
 .cout-auto-display { background: var(--green-light); border: 1.5px solid var(--green); border-radius: var(--r-sm); padding: 8px 14px; font-size: 15px; font-weight: 700; color: #1A7A3C; }
@@ -217,19 +226,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .etape-num-badge { width: 28px; height: 28px; min-width: 28px; background: var(--green-light); color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; margin-top: 8px; flex-shrink: 0; }
 .etape-row .form-field { flex: 1; margin-bottom: 0; }
 .etape-row .btn-remove { margin-top: 8px; }
-.btn-add-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 7px 14px; background: var(--bg); border: 1px dashed var(--border); border-radius: var(--r-sm); color: var(--text-3); cursor: pointer; font-size: 13px; font-family: inherit; transition: background .15s, border-color .15s, color .15s; }
-.btn-add-row:hover { background: var(--green-light); border-color: var(--green); color: var(--green); }
+.btn-add-row { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 7px 16px; background: var(--bg); border: 1.5px dashed var(--border); border-radius: var(--r-sm); color: var(--text-3); cursor: pointer; font-size: 13px; font-family: inherit; transition: background .15s, border-color .15s, color .15s; font-weight: 500; }
+.btn-add-row:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
 
 /* ── ALLERGÈNES FORM ── */
 .allergenes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 8px; }
 .allergene-check { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; transition: background .15s, border-color .15s; }
 .allergene-check:hover   { background: var(--surface-2); }
 .allergene-check.checked { background: #FFF8E6; border-color: #E8C660; }
-.allergene-check input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
+.allergene-check input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
 .allergene-label { font-size: 13px; cursor: pointer; flex: 1; }
 .allergen-add-row { display: flex; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light); align-items: center; }
 .allergen-add-row input { flex: 1; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 13px; font-family: inherit; color: var(--text); background: var(--surface); transition: border .15s; }
-.allergen-add-row input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px var(--green-light); }
+.allergen-add-row input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,122,60,.1); }
 .allergen-del-btn { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 15px; padding: 2px 4px; border-radius: 3px; flex-shrink: 0; }
 .allergen-del-btn:hover { color: var(--red); background: var(--red-light); }
 
@@ -269,15 +278,57 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .color-swatch.active { border-color: var(--text); transform: scale(1.15); }
 
 /* ── COEFFICIENT / PRIX ── */
-.prix-vente-display { padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 15px; font-weight: 700; color: var(--text-3); background: var(--surface-2); min-height: 40px; display: flex; align-items: center; }
-.coeff-alert  { padding: 10px 14px; border-radius: var(--r-sm); font-size: 13px; margin-top: 12px; line-height: 1.5; }
+.prix-vente-display { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 15px; font-weight: 700; color: var(--text); background: var(--surface-2); min-height: 38px; display: flex; align-items: center; letter-spacing: -.2px; }
+.coeff-alert  { padding: 9px 13px; border-radius: var(--r-sm); font-size: 12.5px; margin-top: 8px; line-height: 1.5; }
 .coeff-danger { background: #FDECEA; color: var(--red); border: 1px solid rgba(192,57,43,.3); }
 .coeff-warn   { background: #FFF8E1; color: #7D5A00; border: 1px solid #F5D060; }
-.coeff-ok     { background: #EAF7EE; color: #1A7A3C; border: 1px solid #A8D9B5; }
+.coeff-ok     { background: var(--accent-light); color: var(--accent); border: 1px solid #A8D9B5; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-6px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(4px)} 75%{transform:translateX(-2px)} 90%{transform:translateX(2px)} }
+.shake-anim { animation: shake .55s ease; }
+.coeff-seg { display:flex; border:1.5px solid var(--border); border-radius:var(--r-sm); overflow:hidden; }
+.coeff-seg-btn { flex:1; padding:9px 4px; text-align:center; font-size:13px; font-weight:600; color:var(--text-2); background:var(--surface); border:none; border-right:1px solid var(--border); cursor:pointer; transition:background .15s, color .15s; font-family:inherit; }
+.coeff-seg-btn:last-child { border-right:none; }
+.coeff-seg-btn.active { background:var(--accent); color:#fff; }
+.coeff-seg-btn:hover:not(.active) { background:var(--accent-light); color:var(--accent); }
+.coeff-custom-input { margin-top:7px; width:100%; padding:8px 11px; border:1.5px solid var(--accent); border-radius:var(--r-sm); font-size:13.5px; background:var(--surface); color:var(--text); font-family:inherit; }
+.coeff-custom-input:focus { outline:none; box-shadow:0 0 0 3px rgba(26,122,60,.1); }
+.coeff-norm-hint { font-size:11px; color:var(--text-3); display:block; margin-top:5px; }
+.cout-auto-hint-block { font-size:11px; color:var(--accent); margin-top:3px; }
+.cout-auto-block { display:flex; align-items:center; gap:8px; background:var(--accent-light); border:1.5px solid #A8D9B5; border-radius:var(--r-sm); padding:9px 13px; flex-wrap:wrap; }
+.cout-auto-value { font-size:16px; font-weight:800; color:var(--accent); flex-shrink:0; letter-spacing:-.3px; }
+.cout-auto-info  { font-size:11px; color:#4A7A5A; flex:1; }
+.cout-unlock-link { font-size:11px; color:var(--accent); text-decoration:underline; cursor:pointer; font-weight:600; }
+
+/* ── COMPARATEUR FOURNISSEURS ── */
+.ing-compare { background:var(--surface-2); border:1px solid var(--border-light); border-top:none; border-radius:0 0 var(--r-sm) var(--r-sm); padding:5px 10px 7px; }
+.compare-chips { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.compare-chip { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:11.5px; border:1px solid var(--border); background:var(--surface); color:var(--text-2); }
+.compare-chip.best { background:#EAF7EE; border-color:#A8D9B5; color:var(--accent); font-weight:700; }
+.compare-chip-label { font-size:10px; color:var(--text-3); font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+/* ── ONGLETS FOURNISSEURS ── */
+.fourn-tabs { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:14px; }
+.fourn-tab { flex:1; padding:9px 14px; cursor:pointer; font-size:13.5px; font-weight:600; color:var(--text-3); border:none; background:none; border-bottom:2px solid transparent; margin-bottom:-2px; transition:color .15s,border-color .15s; font-family:inherit; text-align:center; }
+.fourn-tab.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--accent-light); }
 
 /* ── TOAST ── */
 .toast { position: fixed; bottom: 28px; right: 28px; background: #1C1C1C; color: #fff; padding: 12px 20px; border-radius: var(--r); font-size: 13.5px; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .25s; pointer-events: none; z-index: 1000; }
 .toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── BANNIÈRE CONSEIL PRIX LIMITES ── */
+.fiche-tip-banner { position:fixed; bottom:28px; left:24px; max-width:370px; background:var(--surface); border:1px solid var(--border); border-left:4px solid #3d85c8; border-radius:10px; box-shadow:0 4px 18px rgba(0,0,0,.13); padding:14px 14px 12px 16px; z-index:1001; display:flex; flex-direction:column; gap:10px; animation:tipSlideIn .3s ease; }
+@keyframes tipSlideIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+.fiche-tip-banner[hidden] { display:none!important; }
+.fiche-tip-banner-body { display:flex; gap:10px; align-items:flex-start; }
+.fiche-tip-banner-icon { font-size:20px; line-height:1; flex-shrink:0; margin-top:1px; }
+.fiche-tip-banner-text strong { display:block; font-size:13px; color:var(--text); margin-bottom:3px; }
+.fiche-tip-banner-text span { font-size:12px; color:var(--text-2); line-height:1.45; }
+.fiche-tip-banner-path { display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:600; background:rgba(61,133,200,.1); color:#3d85c8; border:1px solid rgba(61,133,200,.25); border-radius:20px; padding:2px 10px; margin-top:5px; }
+.fiche-tip-banner-actions { display:flex; gap:8px; justify-content:flex-end; }
+.fiche-tip-banner-actions .btn-tip { font-size:12px; padding:5px 14px; border-radius:6px; border:none; cursor:pointer; font-weight:600; }
+.fiche-tip-banner-actions .btn-tip-primary { background:#3d85c8; color:#fff; }
+.fiche-tip-banner-actions .btn-tip-primary:hover { background:#2d6faa; }
+.fiche-tip-banner-actions .btn-tip-close { background:var(--surface-2); color:var(--text-2); border:1px solid var(--border)!important; }
+.fiche-tip-banner-actions .btn-tip-close:hover { color:var(--text); }
 
 /* ── MODAL ── */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 900; }
@@ -289,7 +340,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 /* ── PARAMÈTRES ── */
 .param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; max-width: 900px; }
 .param-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: box-shadow .18s, border-color .18s, transform .15s; }
-.param-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.09); border-color: var(--green); transform: translateY(-2px); }
+.param-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.09); border-color: var(--accent); transform: translateY(-2px); }
 .param-card-icon { font-size: 32px; line-height: 1; }
 .param-card-title { font-size: 16px; font-weight: 700; color: var(--text); }
 .param-card-desc { font-size: 13px; color: var(--text-3); line-height: 1.5; }
@@ -453,20 +504,62 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn-hamburger:hover { background: var(--bg); }
 
 /* ── IMPRESSION ── */
+@page { margin: 14mm 16mm 14mm 16mm; }
+
 @media print {
-  .sidebar, .topbar, #toast, .modal-overlay { display: none !important; }
-  .main { display: block; overflow: visible; }
-  .view { height: auto; overflow: visible; }
+  /* Thème clair forcé */
+  :root {
+    --green: #1E5C3A; --green-light: #e8f5ee; --green-dark: #163d28;
+    --surface: #ffffff; --surface-2: #f5f5f5; --bg: #ffffff;
+    --border: #dddddd; --border-light: #eeeeee;
+    --text-1: #111111; --text-2: #444444; --text-3: #888888;
+    --accent: #1E5C3A; --r: 6px;
+  }
+  /* Masquer chrome de l'application */
+  .sidebar, .topbar, #toast, .modal-overlay,
+  .btn-hamburger, .btn-back, .card-actions { display: none !important; }
+
+  /* Réinitialiser le layout flex principal */
+  .app  { display: block; }
+  .main { display: block; width: 100%; overflow: visible; }
+  .view { display: block; height: auto; overflow: visible; }
+  #view-detail { display: block !important; }
   .content-area { padding: 0; overflow: visible; }
+
+  body { background: #fff; font-size: 12px; color: #111; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* En-tête logo */
+  #print-header { display: flex !important; }
+
+  /* Hero : côte à côte, photo taille fixe */
   .fiche-detail-wrapper { max-width: 100%; }
-  body { background: #fff; font-size: 12px; }
-  .detail-section   { break-inside: avoid; page-break-inside: avoid; }
-  .detail-hero      { break-inside: avoid; page-break-inside: avoid; }
-  .detail-grid      { break-inside: avoid; page-break-inside: avoid; }
-  .etape-item       { break-inside: avoid; page-break-inside: avoid; }
-  .ing-table tr     { break-inside: avoid; page-break-inside: avoid; }
-  .apparence-box    { break-inside: avoid; page-break-inside: avoid; }
+  .detail-hero       { flex-direction: row; align-items: flex-start; break-inside: avoid; page-break-inside: avoid; }
+  .detail-photo-col  { width: 140px; flex-shrink: 0; }
+  .detail-photo      { width: 140px; height: 140px; min-height: unset; object-fit: cover; }
+  .detail-photo-none { width: 140px; height: 140px; min-height: unset; font-size: 28px; }
+  .detail-info-col   { padding: 16px 20px; }
+  .detail-title      { font-size: 18px; }
+
+  /* Grille 2 colonnes maintenue */
+  .detail-grid { grid-template-columns: 1fr 1fr; break-inside: avoid; page-break-inside: avoid; }
+
+  /* Sections */
+  .detail-section  { break-inside: avoid; page-break-inside: avoid; padding: 14px 18px; }
+  .etape-item      { break-inside: avoid; page-break-inside: avoid; }
+  .ing-table tr    { break-inside: avoid; page-break-inside: avoid; }
+  .apparence-box   { break-inside: avoid; page-break-inside: avoid; }
 }
+
+#print-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1C1C1C;
+  margin-bottom: 14px;
+}
+#print-header img  { height: 42px; width: auto; object-fit: contain; }
+#print-header span { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: #888; }
 </style>
 </head>
 <body>
@@ -553,13 +646,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <button class="btn-back" onclick="showView('liste')">← Retour</button>
         </div>
         <div class="topbar-right">
-          <button class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
           <button class="btn btn-outline" id="btn-dl-pdf" onclick="downloadPDF()">⬇ PDF</button>
           <button class="btn btn-outline" id="btn-edit-top">✏️ Modifier</button>
           <button class="btn btn-danger-outline" id="btn-delete-top">🗑 Supprimer</button>
         </div>
       </header>
-      <div class="content-area"><div id="detail-content"></div></div>
+      <div class="content-area">
+        <div id="print-header">
+          <img id="print-logo" src="/static/logo.png" alt="Logo">
+          <span id="print-brand-label">Fiche Technique</span>
+        </div>
+        <div id="detail-content"></div>
+      </div>
     </div>
 
     <!-- VUE FORMULAIRE -->
@@ -572,7 +670,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
         <div class="topbar-right">
           <button class="btn btn-outline" onclick="showView('liste')">Annuler</button>
-          <button class="btn btn-primary" onclick="document.getElementById('fiche-form').requestSubmit()">💾 Enregistrer</button>
+          <button class="btn btn-save" onclick="document.getElementById('fiche-form').requestSubmit()">💾 Enregistrer</button>
         </div>
       </header>
       <div class="content-area">
@@ -601,7 +699,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                     <input type="text" id="f-nom" required placeholder="Ex : Tarte tatin aux pommes">
                   </div>
                 </div>
-                <div class="form-row cols-3" style="grid-template-columns: 1.8fr 1.8fr 1fr">
+                <div class="form-row cols-3" style="grid-template-columns:1fr 1fr 1fr;gap:16px">
                   <div class="form-field">
                     <label>Catégorie <span class="req">*</span></label>
                     <select id="f-categorie" required onchange="updateCatBadge()"><option value="">Sélectionner…</option></select>
@@ -611,7 +709,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                     <label>Quantité <span class="req">*</span></label>
                     <div style="display:flex;gap:8px">
                       <input type="number" id="f-quantite" min="1" required placeholder="4" style="flex:1">
-                      <select id="f-unite" style="flex:1.2">
+                      <select id="f-unite" style="flex:1.4">
                         <option value="personnes">personnes</option>
                         <option value="portions">portions</option>
                         <option value="pièces">pièces</option>
@@ -625,9 +723,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                   </div>
                   <div class="form-field" id="cout-field-wrap">
                     <label id="cout-field-label">Coût matière / unité (Ar)</label>
-                    <input type="number" id="f-cout" step="1" min="0" placeholder="Ex : 1500" oninput="updatePrixVente()">
-                    <div id="cout-auto-display" class="cout-auto-display" hidden></div>
-                    <div id="cout-auto-label" class="cout-auto-label" hidden>Calculé depuis les ingrédients</div>
+                    <div id="cout-auto-block" hidden
+                         style="display:flex;align-items:center;padding:9px 12px;border:1.5px solid var(--accent);border-radius:var(--r-sm);background:var(--accent-light);min-height:42px">
+                      <span id="cout-auto-display" style="font-size:15px;font-weight:800;color:var(--accent);letter-spacing:-.3px;white-space:nowrap">—</span>
+                    </div>
+                    <input type="number" id="f-cout" step="1" min="0" oninput="updatePrixVente()" hidden>
                   </div>
                 </div>
               </div>
@@ -637,37 +737,41 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <!-- 1b. TARIFICATION & CONSERVATION -->
           <div class="form-card" id="tarif-card">
             <h2 class="form-section-title">Tarification &amp; Conservation</h2>
-            <div class="form-row cols-3">
-              <div class="form-field">
-                <label>Coefficient de vente</label>
-                <input type="number" id="f-coefficient" step="0.1" min="0.1" placeholder="2" oninput="updatePrixVente()">
-                <span style="font-size:11px;color:var(--text-3)">Norme recommandée : 2</span>
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 20px;margin-bottom:14px">
+              <label style="font-size:13px;font-weight:600;color:var(--text-2);white-space:nowrap;margin:0">Coefficient de vente</label>
+              <div class="coeff-seg" style="margin:0">
+                <button type="button" class="coeff-seg-btn" onclick="setCoeff(2)">×2</button>
+                <button type="button" class="coeff-seg-btn" onclick="setCoeff(2.5)">×2,5</button>
+                <button type="button" class="coeff-seg-btn" onclick="setCoeff(3)">×3</button>
+                <button type="button" class="coeff-seg-btn" id="coeff-seg-autre-btn" onclick="setCoeffCustom()">Autre</button>
               </div>
-              <div class="form-field">
-                <label>Prix de vente / unité (Ar)</label>
-                <div class="prix-vente-display" id="prix-vente-display">—</div>
-              </div>
-              <div class="form-field">
-                <label>Délai de conservation</label>
-                <div style="display:flex;gap:8px">
-                  <input type="number" id="f-conservation-val" min="0" placeholder="3" style="flex:1">
-                  <select id="f-conservation-unite" style="flex:1.2">
-                    <option value="heures">heures</option>
-                    <option value="jours">jours</option>
-                    <option value="semaines">semaines</option>
-                    <option value="mois">mois</option>
-                  </select>
-                </div>
+              <input type="number" id="f-coefficient" step="0.1" min="0.1" placeholder="Ex : 1.8" oninput="updatePrixVente()" class="coeff-custom-input" style="width:90px" hidden>
+              <span class="coeff-norm-hint" id="coeff-norm-hint" style="margin:0">Norme : ×2 | Min : ×1,5</span>
+              <label style="font-size:13px;font-weight:600;color:var(--text-2);white-space:nowrap;margin:0 0 0 8px">Prix de vente (Ar)</label>
+              <div class="prix-vente-display" id="prix-vente-display" style="min-width:130px;margin:0">—</div>
+              <div id="coeff-alert" class="coeff-alert" hidden style="width:100%;margin:0"></div>
+              <input type="hidden" id="f-prix-plancher">
+              <input type="hidden" id="f-prix-plafond">
+            </div>
+            <div class="form-field">
+              <label>Délai de conservation</label>
+              <div style="display:flex;gap:8px">
+                <input type="number" id="f-conservation-val" min="0" placeholder="3" style="flex:1">
+                <select id="f-conservation-unite" style="flex:1.2">
+                  <option value="heures">heures</option>
+                  <option value="jours">jours</option>
+                  <option value="semaines">semaines</option>
+                  <option value="mois">mois</option>
+                </select>
               </div>
             </div>
-            <div id="coeff-alert" class="coeff-alert" hidden></div>
           </div>
 
           <!-- 2. INGRÉDIENTS -->
           <div class="form-card">
             <h2 class="form-section-title">Ingrédients</h2>
             <div class="table-head-row">
-              <span style="flex:3">Ingrédient</span><span style="flex:1">Quantité</span><span style="flex:1">Unité</span><span style="flex:1.2">Prix (Ar)</span><span style="width:34px"></span>
+              <span style="flex:3">Ingrédient</span><span style="flex:1">Quantité</span><span style="flex:1">Unité</span><span style="flex:1.2">Prix (Ar) 🔒</span><span style="width:34px"></span>
             </div>
             <div id="ingredients-list"></div>
             <button type="button" class="btn-add-row" onclick="addIngredient()">+ Ajouter un ingrédient</button>
@@ -795,7 +899,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <div class="param-card" onclick="openIngCatalogueModal()">
             <div class="param-card-icon">🧂</div>
             <div class="param-card-title">Catalogue Ingrédients</div>
-            <div class="param-card-desc">Gérer la liste des ingrédients disponibles lors de la saisie des fiches</div>
+            <div class="param-card-desc">Gérer les prix des ingrédients — toute modification recalcule automatiquement toutes les fiches concernées</div>
+          </div>
+          <div class="param-card" onclick="openSeuilsModal()">
+            <div class="param-card-icon">📊</div>
+            <div class="param-card-title">Seuils de rentabilité</div>
+            <div class="param-card-desc">Configurer les coefficients minimum, norme et par défaut pour les alertes de prix</div>
+          </div>
+          <div class="param-card" onclick="openPrixLimitesModal()">
+            <div class="param-card-icon">🎯</div>
+            <div class="param-card-title">Prix plancher / plafond</div>
+            <div class="param-card-desc">Définir les limites de prix de vente acceptables avec alertes au blocage</div>
           </div>
         </div>
 
@@ -964,7 +1078,193 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 <div id="toast" class="toast"></div>
 
+<!-- Bannière conseil après création de fiche -->
+<div id="fiche-tip-banner" class="fiche-tip-banner" hidden>
+  <div class="fiche-tip-banner-body">
+    <div class="fiche-tip-banner-icon">💡</div>
+    <div class="fiche-tip-banner-text">
+      <strong>Définir des limites de prix ?</strong>
+      <span>Vous pouvez fixer un prix plancher <strong>⛔ bloquant</strong> et un plafond <strong>⚠️ avertissement</strong> pour contrôler le prix de vente de cette fiche.</span>
+      <div class="fiche-tip-banner-path">Paramètres → Prix plancher / plafond</div>
+    </div>
+  </div>
+  <div class="fiche-tip-banner-actions">
+    <button class="btn-tip btn-tip-close" onclick="hideFicheTipBanner()">Plus tard</button>
+    <button class="btn-tip btn-tip-primary" onclick="hideFicheTipBanner(); showView('parametres'); setTimeout(openPrixLimitesModal, 150)">Configurer →</button>
+  </div>
+</div>
+
 <!-- Modal catégories -->
+<style>
+.sr-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.sr-field{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
+.sr-field label{font-size:11.5px;font-weight:600;color:var(--text-2)}
+.sr-field input{padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.sr-field input:focus{border-color:var(--accent)}
+.sr-field span{font-size:10.5px;color:var(--text-3)}
+.sr-result-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:7px;margin-bottom:5px}
+.sr-formula-box{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-family:monospace;font-size:12px;color:var(--text-2);text-align:center;line-height:1.8}
+</style>
+<div id="seuils-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeSeuilsModal()">
+  <div class="modal" style="max-width:900px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:95vh">
+
+    <!-- En-tête -->
+    <div style="padding:16px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📊</div>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)">Seuil de rentabilité — Point mort</div>
+          <div style="font-size:11.5px;color:var(--text-3);margin-top:1px">Calcul du Q* à partir des données de vos recettes</div>
+        </div>
+      </div>
+      <button onclick="closeSeuilsModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);padding:2px 7px;border-radius:6px" title="Fermer">✕</button>
+    </div>
+
+    <!-- Corps -->
+    <div style="display:flex;flex-direction:column;background:var(--surface-2);overflow-y:auto;flex:1;min-height:0;gap:6px;padding:8px 24px 10px">
+
+      <!-- Graphique -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;flex-shrink:0">
+        <div id="breakeven-chart" style="width:100%">
+          <div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--text-3);font-size:13px;flex-direction:column;gap:8px">
+            <span style="font-size:28px">📈</span>
+            <span style="font-weight:500">Déplacez les curseurs pour afficher le graphique</span>
+            <span style="font-size:11px">Ou cliquez sur <strong>🔗 Importer p et v</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formule + cartes : côte à côte -->
+      <div style="display:flex;gap:8px;align-items:stretch;flex-shrink:0">
+
+        <!-- Formule -->
+        <div style="flex:2;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+          <div id="sr-formula-display" style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:15px">
+            <span style="font-style:italic;font-weight:700;color:var(--text)">Q*</span>
+            <span style="color:var(--text-3);font-size:16px">=</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1.4">
+              <span style="font-style:italic;font-weight:700;color:var(--text);font-size:14px">F</span>
+              <span style="border-top:2px solid var(--text-2);padding-top:3px;min-width:40px;text-align:center;font-size:12px;color:var(--text-2)"><i>p</i> − <i>v</i></span>
+            </span>
+            <span id="sr-formula-values" style="color:var(--text-3);font-size:13px"></span>
+            <span style="color:var(--text-3);font-size:16px">=</span>
+            <span id="sr-q-star" style="font-size:22px;font-weight:800;color:#27AE60;letter-spacing:-.5px">—</span>
+          </div>
+          <!-- Lexique des abréviations -->
+          <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:2px">
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Charges fixes : coûts indépendants du volume produit (loyer, salaires, énergie…)">
+              <span style="font-style:italic;font-weight:800;color:var(--text-2)">F</span>
+              <span style="color:var(--text-3)">= Charges fixes</span>
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Prix de vente unitaire : montant facturé au client pour une recette">
+              <span style="font-style:italic;font-weight:800;color:#2980B9">p</span>
+              <span style="color:var(--text-3)">= Prix de vente</span>
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Coût variable unitaire : coût des ingrédients par recette (varie avec la production)">
+              <span style="font-style:italic;font-weight:800;color:#27AE60">v</span>
+              <span style="color:var(--text-3)">= Coût variable</span>
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Marge sur coût variable : ce que rapporte chaque recette vendue après avoir couvert son coût variable">
+              <span style="font-style:italic;font-weight:800;color:var(--text-2)">p−v</span>
+              <span style="color:var(--text-3)">= Marge unitaire</span>
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:#27AE6014;border:1px solid #27AE6030;font-size:10px" title="Quantité au seuil de rentabilité : nombre de recettes à vendre pour couvrir toutes les charges (CA = Coût total)">
+              <span style="font-style:italic;font-weight:800;color:#27AE60">Q*</span>
+              <span style="color:var(--text-3)">= Seuil de rentabilité</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 cartes métriques empilées -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px">
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:2px">Marge (p−v)</div>
+            <div id="sr-marge" style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+          </div>
+          <div style="flex:1;background:var(--surface);border:2px solid #27AE60;border-radius:8px;padding:7px 12px">
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#27AE60;margin-bottom:2px">Q* Point mort</div>
+            <div id="sr-q-star-card" style="font-size:15px;font-weight:700;color:#27AE60;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+          </div>
+          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px">
+            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:2px">CA au point mort</div>
+            <div id="sr-ca-star" style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sliders -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;flex-shrink:0">
+
+        <!-- Titre + import -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <span style="font-size:12px;font-weight:700;color:var(--text)">Paramètres</span>
+            <span id="sr-import-info" style="font-size:10.5px;color:var(--text-3);margin-left:8px">Ajustez ou importez depuis vos recettes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <select id="sr-cat-filter" style="padding:4px 8px;font-size:11px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:var(--text);outline:none">
+              <option value="">Toutes catégories</option>
+            </select>
+            <button onclick="importFromFiches()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:16px;cursor:pointer;white-space:nowrap">
+              🔗 Importer p et v
+            </button>
+          </div>
+        </div>
+
+        <!-- Aide rapide -->
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;margin-bottom:10px;display:flex;flex-direction:column;gap:5px">
+          <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:2px">Comment renseigner ces valeurs ?</div>
+          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
+            <span style="font-style:italic;font-weight:800;font-size:14px;color:var(--text);min-width:14px">F</span>
+            <span><strong style="color:var(--text)">Charges fixes</strong> — coûts qui ne dépendent pas du volume : loyer, salaires, électricité, assurances… Additionnez-les et <strong>saisissez le total mensuel</strong> dans la case à droite.</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
+            <span style="font-style:italic;font-weight:800;font-size:14px;color:#27AE60;min-width:14px">v</span>
+            <span><strong style="color:var(--text)">Coût variable</strong> — coût moyen des ingrédients par recette. Cliquez <strong>"🔗 Importer p et v"</strong> pour le calculer automatiquement depuis vos fiches, ou saisissez-le manuellement.</span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
+            <span style="font-style:italic;font-weight:800;font-size:14px;color:#2980B9;min-width:14px">p</span>
+            <span><strong style="color:var(--text)">Prix de vente</strong> — prix moyen facturé au client par recette. Importé depuis vos fiches (coût × coefficient) ou saisi manuellement.</span>
+          </div>
+        </div>
+
+        <!-- Slider F -->
+        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-style:italic;font-weight:800;font-size:14px;color:var(--text-2);cursor:help" title="F — Charges fixes : coûts indépendants du volume (loyer, salaires, électricité…)">F</span>
+          <input type="range" id="sr-F-range" min="0" max="10000000" step="50000" value="0" oninput="syncBESlider('F')" style="width:100%;accent-color:var(--accent);cursor:pointer">
+          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar fixes</span>
+          <input type="number" id="sr-F-input" min="0" step="50000" placeholder="0" oninput="syncBESlider('F',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);outline:none;text-align:right">
+        </div>
+        <!-- Slider v -->
+        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px;margin-bottom:5px">
+          <span style="font-style:italic;font-weight:800;font-size:14px;color:#27AE60;cursor:help" title="v — Coût variable unitaire : coût des ingrédients par recette, importé depuis vos fiches techniques">v</span>
+          <input type="range" id="sr-v-range" min="0" max="1000000" step="1000" value="0" oninput="syncBESlider('v')" style="width:100%;accent-color:#27AE60;cursor:pointer">
+          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar/recette</span>
+          <input type="number" id="sr-v-input" min="0" step="1000" placeholder="0" oninput="syncBESlider('v',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:#27AE60;outline:none;text-align:right">
+        </div>
+        <!-- Slider p -->
+        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px">
+          <span style="font-style:italic;font-weight:800;font-size:14px;color:#2980B9;cursor:help" title="p — Prix de vente unitaire : montant facturé au client pour une recette, importé depuis vos fiches techniques">p</span>
+          <input type="range" id="sr-p-range" min="0" max="1000000" step="1000" value="0" oninput="syncBESlider('p')" style="width:100%;accent-color:#2980B9;cursor:pointer">
+          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar/recette</span>
+          <input type="number" id="sr-p-input" min="0" step="1000" placeholder="0" oninput="syncBESlider('p',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:#2980B9;outline:none;text-align:right">
+        </div>
+      </div>
+    </div>
+
+    <!-- Pied -->
+    <div style="padding:11px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface);flex-shrink:0">
+      <span style="font-size:11px;color:var(--text-3)">Outil d'aide à la décision · aucune donnée enregistrée</span>
+      <button class="btn btn-primary" onclick="closeSeuilsModal()">Fermer</button>
+    </div>
+    <!-- Champs coefficients cachés pour compatibilité JS -->
+    <input type="hidden" id="s-coeff-min"     value="1.5">
+    <input type="hidden" id="s-coeff-norm"    value="2.0">
+    <input type="hidden" id="s-coeff-default" value="2.0">
+    <div id="seuils-preview" style="display:none"></div>
+  </div>
+</div>
+
 <div id="cat-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeCatModal()">
   <div class="modal" style="max-width:500px">
     <h3>Gérer les catégories</h3>
@@ -998,33 +1298,156 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <!-- Modal catalogue ingrédients -->
 <div id="ing-catalogue-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeIngCatalogueModal()">
-  <div class="modal" style="max-width:580px;width:95%;padding:24px 24px 20px">
-    <h3 style="margin:0 0 12px">Catalogue des ingrédients</h3>
-    <input type="text" id="ing-cat-search" placeholder="🔍 Rechercher…" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;box-sizing:border-box;margin-bottom:10px" oninput="filterIngCatalogue()">
-    <div class="cat-modal-list" id="ing-catalogue-list" style="max-height:200px;margin-bottom:14px"></div>
-    <div style="border-top:1px solid var(--border);padding-top:14px">
-      <p style="font-size:12px;font-weight:700;color:var(--text-2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em" id="ing-cat-form-label">Nouvel ingrédient</p>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+  <div class="modal" style="max-width:560px;width:95%;padding:0;overflow:hidden">
+
+    <!-- Header + onglets -->
+    <div style="padding:20px 24px 0;background:var(--surface)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <h3 style="margin:0;font-size:16px;font-weight:700">🧂 Ingrédients</h3>
+        <button class="btn btn-outline" style="padding:3px 11px;font-size:15px;line-height:1.4" onclick="closeIngCatalogueModal()">✕</button>
+      </div>
+      <div style="display:flex;border-bottom:2px solid var(--border);margin:0 -0px">
+        <button id="ing-tab-btn-catalogue" onclick="switchIngTab('catalogue')"
+          style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid var(--accent);margin-bottom:-2px;background:none;cursor:pointer;color:var(--accent);transition:color .15s,border-color .15s">
+          📋 Catalogue
+        </button>
+        <button id="ing-tab-btn-form" onclick="switchIngTab('form')"
+          style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;color:var(--text-3);transition:color .15s,border-color .15s">
+          ＋ Nouvel ingrédient
+        </button>
+      </div>
+    </div>
+
+    <!-- Vue Catalogue (liste + recherche) -->
+    <div id="ing-view-catalogue" style="padding:16px 24px 22px">
+      <!-- Bandeau explicatif -->
+      <div style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:11.5px;color:var(--text-2);line-height:1.6;display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:15px;flex-shrink:0;margin-top:1px">💡</span>
+        <span>Le prix des matières premières est enregistré ici une seule fois. Toutes les recettes utilisant le même ingrédient se basent automatiquement sur ce prix — <strong style="color:var(--text)">aucune modification individuelle nécessaire dans chaque recette.</strong></span>
+      </div>
+      <input type="text" id="ing-cat-search" placeholder="🔍 Rechercher un ingrédient…"
+        style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;box-sizing:border-box;margin-bottom:12px"
+        oninput="filterIngCatalogue()">
+      <div class="cat-modal-list" id="ing-catalogue-list" style="max-height:300px"></div>
+      <div style="margin-top:14px;text-align:right">
+        <button class="btn btn-outline" onclick="closeIngCatalogueModal()">Fermer</button>
+      </div>
+    </div>
+
+    <!-- Vue Formulaire (ajout / modification) -->
+    <div id="ing-view-form" style="padding:16px 24px 22px" hidden>
+      <p style="font-size:12px;font-weight:700;color:var(--text-2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em"
+         id="ing-cat-form-label">Nouvel ingrédient</p>
+      <div id="ing-form-cascade-info" style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:7px;padding:7px 11px;margin-bottom:12px;font-size:11px;color:var(--text-2);display:none;align-items:center;gap:7px">
+        <span style="font-size:13px;flex-shrink:0">🔄</span>
+        <span>Modifier le prix ici recalculera automatiquement <strong style="color:var(--text)">toutes les recettes</strong> utilisant cet ingrédient.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
         <div style="display:flex;flex-direction:column;gap:4px">
           <label style="font-size:12px;font-weight:600;color:var(--text-2)">Nom <span class="req">*</span></label>
-          <input type="text" id="ing-cat-nom" placeholder="Ex : Farine" maxlength="60" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+          <input type="text" id="ing-cat-nom" placeholder="Ex : Farine" maxlength="60"
+            style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
         </div>
         <div style="display:flex;gap:10px">
           <div style="display:flex;flex-direction:column;gap:4px;flex:1">
             <label style="font-size:12px;font-weight:600;color:var(--text-2)">Unité</label>
-            <input type="text" id="ing-cat-unite" placeholder="g, kg, L…" maxlength="20" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+            <input type="text" id="ing-cat-unite" placeholder="g, kg, L…" maxlength="20"
+              style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;flex:1">
             <label style="font-size:12px;font-weight:600;color:var(--text-2)">Prix (Ar)</label>
-            <input type="number" id="ing-cat-prix" min="0" step="1" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+            <input type="number" id="ing-cat-prix" min="0" step="1"
+              style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
           </div>
         </div>
       </div>
       <div class="modal-actions" style="margin:0">
-        <button class="btn btn-outline" onclick="closeIngCatalogueModal()">Fermer</button>
-        <button class="btn btn-outline" onclick="resetIngCatForm()">Annuler</button>
+        <button class="btn btn-outline" onclick="resetIngCatForm()">← Retour</button>
         <button class="btn btn-primary" id="ing-cat-save-btn" onclick="saveIngCatalogue()">Ajouter</button>
       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal Aperçu Impact Prix -->
+<div id="fourn-impact-overlay" class="modal-overlay" hidden>
+  <div class="modal" style="max-width:520px;width:95%;padding:24px 24px 20px">
+    <h3 style="margin:0 0 6px;font-size:16px">Aperçu de l'impact</h3>
+    <p id="fourn-impact-subtitle" style="margin:0 0 14px;color:var(--text-3);font-size:13px"></p>
+    <div id="fourn-impact-list"></div>
+    <div class="modal-actions" style="margin:16px 0 0">
+      <button class="btn btn-outline" onclick="document.getElementById('fourn-impact-overlay').hidden=true">Annuler</button>
+      <button class="btn btn-primary" id="fourn-impact-confirm-btn">Confirmer et appliquer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Prix plancher / plafond -->
+<style>
+.pl-tab{padding:4px 12px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-2);cursor:pointer;transition:all .15s}
+.pl-tab:hover{background:var(--surface-2)}
+.pl-tab.pl-tab-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pl-stat-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.pl-stat-ok{background:rgba(39,174,96,.12);color:#1a7a40;border:1px solid rgba(39,174,96,.25)}
+.pl-stat-danger{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.25)}
+.pl-stat-warn{background:rgba(125,90,0,.1);color:#7D5A00;border:1px solid rgba(125,90,0,.25)}
+.pl-stat-none{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
+.pl-summary-card{flex:1;min-width:120px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface)}
+</style>
+<div id="prix-limites-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePrixLimitesModal()">
+  <div class="modal" style="max-width:800px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:95vh">
+
+    <!-- En-tête -->
+    <div style="padding:18px 24px 14px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:38px;height:38px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎯</div>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--text)">Prix plancher / plafond</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:1px">Limites de prix de vente par recette — modifiables en ligne</div>
+          </div>
+        </div>
+        <button onclick="closePrixLimitesModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);line-height:1;padding:2px 6px;border-radius:6px" title="Fermer">✕</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.2)">⛔ Plancher — bloquant à la sauvegarde</span>
+        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(125,90,0,.08);color:#7D5A00;border:1px solid rgba(125,90,0,.2)">⚠️ Plafond — confirmation demandée</span>
+      </div>
+    </div>
+
+    <!-- Cartes résumé -->
+    <div id="prix-limites-preview" style="display:flex;gap:10px;padding:12px 24px;background:var(--surface-2);border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0"></div>
+
+    <!-- Barre outils -->
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 24px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;flex-shrink:0">
+      <div id="pl-filter-tabs" style="display:flex;gap:5px">
+        <button class="pl-tab pl-tab-active" onclick="setPLFilter('all')" data-plf="all">Toutes</button>
+        <button class="pl-tab" onclick="setPLFilter('alert')" data-plf="alert">🚨 En alerte</button>
+        <button class="pl-tab" onclick="setPLFilter('set')" data-plf="set">✓ Avec limites</button>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <span id="pl-ing-count" style="font-size:11.5px;color:var(--text-3)">0 limite définie</span>
+        <input type="text" id="pl-ing-search" placeholder="Rechercher une recette…" oninput="filterPrixLimitesIng()"
+          style="padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:20px;width:190px;background:var(--surface);color:var(--text)">
+      </div>
+    </div>
+
+    <!-- En-tête colonnes -->
+    <div style="display:grid;grid-template-columns:1fr 110px 105px 105px 130px;gap:0;padding:6px 24px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border);flex-shrink:0">
+      <div>Recette</div>
+      <div style="text-align:right">Prix vente</div>
+      <div style="text-align:right">⛔ Plancher</div>
+      <div style="text-align:right">⚠️ Plafond</div>
+      <div style="text-align:center">Statut</div>
+    </div>
+
+    <!-- Liste -->
+    <div id="pl-ing-list" style="flex:1;min-height:0;overflow-y:auto"></div>
+
+    <!-- Pied -->
+    <div style="padding:12px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;background:var(--surface);flex-shrink:0">
+      <button class="btn btn-primary" onclick="closePrixLimitesModal()">Fermer</button>
     </div>
   </div>
 </div>
@@ -1043,6 +1466,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <!-- Modal confirmation -->
+<!-- ── Modal Export PDF ── -->
+<div id="pdf-export-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePdfExportModal()">
+  <div class="modal" style="max-width:620px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:90vh">
+    <!-- En-tête -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">📄</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)">Exporter en PDF</div>
+          <div style="font-size:11.5px;color:var(--text-3)" id="pdf-export-subtitle">Choisissez les fiches à inclure</div>
+        </div>
+      </div>
+      <button onclick="closePdfExportModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-2);padding:4px 8px">✕</button>
+    </div>
+
+    <!-- Mode toggle -->
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:8px">
+      <button id="pem-btn-all" class="btn btn-primary" style="font-size:12.5px;padding:6px 16px" onclick="setPdfExportMode('all')">✓ Toutes les fiches</button>
+      <button id="pem-btn-sel" class="btn btn-outline" style="font-size:12.5px;padding:6px 16px" onclick="setPdfExportMode('select')">Sélection personnalisée</button>
+    </div>
+
+    <!-- Barre outils sélection -->
+    <div id="pem-toolbar" style="padding:10px 20px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;gap:8px;align-items:center" hidden>
+      <input type="text" id="pem-search" placeholder="🔍 Rechercher une recette…" oninput="renderPdfExportList()"
+        style="flex:1;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;background:var(--surface-2);color:var(--text)">
+      <select id="pem-cat" onchange="renderPdfExportList()"
+        style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;background:var(--surface-2);color:var(--text)">
+        <option value="">Toutes catégories</option>
+      </select>
+      <button onclick="pdfExportToggleAll(true)"  style="font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;color:var(--text-2)">✓ Tout</button>
+      <button onclick="pdfExportToggleAll(false)" style="font-size:11px;padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface-2);cursor:pointer;color:var(--text-2)">✗ Rien</button>
+    </div>
+
+    <!-- Liste fiches -->
+    <div id="pem-list" style="flex:1;min-height:0;overflow-y:auto;padding:6px 0" hidden></div>
+
+    <!-- Résumé mode "Toutes" -->
+    <div id="pem-all-summary" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;padding:24px;color:var(--text-2)">
+      <span style="font-size:36px">📄</span>
+      <div id="pem-all-count" style="font-size:14px;font-weight:600;color:var(--text)"></div>
+      <div style="font-size:12px">Toutes les fiches seront incluses dans le PDF</div>
+    </div>
+
+    <!-- Pied -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0;background:var(--surface-2)">
+      <span id="pem-count-badge" style="font-size:12.5px;color:var(--text-2)"></span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" style="font-size:13px;padding:7px 18px" onclick="closePdfExportModal()">Annuler</button>
+        <button class="btn btn-primary" style="font-size:13px;padding:7px 18px" id="pem-export-btn" onclick="runPdfExport()">Exporter →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <h3 id="modal-title">Confirmer</h3>
@@ -1056,6 +1533,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ── ÉTAT ──────────────────────────────────────────────────────────────────────
 let fiches              = [];
@@ -1065,8 +1544,12 @@ let ingredientsCatalogue = [];   // [{nom, prix}]
 let currentFicheId = null;
 let activeCategory = 'all';
 
-const COEFF_MIN  = 1.5;
-const COEFF_NORM = 2;
+let COEFF_MIN     = 1.5;
+let COEFF_NORM    = 2.0;
+let COEFF_DEFAULT = 2.0;
+
+let PRIX_PLANCHER = 0;
+let PRIX_PLAFOND  = 0;
 
 const CAT_COLORS = [
   '#27AE60','#E67E22','#C0399A','#2980B9','#E74C3C',
@@ -1091,12 +1574,25 @@ const api = {
   get:    url     => fetch(url, {headers: bearerHeaders()}).then(handleApiResponse),
   post:   (url,d) => fetch(url, {method:'POST',   headers: jsonHeaders(), body:JSON.stringify(d)}).then(handleApiResponse),
   put:    (url,d) => fetch(url, {method:'PUT',    headers: jsonHeaders(), body:JSON.stringify(d)}).then(handleApiResponse),
+  patch:  (url,d) => fetch(url, {method:'PATCH',  headers: jsonHeaders(), body:JSON.stringify(d)}).then(handleApiResponse),
   delete: url     => fetch(url, {method:'DELETE', headers: bearerHeaders()}).then(handleApiResponse),
 };
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const s = await api.get('/api/settings');
+    COEFF_MIN     = parseFloat(s.coeff_min)     || 1.5;
+    COEFF_NORM    = parseFloat(s.coeff_norm)    || 2.0;
+    COEFF_DEFAULT = parseFloat(s.coeff_default) || 2.0;
+    PRIX_PLANCHER = parseFloat(s.prix_plancher) || 0;
+    PRIX_PLAFOND  = parseFloat(s.prix_plafond)  || 0;
+  } catch(e) {}
+}
+
 async function init() {
   try {
+    await loadSettings();
     [categories, allAllergens, fiches, ingredientsCatalogue] = await Promise.all([
       api.get('/api/categories'),
       api.get('/api/allergenes'),
@@ -1129,27 +1625,96 @@ async function loadFiches() {
 }
 
 // ── PRIX DE VENTE ─────────────────────────────────────────────────────────────
+function setCoeff(val) {
+  const inp = document.getElementById('f-coefficient');
+  if (!inp) return;
+  inp.value  = val;
+  inp.hidden = true;
+  document.querySelectorAll('.coeff-seg-btn').forEach(b => {
+    if (b.id === 'coeff-seg-autre-btn') { b.classList.remove('active'); return; }
+    const v = parseFloat(b.textContent.replace('×','').replace(',','.'));
+    b.classList.toggle('active', v === val);
+  });
+  updatePrixVente();
+}
+
+function setCoeffCustom() {
+  const inp = document.getElementById('f-coefficient');
+  if (!inp) return;
+  inp.hidden = false;
+  inp.focus();
+  document.querySelectorAll('.coeff-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.id === 'coeff-seg-autre-btn');
+  });
+  updatePrixVente();
+}
+
+
+
 function updatePrixVente() {
-  const cout  = parseFloat(document.getElementById('f-cout')?.value) || 0;
-  const coeff = parseFloat(document.getElementById('f-coefficient')?.value) || 0;
+  const cout    = parseFloat(document.getElementById('f-cout')?.value) || 0;
+  const coeff   = parseFloat(document.getElementById('f-coefficient')?.value) || 0;
   const display = document.getElementById('prix-vente-display');
-  const alert   = document.getElementById('coeff-alert');
+  const alertEl = document.getElementById('coeff-alert');
+  const hint    = document.getElementById('coeff-norm-hint');
+
+  if (hint) hint.textContent = `Norme recommandée : ×${COEFF_NORM}  |  Minimum : ×${COEFF_MIN}`;
+
+  // Sync segmented buttons (hors "Autre")
+  document.querySelectorAll('.coeff-seg-btn').forEach(b => {
+    if (b.id === 'coeff-seg-autre-btn') return;
+    const v = parseFloat(b.textContent.replace('×','').replace(',','.'));
+    b.classList.toggle('active', v === coeff);
+  });
+
   if (!display) return;
+
+  const coeffInp = document.getElementById('f-coefficient');
+
   if (cout > 0 && coeff > 0) {
     const prix = Math.round(cout * coeff);
     display.textContent = prix.toLocaleString('fr-FR') + ' Ar';
-    if (coeff < COEFF_MIN) {
-      alert.hidden = false; alert.className = 'coeff-alert coeff-danger';
-      alert.innerHTML = `⛔ Coefficient <strong>${coeff}</strong> trop bas ! Minimum : ${COEFF_MIN}.`;
-    } else if (coeff < COEFF_NORM) {
-      alert.hidden = false; alert.className = 'coeff-alert coeff-warn';
-      alert.innerHTML = `⚠️ Coefficient <strong>${coeff}</strong> en dessous de la norme (${COEFF_NORM}).`;
+
+    // Vérification plancher / plafond de la fiche (temps réel)
+    const fPlancher = parseFloat(document.getElementById('f-prix-plancher')?.value) || 0;
+    const fPlafond  = parseFloat(document.getElementById('f-prix-plafond')?.value)  || 0;
+
+    if (fPlancher > 0 && prix < fPlancher) {
+      alertEl.hidden = false; alertEl.className = 'coeff-alert coeff-danger';
+      alertEl.innerHTML = `⛔ Prix minimum autorisé : <strong>${fPlancher.toLocaleString('fr-FR')} Ar</strong>.<br><small>Prix actuel : ${prix.toLocaleString('fr-FR')} Ar — augmentez le coefficient pour débloquer la sauvegarde.</small>`;
+      display.style.color = 'var(--red)'; display.style.borderColor = 'var(--red)';
+      document.getElementById('f-prix-plancher').style.borderColor = 'var(--red)';
+      if (coeffInp) coeffInp.style.borderColor = 'var(--red)';
+    } else if (fPlafond > 0 && prix > fPlafond) {
+      let coeffNote = '';
+      if (coeff < COEFF_MIN) coeffNote = ` · ⛔ Coefficient trop bas (min ×${COEFF_MIN})`;
+      else if (coeff < COEFF_NORM) coeffNote = ` · ⚠️ Coefficient sous la norme (×${COEFF_NORM})`;
+      alertEl.hidden = false; alertEl.className = 'coeff-alert coeff-warn';
+      alertEl.innerHTML = `⚠️ Prix maximum recommandé : <strong>${fPlafond.toLocaleString('fr-FR')} Ar</strong>.<br><small>Prix actuel : ${prix.toLocaleString('fr-FR')} Ar${coeffNote}</small>`;
+      display.style.color = '#7D5A00'; display.style.borderColor = '#F5D060';
+      document.getElementById('f-prix-plafond').style.borderColor = '#F5D060';
+      if (coeffInp) coeffInp.style.borderColor = '#F5D060';
     } else {
-      alert.hidden = false; alert.className = 'coeff-alert coeff-ok';
-      alert.innerHTML = `✅ Coefficient <strong>${coeff}</strong> — Prix de vente : ${prix.toLocaleString('fr-FR')} Ar.`;
+      document.getElementById('f-prix-plancher').style.borderColor = '';
+      document.getElementById('f-prix-plafond').style.borderColor  = '';
+      display.style.color = ''; display.style.borderColor = '';
+      if (coeffInp) coeffInp.style.borderColor = '';
+      if (coeff < COEFF_MIN) {
+        alertEl.hidden = false; alertEl.className = 'coeff-alert coeff-danger';
+        alertEl.innerHTML = `⛔ Coefficient <strong>×${coeff}</strong> trop bas — minimum ×${COEFF_MIN}.`;
+      } else if (coeff < COEFF_NORM) {
+        alertEl.hidden = false; alertEl.className = 'coeff-alert coeff-warn';
+        alertEl.innerHTML = `⚠️ Coefficient <strong>×${coeff}</strong> sous la norme (×${COEFF_NORM}).`;
+      } else {
+        alertEl.hidden = false; alertEl.className = 'coeff-alert coeff-ok';
+        alertEl.innerHTML = `✅ Coefficient <strong>×${coeff}</strong> — Rentabilité correcte.`;
+      }
     }
   } else {
-    display.textContent = '—'; if (alert) alert.hidden = true;
+    display.textContent = '—';
+    display.style.color = ''; display.style.borderColor = '';
+    if (coeffInp) coeffInp.style.borderColor = '';
+    if (alertEl) alertEl.hidden = true;
   }
 }
 
@@ -1441,9 +2006,13 @@ function loadBrandSettings() {
   const logo = localStorage.getItem('brand_logo');
   if (name) {
     document.getElementById('brand-name').textContent = name;
+    document.getElementById('print-brand-label').textContent = name;
     document.title = name;
   }
-  if (logo) document.getElementById('brand-logo').src = logo;
+  if (logo) {
+    document.getElementById('brand-logo').src = logo;
+    document.getElementById('print-logo').src = logo;
+  }
 }
 
 function openProfileModal() {
@@ -1483,14 +2052,17 @@ function saveProfileSettings() {
   const name = document.getElementById('profile-name-input').value.trim() || 'Fiche Technique';
   localStorage.setItem('brand_name', name);
   document.getElementById('brand-name').textContent = name;
+  document.getElementById('print-brand-label').textContent = name;
   document.title = name;
 
   if (_pendingLogoDataUrl === '__reset__') {
     localStorage.removeItem('brand_logo');
     document.getElementById('brand-logo').src = '/static/logo.png';
+    document.getElementById('print-logo').src  = '/static/logo.png';
   } else if (_pendingLogoDataUrl) {
     localStorage.setItem('brand_logo', _pendingLogoDataUrl);
     document.getElementById('brand-logo').src = _pendingLogoDataUrl;
+    document.getElementById('print-logo').src  = _pendingLogoDataUrl;
   }
 
   closeProfileModal();
@@ -1500,25 +2072,32 @@ function saveProfileSettings() {
 // ── EXPORT / IMPORT EXCEL ────────────────────────────────────────────────────
 function exportExcel() {
   if (typeof XLSX === 'undefined') { showToast('Connexion internet requise'); return; }
+  if (!fiches.length) { showToast('Aucune fiche à exporter'); return; }
+  const brand = (localStorage.getItem('brand_name') || 'fiches').toLowerCase().replace(/\s+/g,'-');
   const fichesSheet = fiches.map(f => ({
     'Nom': f.nom, 'Catégorie': getCatLabel(f.categorie),
     'Quantité': f.quantite || '', 'Unité': f.unite || 'personnes',
     'Coût matière (Ar)': f.cout || '', 'Coefficient': f.coefficient || COEFF_NORM,
     'Prix vente (Ar)': (f.cout && f.coefficient) ? Math.round(parseFloat(f.cout)*parseFloat(f.coefficient)) : '',
+    'Prix plancher (Ar)': f.prix_plancher || '',
+    'Prix plafond (Ar)':  f.prix_plafond  || '',
     'Conservation': f.conservation_val ? `${f.conservation_val} ${f.conservation_unite}` : '',
     'Préparation (min)': f.prep || '', 'Cuisson (min)': f.cuisson || '',
     'Température (°C)': f.temperature || '',
     'Allergènes': (f.allergenes||[]).join(', '),
+    'Description': f.description || '',
     'Apparence normale': f.apparence_normale || '',
     'Apparence anormale': f.apparence_anormale || '',
-    'Matériels': (f.materiels||[]).join(', '),
     'Utilisations': f.utilisations || '',
     'Notes de services': f.notes_services || '',
     'Notes préparateur': f.notes_preparateur || '',
     'ID': f.id, 'Mise à jour': formatDate(f.updatedAt),
   }));
   const ingSheet = [];
-  fiches.forEach(f => (f.ingredients||[]).forEach(i => ingSheet.push({Fiche:f.nom,Ingrédient:i.nom,Quantité:i.qte,Unité:i.unite})));
+  fiches.forEach(f => (f.ingredients||[]).forEach(i => ingSheet.push({
+    Fiche: f.nom, Ingrédient: i.nom, Quantité: i.qte, Unité: i.unite,
+    'Prix unitaire (Ar)': i.prix || '',
+  })));
   const etapesSheet = [];
   fiches.forEach(f => (f.etapes||[]).forEach((e,i) => etapesSheet.push({Fiche:f.nom,Étape:i+1,Description:e})));
   const matSheet = [];
@@ -1528,8 +2107,8 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ingSheet),    'Ingrédients');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(etapesSheet), 'Étapes');
   if (matSheet.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(matSheet), 'Matériels');
-  XLSX.writeFile(wb, 'fiches-bogota-' + new Date().toISOString().slice(0,10) + '.xlsx');
-  showToast('Export Excel téléchargé ✓');
+  XLSX.writeFile(wb, `${brand}-${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast(`Export Excel (${fiches.length} fiches) téléchargé ✓`);
 }
 
 function importPDF()   { document.getElementById('import-pdf-input').click(); }
@@ -1692,26 +2271,147 @@ function showView(name) {
   if (name === 'historique') loadHistorique();
 }
 
+// ── MODAL EXPORT PDF ─────────────────────────────────────────────────────────
+let _pemMode = 'all';           // 'all' | 'select'
+let _pemSelected = new Set();   // ids des fiches sélectionnées
+
 function exportAllPDF() {
-  if (typeof html2pdf === 'undefined') { showToast('Connexion internet requise pour le PDF'); return; }
+  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+    showToast('Connexion internet requise pour le PDF'); return;
+  }
   if (!fiches.length) { showToast('Aucune fiche à exporter'); return; }
-  showToast('Génération PDF en cours…');
-  fiches.forEach((f, i) => {
-    setTimeout(() => {
-      const host = document.createElement('div');
-      host.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:24px 28px';
-      host.appendChild(buildPDFEl(f));
-      document.body.appendChild(host);
-      html2pdf().set({
-        margin: 10, filename: `${f.nom}.pdf`,
-        image: {type:'jpeg', quality:.92},
-        html2canvas: {scale:2, useCORS:true}, jsPDF: {unit:'mm', format:'a4'}
-      }).from(host).save().then(() => {
-        document.body.removeChild(host);
-        if (i === fiches.length - 1) showToast(`${fiches.length} PDF exportés ✓`);
+  openPdfExportModal();
+}
+
+function openPdfExportModal() {
+  // Pré-sélectionner toutes les fiches
+  _pemSelected = new Set(fiches.map(f => f.id));
+  _pemMode = 'all';
+
+  // Remplir le select catégories
+  const catSel = document.getElementById('pem-cat');
+  catSel.innerHTML = '<option value="">Toutes catégories</option>' +
+    categories.map(c => `<option value="${c.id}">${esc(c.nom)}</option>`).join('');
+
+  setPdfExportMode('all');
+  document.getElementById('pdf-export-modal-overlay').hidden = false;
+}
+
+function closePdfExportModal() {
+  document.getElementById('pdf-export-modal-overlay').hidden = true;
+}
+
+function setPdfExportMode(mode) {
+  _pemMode = mode;
+  const btnAll  = document.getElementById('pem-btn-all');
+  const btnSel  = document.getElementById('pem-btn-sel');
+  const toolbar = document.getElementById('pem-toolbar');
+  const list    = document.getElementById('pem-list');
+  const summary = document.getElementById('pem-all-summary');
+
+  if (mode === 'all') {
+    btnAll.className = 'btn btn-primary'; btnSel.className = 'btn btn-outline';
+    toolbar.hidden = true; list.hidden = true; summary.style.display = 'flex';
+    _pemSelected = new Set(fiches.map(f => f.id));
+    document.getElementById('pem-all-count').textContent = `${fiches.length} fiche${fiches.length > 1 ? 's' : ''}`;
+  } else {
+    btnAll.className = 'btn btn-outline'; btnSel.className = 'btn btn-primary';
+    toolbar.hidden = false; list.hidden = false; summary.style.display = 'none';
+    document.getElementById('pem-search').value = '';
+    document.getElementById('pem-cat').value = '';
+    renderPdfExportList();
+  }
+  updatePemFooter();
+}
+
+function renderPdfExportList() {
+  const q   = (document.getElementById('pem-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('pem-cat')?.value || '';
+  const filtered = fiches.filter(f =>
+    (!q   || f.nom.toLowerCase().includes(q)) &&
+    (!cat || f.categorie === cat)
+  );
+  const listEl = document.getElementById('pem-list');
+  if (!filtered.length) {
+    listEl.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-3);font-size:13px">Aucune fiche trouvée</div>`;
+    updatePemFooter(); return;
+  }
+  listEl.innerHTML = filtered.map(f => {
+    const checked = _pemSelected.has(f.id);
+    const prix = (f.cout && f.coefficient) ? Math.round(parseFloat(f.cout) * parseFloat(f.coefficient)) : null;
+    const col  = getCatColor(f.categorie);
+    return `<label style="display:flex;align-items:center;gap:12px;padding:9px 20px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:background .12s"
+                   onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''" >
+      <input type="checkbox" ${checked ? 'checked' : ''} onchange="pemToggle('${f.id}',this.checked)"
+             style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0">
+      <span style="flex:1;min-width:0">
+        <span style="display:block;font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(f.nom)}</span>
+        <span style="font-size:11px;color:${col};font-weight:500">${esc(getCatLabel(f.categorie))}</span>
+      </span>
+      ${prix ? `<span style="font-size:12px;color:var(--text-2);flex-shrink:0">${prix.toLocaleString('fr-FR')} Ar</span>` : ''}
+    </label>`;
+  }).join('');
+  updatePemFooter();
+}
+
+function pemToggle(id, checked) {
+  if (checked) _pemSelected.add(id); else _pemSelected.delete(id);
+  updatePemFooter();
+}
+
+function pdfExportToggleAll(check) {
+  const q   = (document.getElementById('pem-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('pem-cat')?.value || '';
+  fiches.filter(f =>
+    (!q   || f.nom.toLowerCase().includes(q)) &&
+    (!cat || f.categorie === cat)
+  ).forEach(f => check ? _pemSelected.add(f.id) : _pemSelected.delete(f.id));
+  renderPdfExportList();
+}
+
+function updatePemFooter() {
+  const n   = _pemSelected.size;
+  const btn = document.getElementById('pem-export-btn');
+  document.getElementById('pem-count-badge').textContent =
+    _pemMode === 'all' ? `${fiches.length} fiche${fiches.length > 1 ? 's' : ''} — 1 fichier PDF`
+                       : `${n} fiche${n > 1 ? 's' : ''} sélectionnée${n > 1 ? 's' : ''}`;
+  if (btn) { btn.disabled = n === 0; btn.textContent = n ? `Exporter (${n}) →` : 'Aucune sélection'; }
+}
+
+async function runPdfExport() {
+  const toExport = fiches.filter(f => _pemSelected.has(f.id));
+  if (!toExport.length) return;
+  closePdfExportModal();
+
+  const brand    = localStorage.getItem('brand_name') || 'Fiches';
+  const filename = `${brand.toLowerCase().replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.pdf`;
+  const { jsPDF } = window.jspdf;
+  const pdf  = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const A4_W = 210, A4_H = 297;
+
+  showToast(`Export PDF : 0 / ${toExport.length}…`);
+
+  for (let i = 0; i < toExport.length; i++) {
+    const f    = toExport[i];
+    const host = document.createElement('div');
+    host.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:24px 28px';
+    host.appendChild(buildPDFEl(f));
+    document.body.appendChild(host);
+    try {
+      const canvas = await html2canvas(host, {
+        scale:1.5, useCORS:true, allowTaint:true, logging:false, backgroundColor:'#ffffff',
       });
-    }, i * 300);
-  });
+      const imgH = Math.min((canvas.height / canvas.width) * A4_W, A4_H);
+      if (i > 0) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.90), 'JPEG', 0, 0, A4_W, imgH);
+    } catch(err) { console.error('Erreur PDF fiche :', f.nom, err); }
+    finally { document.body.removeChild(host); }
+    if ((i + 1) % 5 === 0 || i === toExport.length - 1)
+      showToast(`Export PDF : ${i + 1} / ${toExport.length}…`);
+  }
+
+  pdf.save(filename);
+  showToast(`Export PDF (${toExport.length} fiche${toExport.length > 1 ? 's' : ''}) téléchargé ✓`);
 }
 
 // ── SIDEBAR CATÉGORIES ────────────────────────────────────────────────────────
@@ -1781,6 +2481,7 @@ async function openIngCatalogueModal() {
   document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
   document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
   await renderIngCatalogueList();
+  switchIngTab('catalogue');
   document.getElementById('ing-catalogue-modal-overlay').hidden = false;
 
   // Délégation d'événements sur la liste
@@ -1808,6 +2509,19 @@ async function openIngCatalogueModal() {
 
 function closeIngCatalogueModal() {
   document.getElementById('ing-catalogue-modal-overlay').hidden = true;
+}
+
+function switchIngTab(tab) {
+  const isCat = tab === 'catalogue';
+  document.getElementById('ing-view-catalogue').hidden = !isCat;
+  document.getElementById('ing-view-form').hidden      =  isCat;
+  const catBtn  = document.getElementById('ing-tab-btn-catalogue');
+  const formBtn = document.getElementById('ing-tab-btn-form');
+  catBtn.style.borderBottomColor  = isCat ? 'var(--accent)' : 'transparent';
+  catBtn.style.color              = isCat ? 'var(--accent)' : 'var(--text-3)';
+  formBtn.style.borderBottomColor = isCat ? 'transparent' : 'var(--accent)';
+  formBtn.style.color             = isCat ? 'var(--text-3)' : 'var(--accent)';
+  if (!isCat) setTimeout(() => document.getElementById('ing-cat-nom').focus(), 50);
 }
 
 async function renderIngCatalogueList() {
@@ -1844,6 +2558,7 @@ async function renderIngCatalogueList() {
 function filterIngCatalogue() {
   const q = (document.getElementById('ing-cat-search')?.value || '').toLowerCase();
   const list = document.getElementById('ing-catalogue-list');
+  if (!list) return;
 
   // Fusionner : d'abord les entrées manuelles (éditables), puis les noms de fiches non encore dans catalogue
   const manuelNoms = new Set(ingCatalogueData.map(e => e.nom));
@@ -1894,6 +2609,8 @@ function resetIngCatForm() {
   document.getElementById('ing-cat-prix').value  = '';
   document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
   document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+  document.getElementById('ing-tab-btn-form').textContent   = '＋ Nouvel ingrédient';
+  switchIngTab('catalogue');
 }
 
 function prefillIngCat(nom) {
@@ -1902,8 +2619,11 @@ function prefillIngCat(nom) {
   document.getElementById('ing-cat-prix').value  = '';
   document.getElementById('ing-cat-form-label').textContent = 'Ajouter au catalogue';
   document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+  document.getElementById('ing-tab-btn-form').textContent   = '＋ Nouvel ingrédient';
+  const _ci = document.getElementById('ing-form-cascade-info');
+  if (_ci) _ci.style.display = 'none';
   editingIngCatId = null;
-  document.getElementById('ing-cat-unite').focus();
+  switchIngTab('form');
 }
 
 let editingIngFicheNom = null;
@@ -1916,7 +2636,10 @@ function startEditIngFiche(nom, unite, prix) {
   document.getElementById('ing-cat-prix').value  = prix  || '';
   document.getElementById('ing-cat-form-label').textContent = 'Modifier l\'ingrédient';
   document.getElementById('ing-cat-save-btn').textContent   = 'Enregistrer';
-  document.getElementById('ing-cat-nom').focus();
+  document.getElementById('ing-tab-btn-form').textContent   = '✎ Modifier';
+  const _ci1 = document.getElementById('ing-form-cascade-info');
+  if (_ci1) _ci1.style.display = 'flex';
+  switchIngTab('form');
 }
 
 async function deleteIngFiche(nom) {
@@ -1936,48 +2659,72 @@ function startEditIngCat(id, nom, unite, prix) {
   document.getElementById('ing-cat-prix').value  = prix  || '';
   document.getElementById('ing-cat-form-label').textContent = "Modifier l'ingrédient";
   document.getElementById('ing-cat-save-btn').textContent   = 'Enregistrer';
-  document.getElementById('ing-cat-nom').focus();
+  document.getElementById('ing-tab-btn-form').textContent   = '✎ Modifier';
+  const _ci2 = document.getElementById('ing-form-cascade-info');
+  if (_ci2) _ci2.style.display = 'flex';
+  switchIngTab('form');
 }
 
 async function saveIngCatalogue() {
   const nom   = document.getElementById('ing-cat-nom').value.trim();
   const unite = document.getElementById('ing-cat-unite').value.trim();
   const prix  = parseFloat(document.getElementById('ing-cat-prix').value) || null;
-  if (!nom) { alert('Le nom est obligatoire.'); return; }
-  try {
-    if (editingIngFicheNom) {
-      // Renommer dans toutes les fiches
-      if (nom !== editingIngFicheNom) {
-        await api.put('/api/ingredients/fiche/renommer', {ancien: editingIngFicheNom, nouveau: nom});
-        fiches = await api.get('/api/fiches');
-        renderListe();
-      }
-      // Si unité ou prix renseignés → ajouter/mettre à jour dans le catalogue
-      if (unite || prix) {
-        const existing = ingCatalogueData.find(e => e.nom === nom || e.nom === editingIngFicheNom);
-        if (existing) {
-          await api.put('/api/ingredients/catalogue/manuel/' + existing.id, {nom, unite: unite||null, prix});
-        } else {
-          try { await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix}); } catch(e) {}
+  if (!nom) { showToast('Le nom est obligatoire.'); return; }
+
+  const doSave = async () => {
+    try {
+      let result;
+      if (editingIngFicheNom) {
+        if (nom !== editingIngFicheNom) {
+          await api.put('/api/ingredients/fiche/renommer', {ancien: editingIngFicheNom, nouveau: nom});
+          fiches = await api.get('/api/fiches'); renderListe();
         }
+        if (unite || prix) {
+          const existing = ingCatalogueData.find(e => e.nom === nom || e.nom === editingIngFicheNom);
+          if (existing)
+            result = await api.put('/api/ingredients/catalogue/manuel/' + existing.id, {nom, unite: unite||null, prix});
+          else
+            try { result = await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix}); } catch(_) {}
+        }
+        editingIngFicheNom = null;
+      } else if (editingIngCatId) {
+        result = await api.put('/api/ingredients/catalogue/manuel/' + editingIngCatId, {nom, unite: unite||null, prix});
+      } else {
+        result = await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix});
       }
-      editingIngFicheNom = null;
-    } else if (editingIngCatId) {
-      await api.put('/api/ingredients/catalogue/manuel/' + editingIngCatId, {nom, unite: unite||null, prix});
-    } else {
-      await api.post('/api/ingredients/catalogue/manuel', {nom, unite: unite||null, prix});
+      editingIngCatId = null;
+      document.getElementById('ing-cat-nom').value   = '';
+      document.getElementById('ing-cat-unite').value = '';
+      document.getElementById('ing-cat-prix').value  = '';
+      document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
+      document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
+      document.getElementById('ing-tab-btn-form').textContent   = '＋ Nouvel ingrédient';
+      // Rafraîchir ingredientsCatalogue en priorité (auto-fill fiches)
+      ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+      // Mettre à jour l'UI du catalogue (peut échouer si le modal est fermé)
+      try { await renderIngCatalogueList(); } catch(_) {}
+      switchIngTab('catalogue');
+      const nb = result?.fiches_recalculees || 0;
+      if (nb > 0) {
+        fiches = await api.get('/api/fiches'); renderListe();
+        showToast(`✓ Catalogue mis à jour — ${nb} fiche${nb>1?'s':''} recalculée${nb>1?'s':''} automatiquement`, 4000);
+      } else {
+        showToast('Ingrédient enregistré ✓');
+      }
+    } catch(err) {
+      showToast(err.message || 'Erreur lors de l\'enregistrement.');
     }
-    editingIngCatId = null;
-    document.getElementById('ing-cat-nom').value   = '';
-    document.getElementById('ing-cat-unite').value = '';
-    document.getElementById('ing-cat-prix').value  = '';
-    document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
-    document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
-    await renderIngCatalogueList();
-    ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
-  } catch(err) {
-    alert(err.message || 'Erreur lors de l\'enregistrement.');
+  };
+
+  // Aperçu d'impact avant modification d'un ingrédient existant
+  if (prix !== null && (editingIngCatId || editingIngFicheNom)) {
+    try {
+      const nomRef = editingIngFicheNom || nom;
+      const preview = await api.get(`/api/fournisseurs/preview?nom=${encodeURIComponent(nomRef)}&prix=${prix}`);
+      if (preview.nb > 0) { showImpactModal(nom, prix, preview, doSave); return; }
+    } catch(_) {}
   }
+  await doSave();
 }
 
 async function deleteIngCat(id) {
@@ -1985,6 +2732,683 @@ async function deleteIngCat(id) {
   await api.delete('/api/ingredients/catalogue/manuel/' + id);
   await renderIngCatalogueList();
   ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+}
+
+// ── SEUILS DE RENTABILITÉ ─────────────────────────────────────────────────────
+function openSeuilsModal() {
+  // Maintenir les valeurs dans les champs cachés
+  const _cm = document.getElementById('s-coeff-min');     if (_cm) _cm.value = COEFF_MIN;
+  const _cn = document.getElementById('s-coeff-norm');    if (_cn) _cn.value = COEFF_NORM;
+  const _cd = document.getElementById('s-coeff-default'); if (_cd) _cd.value = COEFF_DEFAULT;
+
+  // Remplir le filtre catégories
+  const catSel = document.getElementById('sr-cat-filter');
+  if (catSel) {
+    const cats = [...new Set(fiches.map(f => f.categorie).filter(Boolean))].sort();
+    catSel.innerHTML = '<option value="">Toutes les catégories</option>' +
+      cats.map(c => `<option value="${esc(c)}">${esc(c.replace(/_/g,' ').toUpperCase())}</option>`).join('');
+  }
+
+  // Restaurer sliders + inputs depuis localStorage
+  const saved = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
+  ['F','p','v'].forEach(k => {
+    const range = document.getElementById('sr-' + k + '-range');
+    const input = document.getElementById('sr-' + k + '-input');
+    if (range && saved[k]) {
+      if (saved[k] > parseFloat(range.max)) range.max = Math.ceil(saved[k] * 1.5 / 10000) * 10000;
+      range.value = saved[k];
+      if (input) input.value = saved[k];
+    }
+  });
+
+  const infoEl = document.getElementById('sr-import-info');
+  if (infoEl) infoEl.textContent = saved.importInfo || '';
+
+  updateSeuilsPreview();
+  updateBreakevenChart();
+  document.getElementById('seuils-modal-overlay').hidden = false;
+}
+
+function importFromFiches() {
+  const catFilter = document.getElementById('sr-cat-filter')?.value || '';
+
+  const valid = fiches
+    .filter(f => !catFilter || f.categorie === catFilter)
+    .map(f => {
+      const cout = (f.ingredients || []).reduce((s, ing) => s + (parseFloat(ing.prix) || 0), 0);
+      const pv   = Math.round(cout * (parseFloat(f.coefficient) || 2));
+      return { nom: f.nom, cout, pv };
+    })
+    .filter(f => f.cout > 0 && f.pv > 0);
+
+  if (!valid.length) {
+    showToast('Aucune recette avec données disponibles' + (catFilter ? ' dans cette catégorie' : ''));
+    return;
+  }
+
+  const avgV = Math.round(valid.reduce((s, f) => s + f.cout, 0) / valid.length);
+  const avgP = Math.round(valid.reduce((s, f) => s + f.pv,  0) / valid.length);
+  const maxV = Math.max(...valid.map(f => f.cout));
+  const maxP = Math.max(...valid.map(f => f.pv));
+
+  // Ajuster les max des sliders selon les données réelles
+  const vRange = document.getElementById('sr-v-range');
+  const pRange = document.getElementById('sr-p-range');
+  if (vRange) { vRange.max = Math.ceil(maxV * 1.5 / 10000) * 10000; vRange.value = avgV; }
+  if (pRange) { pRange.max = Math.ceil(maxP * 1.5 / 10000) * 10000; pRange.value = avgP; }
+  const vInput = document.getElementById('sr-v-input'); if (vInput) vInput.value = avgV;
+  const pInput = document.getElementById('sr-p-input'); if (pInput) pInput.value = avgP;
+
+  syncBESlider('v');
+  syncBESlider('p');
+
+  // Afficher info import
+  const label = catFilter ? catFilter.replace(/_/g,' ').toUpperCase() : 'toutes catégories';
+  const info  = `🔗 ${valid.length} recette${valid.length>1?'s':''} (${label}) · v moy = ${avgV.toLocaleString('fr-FR')} Ar · p moy = ${avgP.toLocaleString('fr-FR')} Ar`;
+  const infoEl = document.getElementById('sr-import-info');
+  if (infoEl) infoEl.textContent = info;
+
+  // Sauvegarder l'info import dans localStorage
+  const saved = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
+  saved.importInfo = info;
+  localStorage.setItem('sr_breakeven', JSON.stringify(saved));
+
+  showToast(`✓ p et v importés — ${valid.length} recette${valid.length>1?'s':''}`);
+}
+function closeSeuilsModal() {
+  document.getElementById('seuils-modal-overlay').hidden = true;
+}
+function updateSeuilsPreview() {
+  const min  = parseFloat(document.getElementById('s-coeff-min').value) || 1.5;
+  const norm = parseFloat(document.getElementById('s-coeff-norm').value) || 2.0;
+  const prev = document.getElementById('seuils-preview');
+  prev.innerHTML =
+    `<div style="margin-bottom:5px;font-weight:600;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em">Aperçu des alertes</div>` +
+    `<div style="color:#C0392B;font-size:12px;margin-bottom:2px">⛔ Coeff &lt; <strong>${min}</strong> → Alerte danger</div>` +
+    `<div style="color:#7D5A00;font-size:12px;margin-bottom:2px">⚠️ Coeff entre <strong>${min}</strong> et <strong>${norm}</strong> → Attention</div>` +
+    `<div style="color:#1A7A3C;font-size:12px">✅ Coeff ≥ <strong>${norm}</strong> → Rentabilité OK</div>`;
+}
+
+function syncBESlider(key, fromInput) {
+  const range = document.getElementById('sr-' + key + '-range');
+  const input = document.getElementById('sr-' + key + '-input');
+  if (!range) return;
+  if (fromInput && input) {
+    const val = parseFloat(input.value) || 0;
+    if (val > parseFloat(range.max)) range.max = Math.ceil(val * 1.5 / 10000) * 10000;
+    range.value = val;
+  } else {
+    const val = parseFloat(range.value) || 0;
+    if (input && document.activeElement !== input) input.value = val > 0 ? val : '';
+  }
+  updateBreakevenChart();
+}
+
+function updateBreakevenChart() {
+  const F = parseFloat(document.getElementById('sr-F-range')?.value) || 0;
+  const p = parseFloat(document.getElementById('sr-p-range')?.value) || 0;
+  const v = parseFloat(document.getElementById('sr-v-range')?.value) || 0;
+
+  // Mettre à jour les labels
+  const setLbl = (k, val) => { const el = document.getElementById('sr-'+k+'-lbl'); if (el) el.textContent = val > 0 ? Number(val).toLocaleString('fr-FR') : '0'; };
+  setLbl('F', F); setLbl('p', p); setLbl('v', v);
+
+  const _srPrev = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
+  localStorage.setItem('sr_breakeven', JSON.stringify({ ..._srPrev, F, p, v }));
+
+  const marge = p - v;
+  const qStar = marge > 0 && F > 0 ? F / marge : 0;
+
+  // Formule développée
+  const fmtEl = document.getElementById('sr-formula-values');
+  const qEl   = document.getElementById('sr-q-star');
+  // Mise à jour des cartes métriques
+  const fmt = n => n > 0 ? Number(Math.round(n)).toLocaleString('fr-FR') + ' Ar' : '—';
+  const margeEl = document.getElementById('sr-marge');
+  const qStarCard = document.getElementById('sr-q-star-card');
+  const caStarEl  = document.getElementById('sr-ca-star');
+  if (margeEl)   { margeEl.textContent   = marge > 0 ? fmt(marge) : '—'; margeEl.style.color = marge > 0 ? '#27AE60' : 'var(--red)'; }
+  if (qStarCard) { qStarCard.textContent = qStar > 0 ? Math.ceil(qStar).toLocaleString('fr-FR') + ' unités' : '—'; }
+  if (caStarEl)  { caStarEl.textContent  = qStar > 0 ? fmt(Math.ceil(qStar) * p) : '—'; }
+
+  if (fmtEl && qEl) {
+    if (F > 0 && p > 0 && marge > 0) {
+      fmtEl.innerHTML = `<span style="color:var(--text-3);margin:0 4px">=</span>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;font-weight:600;line-height:1.3;color:var(--text)">
+          <span style="color:var(--text)">${Number(F).toLocaleString('fr-FR')}</span>
+          <span style="border-top:1.5px solid var(--text-2);padding-top:3px;min-width:40px;text-align:center;font-size:13px">
+            <span style="color:#2980B9">${Number(p).toLocaleString('fr-FR')}</span><span style="color:var(--text-3)"> − </span><span style="color:#27AE60">${Number(v).toLocaleString('fr-FR')}</span>
+          </span>
+        </span>`;
+      qEl.textContent = Math.ceil(qStar).toLocaleString('fr-FR');
+      qEl.style.color = '#27AE60';
+    } else {
+      fmtEl.innerHTML = '';
+      qEl.textContent = '—';
+      qEl.style.color = 'var(--text-3)';
+    }
+  }
+
+  const container = document.getElementById('breakeven-chart');
+  if (!container) return;
+
+  if (p <= 0 || v >= p || F <= 0) {
+    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--text-3);font-size:13px;flex-direction:column;gap:8px">
+      <span style="font-size:28px">📈</span>
+      <span style="font-weight:500">${p > 0 && v >= p ? '⛔ p doit être supérieur à v' : 'Déplacez les curseurs pour afficher le graphique'}</span>
+      ${!(p > 0 && v >= p) ? '<span style="font-size:11px">Ou cliquez sur <strong>🔗 Importer p et v</strong></span>' : ''}
+    </div>`;
+    _beChartState = null;
+    return;
+  }
+
+  const W = 680, H = 270;
+  const pad = { top: 28, right: 24, bottom: 48, left: 70 };
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+
+  const maxQ = Math.ceil(qStar * 1.8 / 5) * 5 || 100;
+  const maxY  = Math.max(p * maxQ, F + v * maxQ) * 1.15;
+
+  const toX = q => pad.left + (q / maxQ) * cW;
+  const toY = y => pad.top + cH - (y / maxY) * cH;
+  const fmtY = y => {
+    if (y >= 1e6) return (y/1e6).toFixed(1).replace('.',',')+' M';
+    if (y >= 1e3) return Math.round(y/1e3)+'k';
+    return Math.round(y).toString();
+  };
+
+  _beChartState = { F, p, v, maxQ, maxY, pad, W, H };
+
+  const bx = toX(qStar), by = toY(qStar * p);
+  const x0 = toX(0), xM = toX(maxQ);
+  const yCA   = toY(p * maxQ);
+  const yCost = toY(F + v * maxQ);
+  const yF    = toY(F);
+  const yBot  = pad.top + cH;
+
+  // ── Defs ──
+  const defs = `<defs>
+    <linearGradient id="grad-ca" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2980B9" stop-opacity=".22"/>
+      <stop offset="100%" stop-color="#2980B9" stop-opacity=".02"/>
+    </linearGradient>
+    <linearGradient id="grad-cost" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#27AE60" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#27AE60" stop-opacity=".02"/>
+    </linearGradient>
+    <linearGradient id="grad-perte" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E74C3C" stop-opacity=".13"/>
+      <stop offset="100%" stop-color="#E74C3C" stop-opacity=".04"/>
+    </linearGradient>
+    <linearGradient id="grad-benef" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#27AE60" stop-opacity=".04"/>
+      <stop offset="100%" stop-color="#27AE60" stop-opacity=".16"/>
+    </linearGradient>
+    <filter id="glow-ca">
+      <feGaussianBlur stdDeviation="1.8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glow-green">
+      <feGaussianBlur stdDeviation="1.8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  // ── Grille ──
+  let grid = '';
+  const nY = 5;
+  for (let i = 0; i <= nY; i++) {
+    const yv = (maxY / nY) * i, gy = toY(yv);
+    const isZero = i === 0;
+    grid += `<line x1="${pad.left}" y1="${gy}" x2="${xM}" y2="${gy}" stroke="${isZero?'#ccc':'#e8e8e8'}" stroke-width="${isZero?1.2:.7}"/>`;
+    grid += `<text x="${pad.left - 7}" y="${gy + 3.5}" text-anchor="end" font-size="9.5" fill="#bbb" font-family="Arial">${fmtY(yv)}</text>`;
+  }
+  const nX = 6;
+  for (let i = 0; i <= nX; i++) {
+    const qv = (maxQ / nX) * i, gx = toX(qv);
+    if (i > 0) grid += `<line x1="${gx}" y1="${pad.top}" x2="${gx}" y2="${yBot}" stroke="#e8e8e8" stroke-width=".7"/>`;
+    grid += `<text x="${gx}" y="${yBot + 15}" text-anchor="middle" font-size="9.5" fill="#bbb" font-family="Arial">${Math.round(qv)}</text>`;
+  }
+  // Axes labels
+  grid += `<text x="${pad.left - 40}" y="${pad.top + cH/2}" text-anchor="middle" font-size="10" fill="#aaa" font-family="Arial" transform="rotate(-90,${pad.left-40},${pad.top+cH/2})">Montant (Ar)</text>`;
+  grid += `<text x="${pad.left + cW/2}" y="${H - 6}" text-anchor="middle" font-size="10" font-weight="600" fill="#aaa" font-family="Arial">Quantité vendue</text>`;
+
+  // ── Zones colorées ──
+  let zones = '';
+  if (qStar > 0 && qStar < maxQ) {
+    // Zone perte (triangulaire)
+    zones += `<polygon points="${x0},${yBot} ${x0},${yF} ${bx},${by} ${bx},${yBot}" fill="url(#grad-perte)"/>`;
+    // Zone bénéfice
+    zones += `<polygon points="${bx},${yBot} ${bx},${by} ${xM},${yCA} ${xM},${yBot}" fill="url(#grad-benef)"/>`;
+  }
+
+  // ── Aires sous les courbes ──
+  const areaCA   = `<polygon points="${x0},${yBot} ${x0},${toY(0)} ${xM},${yCA} ${xM},${yBot}" fill="url(#grad-ca)"/>`;
+  const areaCost = `<polygon points="${x0},${yBot} ${x0},${yF} ${xM},${yCost} ${xM},${yBot}" fill="url(#grad-cost)"/>`;
+
+  // ── Ligne charges fixes F ──
+  const fLine = `
+    <line x1="${x0}" y1="${yF}" x2="${xM}" y2="${yF}" stroke="#B0B0B0" stroke-width="1.2" stroke-dasharray="6,4" opacity=".7"/>
+    <rect x="${x0+6}" y="${yF-15}" width="${Math.min(130, cW-10)}" height="13" rx="3" fill="#F5F5F5" fill-opacity=".92"/>
+    <text x="${x0+10}" y="${yF-5}" font-size="8.5" fill="#999" font-family="Arial">Charges fixes F = ${fmtY(F)} Ar</text>
+  `;
+
+  // ── Courbes principales ──
+  const revPath  = `M ${x0} ${toY(0)} L ${xM} ${yCA}`;
+  const costPath = `M ${x0} ${yF}      L ${xM} ${yCost}`;
+
+  const lq = maxQ * 0.80;
+  const lineLabels = `
+    <text x="${toX(lq)}" y="${toY(p*lq) - 9}" text-anchor="middle" font-size="10" font-weight="800" fill="#1a6fa8" font-family="Arial">CA</text>
+    <text x="${toX(lq)}" y="${toY(F+v*lq) + 15}" text-anchor="middle" font-size="10" font-weight="800" fill="#1a7a40" font-family="Arial">Coût total</text>
+  `;
+
+  // ── Labels zones Perte / Bénéfice ──
+  let zoneLabels = '';
+  if (qStar > 0 && qStar < maxQ) {
+    const lossX  = toX(qStar * 0.38);
+    const lossY  = toY((F + v*qStar*0.38 + p*qStar*0.38) / 2);
+    const benefX = toX(qStar + (maxQ - qStar) * 0.52);
+    const benefY = toY((F + v*(qStar+(maxQ-qStar)*0.52) + p*(qStar+(maxQ-qStar)*0.52)) / 2);
+    zoneLabels = `
+      <rect x="${lossX-26}" y="${lossY-11}" width="52" height="16" rx="8" fill="#E74C3C" fill-opacity=".15"/>
+      <text x="${lossX}" y="${lossY+1}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#C0392B" font-family="Arial">⬇ Perte</text>
+      <rect x="${benefX-36}" y="${benefY-11}" width="72" height="16" rx="8" fill="#27AE60" fill-opacity=".15"/>
+      <text x="${benefX}" y="${benefY+1}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#1a7a40" font-family="Arial">⬆ Bénéfice</text>
+    `;
+  }
+
+  // ── Point mort Q* ──
+  let beAnnotation = '';
+  if (qStar > 0 && qStar < maxQ) {
+    const aw = 90, ah = 28;
+    const ax = Math.max(pad.left + 4, Math.min(xM - aw - 4, bx - aw/2));
+    const ay = by < pad.top + ah + 20 ? by + 14 : by - ah - 12;
+    beAnnotation = `
+      <line x1="${bx}" y1="${pad.top}" x2="${bx}" y2="${yBot}" stroke="#5B8FD4" stroke-width="1.4" stroke-dasharray="6,4" opacity=".6"/>
+      <line x1="${x0}" y1="${by}" x2="${bx}" y2="${by}" stroke="#5B8FD4" stroke-width="1.4" stroke-dasharray="6,4" opacity=".6"/>
+      <circle cx="${bx}" cy="${by}" r="7" fill="white" stroke="#2980B9" stroke-width="2.5"/>
+      <circle cx="${bx}" cy="${by}" r="3.5" fill="#2980B9"/>
+      <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" rx="14" fill="#2980B9"/>
+      <text x="${ax+aw/2}" y="${ay+10.5}" text-anchor="middle" font-size="8" font-weight="700" fill="rgba(255,255,255,.75)" font-family="Arial">POINT MORT</text>
+      <text x="${ax+aw/2}" y="${ay+22}" text-anchor="middle" font-size="11" font-weight="800" fill="white" font-family="Arial">Q* = ${Math.ceil(qStar)}</text>
+    `;
+  }
+
+  // ── Légende ──
+  const lgX = pad.left + cW - 4, lgY = pad.top + 6;
+  const legend = `
+    <rect x="${lgX-144}" y="${lgY}" width="144" height="46" rx="7" fill="white" fill-opacity=".85" stroke="#e0e0e0" stroke-width="1"/>
+    <line x1="${lgX-134}" y1="${lgY+15}" x2="${lgX-116}" y2="${lgY+15}" stroke="#2980B9" stroke-width="2.5"/>
+    <circle cx="${lgX-125}" cy="${lgY+15}" r="2.5" fill="#2980B9"/>
+    <text x="${lgX-111}" y="${lgY+19}" font-size="9.5" fill="#2980B9" font-weight="700" font-family="Arial">Chiffre d'affaires</text>
+    <line x1="${lgX-134}" y1="${lgY+33}" x2="${lgX-116}" y2="${lgY+33}" stroke="#27AE60" stroke-width="2.5"/>
+    <circle cx="${lgX-125}" cy="${lgY+33}" r="2.5" fill="#27AE60"/>
+    <text x="${lgX-111}" y="${lgY+37}" font-size="9.5" fill="#27AE60" font-weight="700" font-family="Arial">Coût total</text>
+  `;
+
+  container.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;cursor:crosshair" onmousemove="beChartMouseMove(event)" onmouseleave="beChartMouseLeave(event)">
+    ${defs}
+    ${grid}
+    ${zones}
+    ${areaCA}
+    ${areaCost}
+    ${fLine}
+    <line x1="${x0}" y1="${pad.top}" x2="${x0}" y2="${yBot}" stroke="#CCC" stroke-width="1.5"/>
+    <line x1="${x0}" y1="${yBot}" x2="${xM}" y2="${yBot}" stroke="#CCC" stroke-width="1.5"/>
+    <path d="${costPath}" stroke="#27AE60" stroke-width="2.8" fill="none" stroke-linejoin="round" filter="url(#glow-green)"/>
+    <path d="${revPath}"  stroke="#2980B9" stroke-width="2.8" fill="none" stroke-linejoin="round" filter="url(#glow-ca)"/>
+    ${zoneLabels}
+    ${lineLabels}
+    ${beAnnotation}
+    ${legend}
+    <g id="be-hover" display="none"></g>
+  </svg>`;
+}
+
+let _beChartState = null;
+
+function beChartMouseMove(evt) {
+  if (!_beChartState) return;
+  const { F, p, v, maxQ, maxY, pad, W, H } = _beChartState;
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+  const svg = evt.currentTarget;
+  const svgRect = svg.getBoundingClientRect();
+  const mouseX = ((evt.clientX - svgRect.left) / svgRect.width) * W;
+  const hg = svg.querySelector('#be-hover');
+  if (!hg) return;
+  if (mouseX < pad.left || mouseX > pad.left + cW) { hg.setAttribute('display','none'); return; }
+  hg.setAttribute('display','block');
+  const q   = Math.max(0, ((mouseX - pad.left) / cW) * maxQ);
+  const ca  = p * q;
+  const cout = F + v * q;
+  const profit = ca - cout;
+  const toY = y => pad.top + cH - (y / maxY) * cH;
+  const fmt = y => {
+    const n = Math.abs(y), sign = y < 0 ? '−' : '';
+    return sign + (n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? Math.round(n/1e3)+'k' : Math.round(n)) + ' Ar';
+  };
+  const hx = mouseX;
+  const ttW = 138, ttH = 72;
+  const ttx = hx > pad.left + cW * 0.6 ? hx - ttW - 10 : hx + 10;
+  const tty = pad.top + 4;
+  hg.innerHTML = `
+    <line x1="${hx}" y1="${pad.top}" x2="${hx}" y2="${pad.top+cH}" stroke="#666" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>
+    <circle cx="${hx}" cy="${toY(ca)}"   r="3.5" fill="#2980B9" stroke="white" stroke-width="1.5"/>
+    <circle cx="${hx}" cy="${toY(cout)}" r="3.5" fill="#27AE60" stroke="white" stroke-width="1.5"/>
+    <rect x="${ttx}" y="${tty}" width="${ttW}" height="${ttH}" rx="6" fill="white" stroke="#ddd" stroke-width="1" filter="drop-shadow(0 2px 6px rgba(0,0,0,.10))"/>
+    <text x="${ttx+9}" y="${tty+15}" font-size="9.5" font-weight="700" fill="#333">Qté : ${Math.round(q)}</text>
+    <text x="${ttx+9}" y="${tty+30}" font-size="9" fill="#2980B9">CA : ${fmt(ca)}</text>
+    <text x="${ttx+9}" y="${tty+44}" font-size="9" fill="#27AE60">Coût : ${fmt(cout)}</text>
+    <text x="${ttx+9}" y="${tty+60}" font-size="9.5" font-weight="700" fill="${profit >= 0 ? '#1a7a40' : '#C0392B'}">${profit >= 0 ? '▲ Bénéf.' : '▼ Perte'} : ${fmt(profit)}</text>
+  `;
+}
+
+function beChartMouseLeave(evt) {
+  const hg = evt.currentTarget.querySelector('#be-hover');
+  if (hg) hg.setAttribute('display','none');
+}
+async function saveSeuilsSettings() {
+  const min  = parseFloat(document.getElementById('s-coeff-min').value);
+  const norm = parseFloat(document.getElementById('s-coeff-norm').value);
+  const def  = parseFloat(document.getElementById('s-coeff-default').value);
+  if (isNaN(min) || isNaN(norm) || isNaN(def)) { showToast('Valeurs invalides'); return; }
+  if (min >= norm) { showToast('Le minimum doit être inférieur à la norme'); return; }
+  try {
+    await fetch('/api/settings', {
+      method: 'PUT',
+      headers: { ...bearerHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coeff_min: min, coeff_norm: norm, coeff_default: def })
+    });
+    COEFF_MIN     = min;
+    COEFF_NORM    = norm;
+    COEFF_DEFAULT = def;
+    closeSeuilsModal();
+    showToast(`Seuils enregistrés : min ×${min} | norme ×${norm} ✓`);
+    updatePrixVente();
+  } catch(e) { showToast('Erreur lors de la sauvegarde'); }
+}
+
+// ── APERÇU D'IMPACT PRIX ─────────────────────────────────────────────────────
+function showImpactModal(nom, prix, preview, onConfirm) {
+  document.getElementById('fourn-impact-subtitle').textContent =
+    `Modification de "${nom}" → ${prix.toLocaleString('fr-FR')} Ar — ${preview.nb} fiche${preview.nb > 1 ? 's' : ''} seront recalculées`;
+  const fmt = v => v != null ? Math.round(v).toLocaleString('fr-FR') + ' Ar' : '—';
+  document.getElementById('fourn-impact-list').innerHTML = `
+    <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;max-height:260px;overflow-y:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:var(--surface-2);color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:.04em">
+          <th style="padding:7px 12px;text-align:left;font-weight:600">Fiche</th>
+          <th style="padding:7px 12px;text-align:right;font-weight:600">Coût recalculé</th>
+        </tr></thead>
+        <tbody>${preview.fiches.map((f,i) => `
+          <tr style="${i%2 ? 'background:var(--surface-2)' : ''}">
+            <td style="padding:7px 12px;font-weight:500">${f.fiche_nom}</td>
+            <td style="padding:7px 12px;text-align:right;font-weight:600;color:var(--accent)">${fmt(f.cout_nouveau)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  document.getElementById('fourn-impact-confirm-btn').onclick = async () => {
+    document.getElementById('fourn-impact-overlay').hidden = true;
+    await onConfirm();
+  };
+  document.getElementById('fourn-impact-overlay').hidden = false;
+}
+
+// ── COMPARATEUR PRIX MULTI-SOURCE ─────────────────────────────────────────────
+async function showIngComparateur(row, nom) {
+  const sibling = row.nextElementSibling;
+  if (sibling && sibling.classList.contains('ing-compare')) sibling.remove();
+  if (!nom) return;
+  try {
+    const data    = await api.get('/api/prix/comparateur?nom=' + encodeURIComponent(nom));
+    const sources = Object.entries(data);
+    if (sources.length < 2) return;
+    const minPrix = Math.min(...sources.map(([, v]) => v.prix));
+    const chips   = sources.map(([src, { prix, unite }]) => {
+      const best = prix === minPrix;
+      return `<span class="compare-chip${best ? ' best' : ''}">
+        <span class="compare-chip-label">${esc(src)}</span>
+        <strong>${prix.toLocaleString('fr-FR')} Ar</strong>${unite ? `<span style="color:var(--text-3);font-size:10px"> /${esc(unite)}</span>` : ''}
+        ${best ? '&nbsp;⭐' : ''}
+      </span>`;
+    }).join('');
+    const div = document.createElement('div');
+    div.className = 'ing-compare';
+    div.innerHTML = `<div class="compare-chips">
+      <span style="font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-right:4px">Comparer :</span>
+      ${chips}
+    </div>`;
+    row.after(div);
+  } catch(e) { /* silencieux */ }
+}
+
+// ── PRIX PLANCHER / PLAFOND ───────────────────────────────────────────────────
+let _plIngData = [];
+let _plFilter  = 'all';
+
+function openPrixLimitesModal() {
+  document.getElementById('pl-ing-search').value = '';
+  _plFilter = 'all';
+  _syncPLTabs();
+  _buildPlIngList();
+  document.getElementById('prix-limites-modal-overlay').hidden = false;
+}
+
+function setPLFilter(f) {
+  _plFilter = f;
+  _syncPLTabs();
+  filterPrixLimitesIng();
+}
+
+function _syncPLTabs() {
+  document.querySelectorAll('#pl-filter-tabs .pl-tab').forEach(btn => {
+    btn.classList.toggle('pl-tab-active', btn.dataset.plf === _plFilter);
+  });
+}
+
+function _buildPlIngList() {
+  _plIngData = fiches
+    .filter(f => f.nom?.trim())
+    .map(f => {
+      const cout = (f.ingredients || []).reduce((s, ing) => s + (parseFloat(ing.prix) || 0), 0);
+      const prix = Math.round(cout * (parseFloat(f.coefficient) || 2));
+      return {
+        id:            f.id,
+        nom:           f.nom.trim(),
+        categorie:     f.categorie || '',
+        prix_vente:    prix,
+        prix_plancher: f.prix_plancher || null,
+        prix_plafond:  f.prix_plafond  || null,
+      };
+    })
+    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  filterPrixLimitesIng();
+  updatePrixLimitesPreview();
+}
+
+function _plStatus(e) {
+  const pv = e.prix_vente, fp = e.prix_plancher || 0, fc = e.prix_plafond || 0;
+  if (fp > 0 && pv > 0 && pv < fp) return 'danger';
+  if (fc > 0 && pv > 0 && pv > fc) return 'warn';
+  if (fp > 0 || fc > 0)            return 'ok';
+  return 'none';
+}
+
+function filterPrixLimitesIng() {
+  const q    = (document.getElementById('pl-ing-search')?.value || '').toLowerCase();
+  const list = document.getElementById('pl-ing-list');
+  if (!list) return;
+
+  let rows = _plIngData.filter(e => !q || e.nom.toLowerCase().includes(q));
+  if (_plFilter === 'alert') rows = rows.filter(e => _plStatus(e) === 'danger' || _plStatus(e) === 'warn');
+  if (_plFilter === 'set')   rows = rows.filter(e => e.prix_plancher > 0 || e.prix_plafond > 0);
+
+  _updatePlIngCount();
+  updatePrixLimitesPreview();
+
+  if (!rows.length) {
+    list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-3)">
+      <div style="font-size:28px;margin-bottom:8px">${_plFilter==='alert'?'✅':_plFilter==='set'?'🎯':'🍽'}</div>
+      <div style="font-size:13px">${_plFilter==='alert'?'Aucune recette en alerte':_plFilter==='set'?'Aucune limite définie pour l\'instant':'Aucune recette trouvée'}</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = rows.map((e, i) => {
+    const status  = _plStatus(e);
+    const pv      = e.prix_vente;
+    const fp      = e.prix_plancher || 0;
+    const fc      = e.prix_plafond  || 0;
+    const plVal   = fp > 0 ? fp : '';
+    const plfVal  = fc > 0 ? fc : '';
+    const idEsc   = String(e.id);
+
+    // Couleur de fond selon statut
+    const rowBg = status === 'danger' ? 'rgba(192,57,43,.05)'
+                : status === 'warn'   ? 'rgba(125,90,0,.04)'
+                : i % 2               ? 'var(--surface-2)'
+                : 'var(--surface)';
+
+    // Badge statut
+    const badgeHtml = status === 'danger'
+      ? `<span class="pl-stat-badge pl-stat-danger">⛔ Sous plancher</span>`
+      : status === 'warn'
+      ? `<span class="pl-stat-badge pl-stat-warn">⚠️ Dépasse plafond</span>`
+      : status === 'ok'
+      ? `<span class="pl-stat-badge pl-stat-ok">✓ Dans les limites</span>`
+      : `<span class="pl-stat-badge pl-stat-none">— Sans limite</span>`;
+
+    // Couleur prix vente
+    const pvColor = status === 'danger' ? 'var(--red)'
+                  : status === 'warn'   ? '#7D5A00'
+                  : status === 'ok'     ? '#1a7a40'
+                  : 'var(--text-2)';
+
+    // Chip catégorie
+    const catLabel = (e.categorie || '').replace(/_/g,' ').toUpperCase();
+    const catChip  = catLabel
+      ? `<span style="font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--surface-2);color:var(--text-3);margin-left:5px;border:1px solid var(--border)">${catLabel}</span>`
+      : '';
+
+    const mkInput = (field, val, color, ph) =>
+      `<input type="number" min="0" step="100"
+         value="${val}" placeholder="${ph}"
+         data-fiche-id="${idEsc}"
+         onchange="saveLimitesFiche('${idEsc}','${field}',this)"
+         style="width:96px;padding:3px 7px;font-size:12px;border:1.5px solid ${val ? color : 'var(--border)'};border-radius:6px;text-align:right;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s"
+         onfocus="this.style.borderColor='${color}'"
+         onblur="this.style.borderColor='${val ? color : 'var(--border)'}'"
+      >`;
+
+    return `<div style="display:grid;grid-template-columns:1fr 110px 105px 105px 130px;align-items:center;gap:0;padding:7px 24px;background:${rowBg};border-bottom:1px solid var(--border-light)">
+      <div style="display:flex;align-items:center;overflow:hidden;gap:4px;min-width:0">
+        <span style="font-weight:600;color:var(--text);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(e.nom)}">${esc(e.nom)}</span>
+        ${catChip}
+      </div>
+      <div style="text-align:right;font-weight:700;color:${pvColor};font-size:12.5px">${pv > 0 ? Number(pv).toLocaleString('fr-FR') + ' Ar' : '<span style="color:var(--text-3)">—</span>'}</div>
+      <div style="text-align:right">${mkInput('plancher', plVal, 'var(--red)', '—')}</div>
+      <div style="text-align:right">${mkInput('plafond', plfVal, '#F0A500', '—')}</div>
+      <div style="text-align:center;overflow:hidden">${badgeHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+async function saveLimitesFiche(ficheId, field, inputEl) {
+  const val   = parseFloat(inputEl.value) || null;
+  const entry = _plIngData.find(e => String(e.id) === String(ficheId));
+  if (!entry) return;
+  const newPlancher = field === 'plancher' ? val : (entry.prix_plancher || null);
+  const newPlafond  = field === 'plafond'  ? val : (entry.prix_plafond  || null);
+  if (newPlancher > 0 && newPlafond > 0 && newPlafond <= newPlancher) {
+    showToast('⚠️ Le plafond doit être supérieur au plancher');
+    inputEl.value = '';
+    return;
+  }
+  try {
+    // Charger la fiche complète pour ne pas écraser les autres champs
+    const fiche = fiches.find(f => f.id === entry.id);
+    if (!fiche) return;
+    const payload = {
+      nom:           fiche.nom,
+      categorie:     fiche.categorie     || null,
+      coefficient:   fiche.coefficient   || 2,
+      nb_personnes:  fiche.nb_personnes  || null,
+      delai:         fiche.delai         || null,
+      allergenes:    fiche.allergenes    || [],
+      ingredients:   fiche.ingredients  || [],
+      prix_plancher: newPlancher,
+      prix_plafond:  newPlafond,
+    };
+    await api.put(`/api/fiches/${ficheId}`, payload);
+    // Mettre à jour l'état local
+    entry.prix_plancher = newPlancher;
+    entry.prix_plafond  = newPlafond;
+    fiche.prix_plancher = newPlancher;
+    fiche.prix_plafond  = newPlafond;
+    const color = field === 'plancher' ? 'var(--red)' : '#7D5A00';
+    inputEl.style.borderColor = val ? color : 'var(--border)';
+    _updatePlIngCount();
+    updatePrixLimitesPreview();
+    // Rafraîchir la ligne pour mettre à jour le statut
+    filterPrixLimitesIng();
+    const label = field === 'plancher' ? '⛔ Plancher' : '⚠️ Plafond';
+    showToast(val ? `${label} ${Number(val).toLocaleString('fr-FR')} Ar enregistré pour ${esc(entry.nom)} ✓` : `${label} supprimé ✓`);
+    renderListe();
+  } catch(err) {
+    showToast('Erreur enregistrement limite');
+    inputEl.value = '';
+  }
+}
+
+function _updatePlIngCount() {
+  const nbP  = _plIngData.filter(e => e.prix_plancher > 0).length;
+  const nbPl = _plIngData.filter(e => e.prix_plafond  > 0).length;
+  const cntEl = document.getElementById('pl-ing-count');
+  if (!cntEl) return;
+  const parts = [];
+  if (nbP)  parts.push(`${nbP} plancher${nbP>1?'s':''}`);
+  if (nbPl) parts.push(`${nbPl} plafond${nbPl>1?'s':''}`);
+  cntEl.textContent = parts.length ? parts.join(' · ') + ' défini' + (nbP+nbPl>1?'s':'') : '0 limite définie';
+}
+
+function closePrixLimitesModal() {
+  document.getElementById('prix-limites-modal-overlay').hidden = true;
+}
+
+function updatePrixLimitesPreview() {
+  const total  = _plIngData.length;
+  const nbP    = _plIngData.filter(e => e.prix_plancher > 0).length;
+  const nbPl   = _plIngData.filter(e => e.prix_plafond  > 0).length;
+  const nbDanger = _plIngData.filter(e => _plStatus(e) === 'danger').length;
+  const nbWarn   = _plIngData.filter(e => _plStatus(e) === 'warn').length;
+  const nbOk     = _plIngData.filter(e => _plStatus(e) === 'ok').length;
+  const prev = document.getElementById('prix-limites-preview');
+  if (!prev) return;
+  prev.innerHTML = `
+    <div class="pl-summary-card" style="border-color:var(--border)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:4px">Total recettes</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text)">${total}</div>
+    </div>
+    <div class="pl-summary-card" style="border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.04)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red);margin-bottom:4px">⛔ Avec plancher</div>
+      <div style="font-size:20px;font-weight:700;color:var(--red)">${nbP}</div>
+    </div>
+    <div class="pl-summary-card" style="border-color:rgba(125,90,0,.3);background:rgba(125,90,0,.04)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#7D5A00;margin-bottom:4px">⚠️ Avec plafond</div>
+      <div style="font-size:20px;font-weight:700;color:#7D5A00">${nbPl}</div>
+    </div>
+    <div class="pl-summary-card" style="border-color:rgba(39,174,96,.3);background:rgba(39,174,96,.04)">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1a7a40;margin-bottom:4px">✓ Dans les limites</div>
+      <div style="font-size:20px;font-weight:700;color:#1a7a40">${nbOk}</div>
+    </div>
+    ${(nbDanger + nbWarn) > 0 ? `
+    <div class="pl-summary-card" style="border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.08);cursor:pointer" onclick="setPLFilter('alert')" title="Voir les recettes en alerte">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red);margin-bottom:4px">🚨 En alerte</div>
+      <div style="font-size:20px;font-weight:700;color:var(--red)">${nbDanger + nbWarn}</div>
+    </div>` : ''}
+  `;
 }
 
 function openCatModal() {
@@ -2083,10 +3507,7 @@ function updateCatBadge() {
   const cat = categories.find(c => c.id === sel.value);
   if (!cat) { badge.style.display = 'none'; adaptFormToCategory(null); return; }
   const isPrepa = cat.groupe === 'PREPA';
-  badge.textContent      = isPrepa ? '⚙ Semi-fini (PREPA)' : '🍽 Produit fini (PRODUCTION)';
-  badge.style.display    = 'inline-block';
-  badge.style.background = isPrepa ? '#FEF3E2' : '#E8F5E9';
-  badge.style.color      = isPrepa ? '#E67E22' : '#1A7A3C';
+  badge.style.display = 'none';
   adaptFormToCategory(cat);
 }
 
@@ -2101,21 +3522,12 @@ function adaptFormToCategory(cat) {
   const notesServiceRow = document.getElementById('notes-service-row');
   const uniteSelect  = document.getElementById('f-unite');
 
-  if (isPrepa) {
-    // PREPA : coût saisi manuellement
-    if (coutWrap)  coutWrap.hidden = false;
-    if (coutInput) { coutInput.readOnly = false; coutInput.placeholder = 'Ex : 1500'; coutInput.style.background = ''; coutInput.style.color = ''; }
-    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
-  } else if (isProduction) {
-    // PRODUCTION : coût auto-calculé depuis les ingrédients
-    if (coutWrap)  coutWrap.hidden = false;
-    if (coutInput) { coutInput.readOnly = true; coutInput.placeholder = 'Calculé auto…'; coutInput.style.background = 'var(--bg-2,#f5f5f5)'; coutInput.style.color = 'var(--text-3,#999)'; }
-    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
-  } else {
-    // Aucune catégorie sélectionnée
-    if (coutWrap)  coutWrap.hidden = false;
-    if (coutInput) { coutInput.readOnly = false; coutInput.placeholder = 'Ex : 1500'; coutInput.style.background = ''; coutInput.style.color = ''; }
-    if (coutLabel) coutLabel.textContent = 'Coût matière / unité (Ar)';
+  if (coutWrap) coutWrap.hidden = false;
+  if (coutInput) {
+    coutInput.readOnly    = false;
+    coutInput.placeholder = 'Ex : 1 500';
+    coutInput.style.background = '';
+    coutInput.style.color      = '';
   }
 
   // PREPA : Tarification, Matériels et Notes de service masqués
@@ -2163,8 +3575,19 @@ function ficheCard(f) {
     else if (coeff < COEFF_NORM) badge = `<span style="background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">⚠️ Coeff ${coeff}</span>`;
     else badge = `<span style="background:#EAF7EE;color:#1A7A3C;border:1px solid #A8D9B5;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">✅ Coeff ${coeff}</span>`;
   }
+  // Badge plancher / plafond de la fiche — prioritaire sur le badge coefficient
+  let limitBadge = '';
+  if (prix > 0) {
+    const fp = f.prix_plancher || 0, fc = f.prix_plafond || 0;
+    if (fp > 0 && prix < fp) {
+      limitBadge = `<span style="background:#FDECEA;color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600" title="Min autorisé : ${Number(fp).toLocaleString('fr-FR')} Ar">⛔ Plancher non atteint</span>`;
+    } else if (fc > 0 && prix > fc) {
+      limitBadge = `<span style="background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600" title="Max recommandé : ${Number(fc).toLocaleString('fr-FR')} Ar">⚠️ Plafond dépassé</span>`;
+    }
+  }
   const photo = f.photo ? `<img src="${f.photo}" class="card-photo-thumb" alt="${esc(f.nom)}">` : `<div class="card-photo-placeholder">🍽</div>`;
   return `<div class="fiche-card" onclick="showDetail('${f.id}')">
+    <div style="height:4px;background:${col};flex-shrink:0"></div>
     <div class="card-actions">
       <button class="card-action-btn" onclick="event.stopPropagation();showForm('${f.id}')">✏️</button>
       <button class="card-action-btn del" onclick="event.stopPropagation();confirmDelete('${f.id}')">🗑</button>
@@ -2185,7 +3608,7 @@ function ficheCard(f) {
           ${f.conservation_val ? `<div class="card-meta-item">🕐 ${f.conservation_val} ${esc(f.conservation_unite||'jours')}</div>` : ''}
         </div>
         <div class="card-footer">
-          <span class="card-date">Maj ${formatDate(f.updatedAt)}</span>${badge}
+          <span class="card-date">Maj ${formatDate(f.updatedAt)}</span>${limitBadge || badge}
         </div>
       </div>
     </div>
@@ -2213,11 +3636,21 @@ function showDetail(id) {
   const cout  = parseFloat(f.cout) || 0;
   const prix  = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
   const col   = getCatColor(f.categorie);
+  // Alerte coefficient
   let alertHtml = '';
   if (cout > 0 && coeff > 0) {
     if (coeff < COEFF_MIN) alertHtml = `<div class="coeff-alert coeff-danger">⛔ Coefficient <strong>${coeff}</strong> trop bas ! Min : ${COEFF_MIN}. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
     else if (coeff < COEFF_NORM) alertHtml = `<div class="coeff-alert coeff-warn">⚠️ Coefficient <strong>${coeff}</strong> sous la norme. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
     else alertHtml = `<div class="coeff-alert coeff-ok">✅ Coeff <strong>${coeff}</strong> — Prix de vente : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
+  }
+  // Alerte plancher / plafond de la fiche — prioritaire
+  if (prix > 0) {
+    const fp = f.prix_plancher || 0, fc = f.prix_plafond || 0;
+    if (fp > 0 && prix < fp) {
+      alertHtml = `<div class="coeff-alert coeff-danger">⛔ Prix de vente (<strong>${prix.toLocaleString('fr-FR')} Ar</strong>) sous le plancher.<br><small>Prix minimum autorisé : <strong>${Number(fp).toLocaleString('fr-FR')} Ar</strong></small></div>`;
+    } else if (fc > 0 && prix > fc) {
+      alertHtml = `<div class="coeff-alert coeff-warn">⚠️ Prix de vente (<strong>${prix.toLocaleString('fr-FR')} Ar</strong>) dépasse le plafond.<br><small>Prix maximum recommandé : <strong>${Number(fc).toLocaleString('fr-FR')} Ar</strong></small></div>`;
+    }
   }
   const photoCol = f.photo
     ? `<div class="detail-photo-col"><img src="${f.photo}" class="detail-photo" alt="${esc(f.nom)}"></div>`
@@ -2286,7 +3719,19 @@ function showForm(id) {
   v('f-quantite').value           = f?.quantite     || '';
   v('f-unite').value              = f?.unite        || 'personnes';
   v('f-cout').value               = f?.cout         || '';
-  v('f-coefficient').value        = f?.coefficient  != null ? f.coefficient : COEFF_NORM;
+  v('f-cout').hidden              = true;
+  const _coutDisp = document.getElementById('cout-auto-display');
+  if (_coutDisp) _coutDisp.textContent = f?.cout ? parseFloat(f.cout).toLocaleString('fr-FR') + ' Ar' : '—';
+  document.getElementById('cout-auto-block').hidden = false;
+  const savedCoeff = f?.coefficient != null ? parseFloat(f.coefficient) : COEFF_DEFAULT;
+  v('f-coefficient').value = savedCoeff;
+  const isPreset = [2, 2.5, 3].includes(savedCoeff);
+  v('f-coefficient').hidden = isPreset;
+  document.querySelectorAll('.coeff-seg-btn').forEach(b => {
+    if (b.id === 'coeff-seg-autre-btn') { b.classList.toggle('active', !isPreset); return; }
+    const bv = parseFloat(b.textContent.replace('×','').replace(',','.'));
+    b.classList.toggle('active', bv === savedCoeff);
+  });
   v('f-conservation-val').value   = f?.conservation_val   || '';
   v('f-conservation-unite').value = f?.conservation_unite || 'jours';
   v('f-prep').value               = f?.prep         || '';
@@ -2309,6 +3754,8 @@ function showForm(id) {
   v('f-utilisations').value       = f?.utilisations       || '';
   v('f-notes-services').value     = f?.notes_services     || '';
   v('f-notes-preparateur').value  = f?.notes_preparateur  || '';
+  v('f-prix-plancher').value      = f?.prix_plancher > 0 ? f.prix_plancher : '';
+  v('f-prix-plafond').value       = f?.prix_plafond  > 0 ? f.prix_plafond  : '';
   document.querySelectorAll('.allergene-check input[type="checkbox"]').forEach(cb => {
     const checked = (f?.allergenes||[]).includes(cb.value);
     cb.checked = checked;
@@ -2354,7 +3801,8 @@ function addIngredientRow(ing) {
       <input type="text" placeholder="Unité" value="${esc(ing.unite||'')}">
     </div>
     <div class="ing-field ing-prix">
-      <input type="number" placeholder="Prix (Ar)" value="${prixVal}" min="0" step="1" oninput="calcCout()">
+      <div class="ing-prix-display">${prixVal ? Number(prixVal).toLocaleString('fr-FR') + ' Ar' : '—'}</div>
+      <input type="hidden" class="ing-prix-val" value="${prixVal}">
     </div>
     <button type="button" class="btn-remove" onclick="this.closest('.ing-row').remove();calcCout()">×</button>`;
   document.getElementById('ingredients-list').appendChild(d);
@@ -2365,15 +3813,22 @@ function onIngSelect(sel) {
   const textInput = row.querySelector('.ing-nom-text');
   const qteInput  = row.querySelector('.ing-qte input');
   const uniteInput= row.querySelector('.ing-unite input');
-  const prixInput = row.querySelector('.ing-prix input');
+  const prixDisplay = row.querySelector('.ing-prix-display');
+  const prixHidden  = row.querySelector('.ing-prix-val');
+
+  function setPrix(val) {
+    prixHidden.value    = val != null ? val : '';
+    prixDisplay.textContent = val != null && val !== '' ? Number(val).toLocaleString('fr-FR') + ' Ar' : '—';
+  }
 
   if (sel.value === '__autre__') {
     textInput.style.display = '';
     textInput.focus();
-    textInput.value = '';
+    textInput.value  = '';
     qteInput.value   = '';
     uniteInput.value = '';
-    prixInput.value  = '';
+    setPrix(null);
+    showIngComparateur(row, '');
   } else {
     textInput.style.display = 'none';
     textInput.value = '';
@@ -2382,36 +3837,40 @@ function onIngSelect(sel) {
       if (cat) {
         if (cat.qte   != null) qteInput.value   = cat.qte;
         if (cat.unite != null) uniteInput.value  = cat.unite;
-        if (cat.prix  != null) prixInput.value   = cat.prix;
+        setPrix(cat.prix != null ? cat.prix : null);
         calcCout();
       }
     }
+    showIngComparateur(row, sel.value);
   }
 }
 
 function calcCout() {
-  const rows = [...document.querySelectorAll('.ing-row')];
-  const prix = rows.map(r => parseFloat(r.querySelector('.ing-prix input').value) || 0);
-  const total = prix.reduce((a, b) => a + b, 0);
-  const hasPrix = prix.some(p => p > 0);
-  const cat = categories.find(c => c.id === document.getElementById('f-categorie').value);
+  const autoBlock = document.getElementById('cout-auto-block');
+  const autoDisp  = document.getElementById('cout-auto-display');
+  const coutInput = document.getElementById('f-cout');
+  if (!autoBlock || !autoDisp || !coutInput) return;
+
+  const rows     = [...document.querySelectorAll('.ing-row')];
+  const prix     = rows.map(r => parseFloat(r.querySelector('.ing-prix-val').value) || 0);
+  const total    = prix.reduce((a, b) => a + b, 0);
+  const hasPrix  = prix.some(p => p > 0);
+  const cat      = categories.find(c => c.id === document.getElementById('f-categorie').value);
   const isProduction = cat && cat.groupe !== 'PREPA';
 
-  const autoDisplay = document.getElementById('cout-auto-display');
-  const autoLabel   = document.getElementById('cout-auto-label');
-  const coutInput   = document.getElementById('f-cout');
-
   if (hasPrix) {
-    autoDisplay.textContent = Math.round(total).toLocaleString('fr-FR') + ' Ar';
-    autoDisplay.hidden = false;
-    autoLabel.hidden   = false;
-    if (isProduction) {
-      coutInput.value = Math.round(total);
-      updatePrixVente();
-    }
+    const rounded = Math.round(total);
+    coutInput.value  = rounded;
+    coutInput.hidden = true;
+    autoDisp.textContent = rounded.toLocaleString('fr-FR') + ' Ar';
+    autoBlock.hidden = false;
+    updatePrixVente();
   } else {
-    autoDisplay.hidden = true;
-    autoLabel.hidden   = true;
+    coutInput.value  = '';
+    coutInput.hidden = true;
+    autoBlock.hidden = false;
+    autoDisp.textContent = '—';
+    updatePrixVente();
   }
 }
 function addEtape() { addEtapeRow(''); }
@@ -2498,7 +3957,7 @@ async function saveFiche(e) {
         nom,
         qte:   r.querySelector('.ing-qte input').value.trim(),
         unite: r.querySelector('.ing-unite input').value.trim(),
-        prix:  parseFloat(r.querySelector('.ing-prix input').value) || null,
+        prix:  parseFloat(r.querySelector('.ing-prix-val').value) || null,
       };
     }).filter(i => i.nom),
     etapes:    [...document.querySelectorAll('.etape-row textarea')].map(t => t.value.trim()).filter(Boolean),
@@ -2510,8 +3969,28 @@ async function saveFiche(e) {
     utilisations:       document.getElementById('f-utilisations').value.trim()        || null,
     notes_services:     document.getElementById('f-notes-services').value.trim()      || null,
     notes_preparateur:  document.getElementById('f-notes-preparateur').value.trim()   || null,
+    prix_plancher: parseFloat(document.getElementById('f-prix-plancher').value) || null,
+    prix_plafond:  parseFloat(document.getElementById('f-prix-plafond').value)  || null,
   };
+  // ── Validation plancher / plafond de la fiche ─────────────────────────────
+  const _cout      = parseFloat(document.getElementById('f-cout').value)        || 0;
+  const _coeff     = parseFloat(document.getElementById('f-coefficient').value)  || 0;
+  const _prixVente = (_cout > 0 && _coeff > 0) ? Math.round(_cout * _coeff) : 0;
+  if (_prixVente > 0) {
+    const _plancher = data.prix_plancher || 0;
+    const _plafond  = data.prix_plafond  || 0;
+    if (_plancher > 0 && _prixVente < _plancher) {
+      const _al = document.getElementById('coeff-alert');
+      if (_al) { _al.scrollIntoView({behavior:'smooth', block:'nearest'}); _al.classList.add('shake-anim'); setTimeout(() => _al.classList.remove('shake-anim'), 600); }
+      return;
+    }
+    if (_plafond > 0 && _prixVente > _plafond) {
+      if (!confirm(`⚠️ Prix de vente (${_prixVente.toLocaleString('fr-FR')} Ar) dépasse le plafond (${_plafond.toLocaleString('fr-FR')} Ar).\n\nContinuer quand même ?`)) return;
+    }
+  }
+
   try {
+    const isNew = !existing;
     if (existing) await api.put('/api/fiches/' + existing.id, data);
     else await api.post('/api/fiches', data);
     showToast(existing ? 'Fiche modifiée ✓' : 'Fiche créée ✓');
@@ -2521,6 +4000,7 @@ async function saveFiche(e) {
     ]);
     renderListe();
     showView('liste');
+    if (isNew) setTimeout(showFicheTipBanner, 400);
   } catch(err) { showToast('Erreur lors de la sauvegarde'); }
 }
 
@@ -2644,8 +4124,8 @@ body,div,p,span,td,th,li{font-family:Arial,Helvetica,sans-serif;font-size:11px;c
 
 <!-- En-tête -->
 <div class="ph avoid">
-  <img class="ph-logo" src="/static/logo.png" alt="BOGOTA">
-  <span class="ph-label">Fiche Technique</span>
+  <img class="ph-logo" src="${localStorage.getItem('brand_logo') || '/static/logo.png'}" alt="Logo">
+  <span class="ph-label">${localStorage.getItem('brand_name') || 'Fiche Technique'}</span>
 </div>
 
 <!-- Hero -->
@@ -2698,8 +4178,289 @@ ${(f.utilisations || f.notes_services || f.notes_preparateur) ? `
   return wrap;
 }
 
+function _printFiche_removed() {
+  // Fonction supprimée — utiliser downloadPDF() à la place
+  const _rawLogo = '';
+  const logo     = (_rawLogo.startsWith('data:') || _rawLogo.startsWith('http'))
+                    ? _rawLogo
+                    : (window.location.origin + (_rawLogo.startsWith('/') ? '' : '/') + _rawLogo);
+  const appName  = localStorage.getItem('brand_name') || 'Fiche Technique';
+  const col      = getCatColor(f.categorie);
+  const catLabel = getCatLabel(f.categorie);
+  const coeff    = f.coefficient != null ? parseFloat(f.coefficient) : COEFF_NORM;
+  const cout     = parseFloat(f.cout) || 0;
+  const prix     = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
+  const t        = (f.prep||0) + (f.cuisson||0);
+
+  // ── Ingrédients ──
+  const ings = (f.ingredients||[]).filter(i => i.nom.trim());
+  let ingHtml = '';
+  if (ings.length) {
+    ingHtml = `<table class="itbl">
+      <thead><tr><th>Ingrédient</th><th>Qté</th><th>Unité</th><th>Prix (Ar)</th></tr></thead>
+      <tbody>` +
+      ings.map(i => `<tr><td>${esc(i.nom)}</td><td>${esc(i.qte)}</td><td>${esc(i.unite||'')}</td><td>${i.prix!=null?i.prix.toLocaleString('fr-FR'):'—'}</td></tr>`).join('') +
+      (cout > 0 ? `<tr class="itot"><td colspan="3">Coût total</td><td>${Math.round(cout).toLocaleString('fr-FR')} Ar</td></tr>` : '') +
+      `</tbody></table>`;
+  } else {
+    ingHtml = `<p class="vide">Aucun ingrédient renseigné.</p>`;
+  }
+
+  // ── Étapes ──
+  const etapes = (f.etapes||[]).filter(e => e.trim());
+  let etapesHtml = '';
+  if (etapes.length) {
+    etapesHtml = etapes.map((e,idx) => `
+      <div class="step">
+        <div class="snum">${idx+1}</div>
+        <div class="stxt">${esc(e)}</div>
+      </div>`).join('');
+  } else {
+    etapesHtml = `<p class="vide">Aucune étape renseignée.</p>`;
+  }
+
+  // ── Allergènes / Matériels / Apparence ──
+  const allergs = f.allergenes||[];
+  const mats    = f.materiels||[];
+  let appHtml   = '';
+  if (f.apparence_normale || f.apparence_anormale) {
+    if (f.apparence_normale)  appHtml += `<div class="apb apok"><div class="aplbl">Conforme</div><div class="aptxt">${esc(f.apparence_normale)}</div></div>`;
+    if (f.apparence_anormale) appHtml += `<div class="apb aperr"><div class="aplbl">Non conforme</div><div class="aptxt">${esc(f.apparence_anormale)}</div></div>`;
+  }
+
+  // ── Méta (portions, temps, température…) ──
+  const meta = [];
+  if (f.quantite)         meta.push({ icon:'&#128101;', lbl:'Portions',    val:`${f.quantite} ${esc(f.unite||'pers.')}` });
+  if (f.prep)             meta.push({ icon:'&#9201;',   lbl:'Préparation', val:`${f.prep} min` });
+  if (f.cuisson)          meta.push({ icon:'&#128293;', lbl:'Cuisson',     val:`${f.cuisson} min` });
+  if (t > 0)              meta.push({ icon:'&#9201;',   lbl:'Total',       val:`${t} min` });
+  if (f.temperature)      meta.push({ icon:'&#127777;', lbl:'Température', val:`${f.temperature} °C` });
+  if (f.conservation_val) meta.push({ icon:'&#10052;',  lbl:'Conservation',val:`${f.conservation_val} ${esc(f.conservation_unite||'jours')}` });
+
+  // ── Alerte coefficient ──
+  let alertHtml = '';
+  if (cout > 0 && coeff > 0) {
+    if      (coeff < COEFF_MIN)  alertHtml = `<div class="al alr">&#9940; Coeff &#215;${coeff} trop bas (min &#215;${COEFF_MIN}) &mdash; PV&nbsp;: <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+    else if (coeff < COEFF_NORM) alertHtml = `<div class="al alo">&#9888; Coeff &#215;${coeff} sous la norme &mdash; PV&nbsp;: <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+    else                         alertHtml = `<div class="al alg">&#10003; Coeff &#215;${coeff} &mdash; Prix de vente&nbsp;: <strong>${prix.toLocaleString('fr-FR')} Ar</strong></div>`;
+  }
+
+  const today = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+
+  const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>${esc(f.nom||'Fiche')}</title>
+<style>
+@page { size: A4 portrait; margin: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px; color: #1C1C1A; line-height: 1.55;
+  background: #fff;
+  display: flex; flex-direction: column;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+/* ── En-tête ── */
+.hdr {
+  background: #1E5C3A !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  padding: 13px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.hdr-l { display: flex; align-items: center; gap: 12px; }
+.hdr img { height: 42px; width: auto; object-fit: contain; filter: brightness(0) invert(1); display: block; }
+.hdr-app  { font-size: 13px; font-weight: 800; color: #fff; letter-spacing: .02em; }
+.hdr-sub  { font-size: 8px; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: .12em; margin-top: 2px; }
+.hdr-date { font-size: 9px; color: rgba(255,255,255,.4); }
+
+/* ── Bandeau titre ── */
+.ttl {
+  background: #F4F7F5 !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  border-bottom: 3px solid #1E5C3A;
+  padding: 16px 20px;
+  display: flex; gap: 16px; align-items: flex-start;
+  flex-shrink: 0;
+}
+.ttl-photo { width: 96px; height: 96px; border-radius: 7px; object-fit: cover; flex-shrink: 0; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.ttl-noph  { width: 96px; height: 96px; background: #DDF0E6 !important; border-radius: 7px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.ttl-info  { flex: 1; }
+.cat-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; }
+.rname { font-family: Georgia, 'Times New Roman', serif; font-size: 26px; font-weight: 700; color: #111; line-height: 1.1; letter-spacing: -.3px; margin-bottom: 5px; }
+.rdesc { font-size: 10.5px; color: #666; font-style: italic; line-height: 1.6; margin-bottom: 8px; }
+.pxrow { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+.pxpv  { font-size: 18px; font-weight: 800; color: #D4801A; }
+.pxlbl { font-size: 9px; color: #AAA; }
+.pxcout { font-size: 10.5px; color: #888; }
+.al    { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-top: 4px; }
+.alg   { background: #EAF7EE !important; color: #1A7A3C; border: 1px solid #A8D9B5; }
+.alo   { background: #FFF8E1 !important; color: #7D5A00; border: 1px solid #F5D060; }
+.alr   { background: #FDECEA !important; color: #C0392B; border: 1px solid #F5C5C0; }
+
+/* ── Barre méta ── */
+.mbar { display: flex; border-bottom: 1px solid #E5E8E5; flex-shrink: 0; }
+.mc   { flex: 1; padding: 9px 6px; text-align: center; border-right: 1px solid #E5E8E5; }
+.mc:last-child { border-right: none; }
+.mi   { font-size: 15px; line-height: 1; }
+.ml   { font-size: 8px; color: #AAA; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+.mv   { font-size: 11.5px; font-weight: 700; color: #1E5C3A; margin-top: 1px; }
+
+/* ── Corps ── */
+.body { flex: 1; padding: 15px 20px; }
+
+/* Titre de section */
+.sh { font-size: 8.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #1E5C3A; border-left: 3px solid #1E5C3A; padding: 2px 0 2px 8px; margin-bottom: 9px; }
+
+/* Séparateur */
+hr { border: none; border-top: 1px solid #EAECE8; margin: 13px 0; }
+
+/* 2 colonnes */
+.cols { display: flex; gap: 18px; margin-bottom: 14px; }
+.col  { flex: 1; min-width: 0; overflow: hidden; }
+
+/* Tableau ingrédients */
+.itbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+.itbl thead { background: #1E5C3A !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.itbl thead th { padding: 5px 8px; text-align: left; font-size: 8.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #fff; }
+.itbl thead th:nth-child(n+2) { text-align: center; width: 42px; }
+.itbl thead th:last-child { text-align: right; }
+.itbl tbody tr:nth-child(even) { background: #F2F7F4 !important; }
+.itbl tbody td { padding: 5px 8px; border-bottom: 1px solid #EEF0ED; }
+.itbl tbody td:nth-child(2), .itbl tbody td:nth-child(3) { text-align: center; color: #555; }
+.itbl tbody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.itbl tbody tr:last-child td { border-bottom: none; }
+.itot td { background: #E4F0EA !important; font-weight: 700; color: #1E5C3A; border-top: 1px solid #B8D9C5; font-size: 11.5px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* Étapes */
+.step { display: flex; gap: 9px; margin-bottom: 8px; page-break-inside: avoid; }
+.snum {
+  width: 20px; height: 20px; min-width: 20px;
+  background: #1E5C3A !important; color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8.5px; font-weight: 800;
+  flex-shrink: 0; margin-top: 2px;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+.stxt { font-size: 11px; line-height: 1.6; color: #333; }
+
+/* Tags allergènes */
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.tag  { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 600; background: #FFF3E0 !important; color: #C05000; border: 1px solid #FFD0A0; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+/* Apparence */
+.apb   { border-radius: 4px; padding: 7px 10px; margin-bottom: 6px; page-break-inside: avoid; }
+.apok  { background: #EAF7EE !important; border-left: 3px solid #27AE60; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.aperr { background: #FDECEA !important; border-left: 3px solid #C0392B; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+.aplbl { font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
+.apok  .aplbl { color: #1A7A3C; }
+.aperr .aplbl { color: #C0392B; }
+.aptxt { font-size: 11px; }
+
+/* Notes */
+.nb    { background: #FAFAF7 !important; border: 1px solid #E2E2DA; border-radius: 4px; padding: 8px 11px; margin-bottom: 7px; }
+.nlbl  { font-size: 8px; font-weight: 800; color: #AAA; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.ntxt  { font-size: 11px; white-space: pre-line; line-height: 1.6; }
+
+/* Vide */
+.vide  { color: #BCC; font-size: 10.5px; font-style: italic; }
+
+/* ── Pied de page (fixé en bas) ── */
+.ftr {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #1E5C3A !important;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  padding: 7px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.fl, .fr { font-size: 8px; color: rgba(255,255,255,.45); letter-spacing: .02em; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-l">
+    <img src="${logo}" alt="Logo">
+    <div>
+      <div class="hdr-app">${esc(appName)}</div>
+      <div class="hdr-sub">Fiche Technique de Recette</div>
+    </div>
+  </div>
+  <div class="hdr-date">&#201;dit&#233; le ${today}</div>
+</div>
+
+<div class="ttl">
+  ${f.photo
+    ? `<img class="ttl-photo" src="${f.photo}" alt="${esc(f.nom)}">`
+    : `<div class="ttl-noph">&#127859;</div>`
+  }
+  <div class="ttl-info">
+    <div class="cat-badge" style="background:${col}20;color:${col};border:1px solid ${col}45">${esc(catLabel)}</div>
+    <div class="rname">${esc(f.nom)}</div>
+    ${f.description ? `<div class="rdesc">${esc(f.description)}</div>` : ''}
+    <div class="pxrow">
+      ${prix  ? `<span class="pxpv">${prix.toLocaleString('fr-FR')} Ar</span><span class="pxlbl">Prix de vente</span>` : ''}
+      ${cout && !prix ? `<span class="pxcout">Co&#251;t&nbsp;: <strong>${Math.round(cout).toLocaleString('fr-FR')} Ar</strong></span>` : ''}
+    </div>
+    ${alertHtml}
+  </div>
+</div>
+
+${meta.length ? `<div class="mbar">${meta.map(m=>`<div class="mc"><div class="mi">${m.icon}</div><div class="ml">${m.lbl}</div><div class="mv">${m.val}</div></div>`).join('')}</div>` : ''}
+
+<div class="body">
+  <div class="cols">
+    <div class="col">
+      <div class="sh">Ingr&#233;dients</div>
+      ${ingHtml}
+    </div>
+    <div class="col">
+      <div class="sh">&#201;tapes de pr&#233;paration</div>
+      ${etapesHtml}
+    </div>
+  </div>
+
+  ${allergs.length ? `<hr><div class="sh">Allerg&#232;nes d&#233;clar&#233;s</div><div class="tags">${allergs.map(a=>`<span class="tag">&#9888; ${esc(a)}</span>`).join('')}</div>` : ''}
+
+  ${(mats.length || appHtml) ? `<hr><div class="cols">
+    ${mats.length ? `<div class="col"><div class="sh">Mat&#233;riels &amp; &#201;quipements</div><ul style="margin:0;padding-left:16px">${mats.map(m=>`<li style="padding:3px 0;font-size:11px;page-break-inside:avoid">${esc(m)}</li>`).join('')}</ul></div>` : '<div class="col"></div>'}
+    ${appHtml     ? `<div class="col"><div class="sh">Apparence du plat</div>${appHtml}</div>` : '<div class="col"></div>'}
+  </div>` : ''}
+
+  ${(f.utilisations || f.notes_preparateur || f.notes_services) ? `<hr><div class="sh">Notes &amp; Utilisations</div>
+    ${f.utilisations      ? `<div class="nb"><div class="nlbl">Utilisations</div><div class="ntxt">${esc(f.utilisations)}</div></div>` : ''}
+    ${f.notes_preparateur ? `<div class="nb"><div class="nlbl">Notes pr&#233;parateur</div><div class="ntxt">${esc(f.notes_preparateur)}</div></div>` : ''}
+    ${f.notes_services    ? `<div class="nb"><div class="nlbl">Notes service</div><div class="ntxt">${esc(f.notes_services)}</div></div>` : ''}
+  ` : ''}
+</div>
+
+<div class="ftr">
+  <div class="fl">${esc(appName)} &nbsp;&#183;&nbsp; R&#233;f. #${f.id} &nbsp;&#183;&nbsp; Cr&#233;&#233;e le ${formatDate(f.createdAt)}</div>
+  <div class="fr">Mise &#224; jour : ${formatDate(f.updatedAt)} &nbsp;&#183;&nbsp; Document confidentiel</div>
+</div>
+
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  if (!win) { alert('Autorisez les pop-ups pour imprimer.'); return; }
+  win.document.write(html);
+  win.document.close();
+  win.focus();
+  setTimeout(function() { win.print(); win.close(); }, 900);
+}
+
 async function downloadPDF() {
-  if (typeof html2pdf === 'undefined') { showToast('Connexion internet requise'); return; }
+  if (typeof html2pdf === 'undefined') { showToast('PDF non disponible : connexion internet requise.', 'error'); return; }
   const f = fiches.find(x => x.id === currentFicheId); if (!f) return;
   const slug = (f.nom||'fiche').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
   const btn  = document.getElementById('btn-dl-pdf');
@@ -2778,7 +4539,7 @@ function renderHistorique(rows) {
         ? `<span class="hist-nom-link" onclick="showDetail('${h.fiche_id}')">${esc(h.fiche_nom)}</span>`
         : `<span style="color:var(--text-3);text-decoration:line-through">${esc(h.fiche_nom)}</span>`;
     } else {
-      const typeLabels = { categorie:'📂', utilisateur:'👤', allergene:'⚠️', auth:'🔐' };
+      const typeLabels = { categorie:'📂', utilisateur:'👤', allergene:'⚠️', auth:'🔐', catalogue:'🧂' };
       nomEl = `<span>${typeLabels[type_]||''} ${esc(h.fiche_nom)}</span>`;
     }
 
@@ -2786,11 +4547,30 @@ function renderHistorique(rows) {
     let detailsHtml = '';
     if (type_ === 'fiche' && (h.action === 'créer' || h.action === 'supprimer')) {
       const tags = [];
-      if (d.categorie)          tags.push(`📂 ${esc(getCatLabel(d.categorie))}`);
-      if (d.cout)               tags.push(`💰 ${Number(d.cout).toLocaleString('fr-FR')} Ar`);
+      if (d.categorie)            tags.push(`📂 ${esc(getCatLabel(d.categorie))}`);
+      if (d.cout)                 tags.push(`💰 ${Number(d.cout).toLocaleString('fr-FR')} Ar`);
       if (d.nb_ingredients!=null) tags.push(`🥬 ${d.nb_ingredients} ingrédient${d.nb_ingredients>1?'s':''}`);
-      if (d.nb_etapes>0)        tags.push(`📋 ${d.nb_etapes} étape${d.nb_etapes>1?'s':''}`);
+      if (d.nb_etapes>0)          tags.push(`📋 ${d.nb_etapes} étape${d.nb_etapes>1?'s':''}`);
       if (tags.length) detailsHtml = `<div class="hist-details">${tags.map(t=>`<span class="hist-tag">${t}</span>`).join('')}</div>`;
+    } else if (type_ === 'catalogue' && h.action === 'créer') {
+      const tags = [];
+      if (d.prix != null) tags.push(`💰 ${Number(d.prix).toLocaleString('fr-FR')} Ar`);
+      if (d.unite)        tags.push(`📏 ${esc(d.unite)}`);
+      if (tags.length) detailsHtml = `<div class="hist-details">${tags.map(t=>`<span class="hist-tag">${t}</span>`).join('')}</div>`;
+    } else if (type_ === 'catalogue' && h.action === 'supprimer') {
+      const tags = [];
+      if (d.prix != null) tags.push(`💰 ${Number(d.prix).toLocaleString('fr-FR')} Ar`);
+      if (tags.length) detailsHtml = `<div class="hist-details">${tags.map(t=>`<span class="hist-tag">${t}</span>`).join('')}</div>`;
+    } else if (type_ === 'catalogue' && h.action === 'modifier') {
+      const fmt = v => v != null ? `${Number(v).toLocaleString('fr-FR')} Ar` : '—';
+      const chips = (d.changes || []).map(c => {
+        const avant = c.champ === 'prix' ? fmt(c.avant) : esc(String(c.avant ?? '—'));
+        const apres = c.champ === 'prix' ? fmt(c.apres) : esc(String(c.apres ?? '—'));
+        return `<span class="hist-change"><span class="hist-change-champ">${esc(c.champ)}</span><span class="hist-change-arrow">›</span><span>${avant}</span><span class="hist-change-arrow">→</span><span>${apres}</span></span>`;
+      }).join('');
+      const nb = d.fiches_recalculees;
+      const nbTag = nb > 0 ? `<span class="hist-tag" style="color:var(--accent)">⚡ ${nb} fiche${nb>1?'s':''} recalculée${nb>1?'s':''}</span>` : '';
+      if (chips || nbTag) detailsHtml = `<div class="hist-details">${chips}${nbTag}</div>`;
     } else if (h.action === 'modifier' && d.changes?.length) {
       const chips = d.changes.map(c =>
         `<span class="hist-change"><span class="hist-change-champ">${esc(c.champ)}</span><span class="hist-change-arrow">›</span><span>${esc(String(c.avant))}</span><span class="hist-change-arrow">→</span><span>${esc(String(c.apres))}</span></span>`
@@ -2828,20 +4608,37 @@ function esc(s) { return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;'
 function formatDate(iso) { if (!iso) return '—'; return new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'}); }
 function formatDateTime(iso) {
   if (!iso) return '—';
-  // Le timestamp est stocké en UTC avec suffixe Z — JS le convertit en heure locale automatiquement
   const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;  // fallback si format inattendu
+  if (isNaN(d.getTime())) return iso;
   const now = new Date();
-  const diff = Math.floor((now - d) / 1000);
   const heure   = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
   const dateStr = d.toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
-  if (diff < 0)     return dateStr + ' à ' + heure;
-  if (diff < 60)    return `À l'instant · ${heure}`;
-  if (diff < 3600)  return `Il y a ${Math.floor(diff / 60)} min · ${heure}`;
-  if (diff < 86400) return `Aujourd'hui à ${heure}`;
-  if (diff < 172800) return `Hier à ${heure}`;
+  // Comparer les jours calendaires (pas juste 24h)
+  const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const nDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diffDays = Math.round((nDay - dDay) / 86400000);
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 0)      return dateStr + ' à ' + heure;
+  if (diff < 60)     return `À l'instant · ${heure} · ${dateStr}`;
+  if (diff < 3600)   return `Il y a ${Math.floor(diff / 60)} min · ${heure} · ${dateStr}`;
+  if (diffDays === 0) return `Aujourd'hui à ${heure} · ${dateStr}`;
+  if (diffDays === 1) return `Hier à ${heure} · ${dateStr}`;
   return dateStr + ' à ' + heure;
 }
+let _tipBannerTimer;
+function showFicheTipBanner() {
+  const b = document.getElementById('fiche-tip-banner');
+  if (!b) return;
+  b.hidden = false;
+  clearTimeout(_tipBannerTimer);
+  _tipBannerTimer = setTimeout(hideFicheTipBanner, 12000);
+}
+function hideFicheTipBanner() {
+  const b = document.getElementById('fiche-tip-banner');
+  if (b) b.hidden = true;
+  clearTimeout(_tipBannerTimer);
+}
+
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
