@@ -192,6 +192,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .form-field input:focus, .form-field select:focus, .form-field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,122,60,.1); }
 .form-field textarea { resize: vertical; min-height: 72px; }
 
+/* ── AFFICHAGE / MASQUAGE MOT DE PASSE ── */
+.pwd-wrap { position: relative; display: flex; }
+.pwd-wrap input { width: 100%; padding-right: 38px !important; }
+.pwd-eye { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 15px; padding: 6px 8px; line-height: 1; color: var(--text-3); }
+.pwd-eye:hover { color: var(--text-2); }
+
 /* ── PHOTO DANS LE FORMULAIRE ── */
 .form-photo-row { display: flex; gap: 20px; align-items: flex-start; }
 .form-photo-col { width: 120px; flex-shrink: 0; }
@@ -200,7 +206,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .form-photo-fields { flex: 1; min-width: 0; }
 
 /* ── INGRÉDIENTS FORM ── */
-.table-head-row { display: flex; gap: 8px; padding: 0 0 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin-bottom: 2px; align-items: center; }
+.table-head-row { display: flex; gap: 8px; padding: 0 0 8px; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--text-3); margin-bottom: 2px; align-items: flex-end; }
+/* Les libellés restent sur une ligne : un retour à la ligne désaligne toute la rangée */
+.table-head-row > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ing-row { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border-light); }
 .ing-row:last-child { border-bottom: none; }
 .ing-field { display: flex; flex-direction: column; }
@@ -208,6 +216,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .ing-qte  { flex: 1; }
 .ing-unite{ flex: 1; }
 .ing-prix { flex: 1.2; }
+.ing-total{ flex: 1.2; }
+.ing-total-display { width:100%; padding:7px 9px; border:1px solid var(--border); border-radius:var(--r-sm); font-size:13px; font-weight:700; color:var(--text); background:var(--surface); box-sizing:border-box; min-height:33px; display:flex; align-items:center; justify-content:flex-end; cursor:default; user-select:none; }
 .ing-field select, .ing-field input[type=text], .ing-field input[type=number] {
   width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: var(--r-sm);
   font-size: 13px; color: var(--text); font-family: inherit; background: var(--surface);
@@ -278,6 +288,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .color-swatch.active { border-color: var(--text); transform: scale(1.15); }
 
 /* ── COEFFICIENT / PRIX ── */
+/* Tarification : rangée de colonnes « libellé au-dessus, champ en dessous » */
+.tarif-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 14px 28px; }
+.tarif-col { display: flex; flex-direction: column; gap: 6px; }
+.tarif-lbl { font-size: 13px; font-weight: 600; color: var(--text-2); white-space: nowrap; margin: 0; }
+/* Champs posés directement dans une rangée inline (hors .form-field) */
+.inline-field { padding: 8px 10px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 13.5px; background: var(--surface); color: var(--text); font-family: inherit; min-height: 38px; box-sizing: border-box; transition: border .15s, box-shadow .15s; }
+.inline-field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,122,60,.1); }
 .prix-vente-display { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-size: 15px; font-weight: 700; color: var(--text); background: var(--surface-2); min-height: 38px; display: flex; align-items: center; letter-spacing: -.2px; }
 .coeff-alert  { padding: 9px 13px; border-radius: var(--r-sm); font-size: 12.5px; margin-top: 8px; line-height: 1.5; }
 .coeff-danger { background: #FDECEA; color: var(--red); border: 1px solid rgba(192,57,43,.3); }
@@ -722,7 +739,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
                     </div>
                   </div>
                   <div class="form-field" id="cout-field-wrap">
-                    <label id="cout-field-label">Coût matière / unité (Ar)</label>
+                    <label id="cout-field-label">Coût matière total</label>
                     <div id="cout-auto-block" hidden
                          style="display:flex;align-items:center;padding:9px 12px;border:1.5px solid var(--accent);border-radius:var(--r-sm);background:var(--accent-light);min-height:42px">
                       <span id="cout-auto-display" style="font-size:15px;font-weight:800;color:var(--accent);letter-spacing:-.3px;white-space:nowrap">—</span>
@@ -737,41 +754,48 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           <!-- 1b. TARIFICATION & CONSERVATION -->
           <div class="form-card" id="tarif-card">
             <h2 class="form-section-title">Tarification &amp; Conservation</h2>
-            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px 20px;margin-bottom:14px">
-              <label style="font-size:13px;font-weight:600;color:var(--text-2);white-space:nowrap;margin:0">Coefficient de vente</label>
-              <div class="coeff-seg" style="margin:0">
-                <button type="button" class="coeff-seg-btn" onclick="setCoeff(2)">×2</button>
-                <button type="button" class="coeff-seg-btn" onclick="setCoeff(2.5)">×2,5</button>
-                <button type="button" class="coeff-seg-btn" onclick="setCoeff(3)">×3</button>
-                <button type="button" class="coeff-seg-btn" id="coeff-seg-autre-btn" onclick="setCoeffCustom()">Autre</button>
+            <!-- Une rangée, trois colonnes : libellé au-dessus, champ en dessous -->
+            <div class="tarif-row">
+              <div class="tarif-col">
+                <label class="tarif-lbl">Coefficient de vente</label>
+                <div class="coeff-seg" style="margin:0">
+                  <button type="button" class="coeff-seg-btn" onclick="setCoeff(2)">×2</button>
+                  <button type="button" class="coeff-seg-btn" onclick="setCoeff(2.5)">×2,5</button>
+                  <button type="button" class="coeff-seg-btn" onclick="setCoeff(3)">×3</button>
+                  <button type="button" class="coeff-seg-btn" id="coeff-seg-autre-btn" onclick="setCoeffCustom()">Autre</button>
+                </div>
+                <input type="number" id="f-coefficient" step="0.1" min="0.1" placeholder="Ex : 1.8" oninput="updatePrixVente()" class="coeff-custom-input" style="width:90px" hidden>
+                <span class="coeff-norm-hint" id="coeff-norm-hint" style="margin:0">Norme : ×2 | Min : ×1,5</span>
               </div>
-              <input type="number" id="f-coefficient" step="0.1" min="0.1" placeholder="Ex : 1.8" oninput="updatePrixVente()" class="coeff-custom-input" style="width:90px" hidden>
-              <span class="coeff-norm-hint" id="coeff-norm-hint" style="margin:0">Norme : ×2 | Min : ×1,5</span>
-              <label style="font-size:13px;font-weight:600;color:var(--text-2);white-space:nowrap;margin:0 0 0 8px">Prix de vente (Ar)</label>
-              <div class="prix-vente-display" id="prix-vente-display" style="min-width:130px;margin:0">—</div>
-              <div id="coeff-alert" class="coeff-alert" hidden style="width:100%;margin:0"></div>
-              <input type="hidden" id="f-prix-plancher">
-              <input type="hidden" id="f-prix-plafond">
-            </div>
-            <div class="form-field">
-              <label>Délai de conservation</label>
-              <div style="display:flex;gap:8px">
-                <input type="number" id="f-conservation-val" min="0" placeholder="3" style="flex:1">
-                <select id="f-conservation-unite" style="flex:1.2">
-                  <option value="heures">heures</option>
-                  <option value="jours">jours</option>
-                  <option value="semaines">semaines</option>
-                  <option value="mois">mois</option>
-                </select>
+
+              <div class="tarif-col">
+                <label class="tarif-lbl">Prix de vente (Ar)</label>
+                <div class="prix-vente-display" id="prix-vente-display" style="min-width:130px;margin:0">—</div>
+              </div>
+
+              <div class="tarif-col">
+                <label class="tarif-lbl">Délai de conservation</label>
+                <div style="display:flex;gap:6px;margin:0">
+                  <input type="number" id="f-conservation-val" class="inline-field" min="0" placeholder="3" style="width:72px">
+                  <select id="f-conservation-unite" class="inline-field" style="width:108px">
+                    <option value="heures">heures</option>
+                    <option value="jours">jours</option>
+                    <option value="semaines">semaines</option>
+                    <option value="mois">mois</option>
+                  </select>
+                </div>
               </div>
             </div>
+            <div id="coeff-alert" class="coeff-alert" hidden style="margin:12px 0 0"></div>
+            <input type="hidden" id="f-prix-plancher">
+            <input type="hidden" id="f-prix-plafond">
           </div>
 
           <!-- 2. INGRÉDIENTS -->
           <div class="form-card">
             <h2 class="form-section-title">Ingrédients</h2>
             <div class="table-head-row">
-              <span style="flex:3">Ingrédient</span><span style="flex:1">Quantité</span><span style="flex:1">Unité</span><span style="flex:1.2">Prix (Ar) 🔒</span><span style="width:34px"></span>
+              <span style="flex:3">Ingrédient</span><span style="flex:1">Quantité</span><span style="flex:1">Unité</span><span style="flex:1.2">Coût unit. (Ar) 🔒</span><span style="flex:1.2;text-align:right">Coût matière (Ar)</span><span style="width:34px"></span>
             </div>
             <div id="ingredients-list"></div>
             <button type="button" class="btn-add-row" onclick="addIngredient()">+ Ajouter un ingrédient</button>
@@ -891,25 +915,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
             <div class="param-card-title">Journal d'activité</div>
             <div class="param-card-desc">Historique des créations, modifications et suppressions de fiches</div>
           </div>
-          <div class="param-card" onclick="openCatModal()">
+          <div class="param-card" onclick="showView('categories')">
             <div class="param-card-icon">📂</div>
             <div class="param-card-title">Catégories</div>
             <div class="param-card-desc">Ajouter, modifier ou supprimer les catégories de fiches techniques</div>
           </div>
-          <div class="param-card" onclick="openIngCatalogueModal()">
+          <div class="param-card" onclick="showView('catalogue-ingredients')">
             <div class="param-card-icon">🧂</div>
             <div class="param-card-title">Catalogue Ingrédients</div>
             <div class="param-card-desc">Gérer les prix des ingrédients — toute modification recalcule automatiquement toutes les fiches concernées</div>
           </div>
-          <div class="param-card" onclick="openSeuilsModal()">
-            <div class="param-card-icon">📊</div>
-            <div class="param-card-title">Seuils de rentabilité</div>
-            <div class="param-card-desc">Configurer les coefficients minimum, norme et par défaut pour les alertes de prix</div>
-          </div>
-          <div class="param-card" onclick="openPrixLimitesModal()">
+          <div class="param-card" onclick="showView('controle-rentabilite')">
             <div class="param-card-icon">🎯</div>
-            <div class="param-card-title">Prix plancher / plafond</div>
+            <div class="param-card-title">Contrôle de rentabilité</div>
             <div class="param-card-desc">Définir les limites de prix de vente acceptables avec alertes au blocage</div>
+          </div>
+          <div class="param-card" onclick="showView('evolution-prix')">
+            <div class="param-card-icon">📈</div>
+            <div class="param-card-title">Évolution des prix</div>
+            <div class="param-card-desc">Suivre l'évolution du prix des ingrédients dans le temps, par article ou en indice global</div>
           </div>
         </div>
 
@@ -946,6 +970,295 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
     </div>
 
+    <!-- VUE CONTRÔLE DE RENTABILITÉ -->
+    <div id="view-controle-rentabilite" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('parametres')">← Retour</button>
+          <h1 class="page-title">🎯 Contrôle de rentabilité</h1>
+        </div>
+      </header>
+      <div class="content-area">
+        <p style="font-size:12.5px;color:var(--text-3);margin:-8px 0 12px">Limites de prix de vente par recette — modifiables en ligne</p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.2)">⛔ Plancher — bloquant à la sauvegarde</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(125,90,0,.08);color:#7D5A00;border:1px solid rgba(125,90,0,.2)">⚠️ Plafond — confirmation demandée</span>
+        </div>
+
+        <!-- Barre outils — les filtres portent aussi le compteur de chaque statut -->
+        <div style="display:flex;align-items:center;gap:8px;padding:0 0 12px;flex-wrap:wrap">
+          <div id="pl-filter-tabs" style="display:flex;gap:5px;flex-wrap:wrap">
+            <button class="pl-tab pl-tab-active" onclick="setPLFilter('all')" data-plf="all">Toutes <span class="pl-tab-n" id="pl-n-all">0</span></button>
+            <button class="pl-tab pl-tab-ok"     onclick="setPLFilter('ok')"     data-plf="ok">✓ Rentable <span class="pl-tab-n" id="pl-n-ok">0</span></button>
+            <button class="pl-tab pl-tab-w"      onclick="setPLFilter('warn')"   data-plf="warn">⚠️ Alerte <span class="pl-tab-n" id="pl-n-warn">0</span></button>
+            <button class="pl-tab pl-tab-d"      onclick="setPLFilter('danger')" data-plf="danger">⛔ Perte <span class="pl-tab-n" id="pl-n-danger">0</span></button>
+            <button class="pl-tab"               onclick="setPLFilter('none')"   data-plf="none">— Non renseigné <span class="pl-tab-n" id="pl-n-none">0</span></button>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <span id="pl-ing-count" style="font-size:11.5px;color:var(--text-3)">0 limite définie</span>
+            <input type="text" id="pl-ing-search" placeholder="Rechercher une recette…" oninput="filterPrixLimitesIng()"
+              style="padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:20px;width:190px;background:var(--surface);color:var(--text)">
+          </div>
+        </div>
+
+        <div style="max-width:1100px;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+          <!-- En-tête colonnes -->
+          <div style="display:grid;grid-template-columns:1fr 118px 56px 130px 122px 122px;gap:0;padding:8px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border)">
+            <div>Recette</div>
+            <div style="text-align:right">Coût matière total</div>
+            <div style="text-align:center">Coeff</div>
+            <div style="text-align:right">Prix de vente conseillé</div>
+            <div style="text-align:right">Prix de vente réel</div>
+            <div style="text-align:center">Statut</div>
+          </div>
+
+          <!-- Liste -->
+          <div id="pl-ing-list" style="max-height:60vh;overflow-y:auto"></div>
+        </div>
+
+        <div style="margin-top:16px">
+          <button class="btn btn-danger" onclick="confirmDeleteAllFiches()">🗑 Supprimer toutes les recettes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE CATÉGORIES -->
+    <div id="view-categories" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('parametres')">← Retour</button>
+          <h1 class="page-title">📂 Catégories</h1>
+        </div>
+      </header>
+      <div class="content-area">
+        <div style="max-width:640px;margin:0 auto">
+          <div class="pxev-card">
+            <h2 class="form-section-title">Catégories existantes</h2>
+            <div class="cat-modal-list" id="cat-modal-list"></div>
+          </div>
+
+          <div class="pxev-card">
+            <h2 class="form-section-title" id="cat-form-label">Nouvelle catégorie</h2>
+            <div class="cat-add-row">
+              <div class="form-field" style="flex:1">
+                <label style="font-size:12px">Nom</label>
+                <input type="text" id="cat-nom-input" placeholder="Ex : Amuse-bouche" maxlength="30">
+              </div>
+              <div class="form-field" style="flex:1">
+                <label style="font-size:12px">Type</label>
+                <select id="cat-groupe-input" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px">
+                  <option value="PRODUCTION">Production</option>
+                  <option value="PREPA">Préparation (PREPA)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field">
+              <label style="font-size:12px">Couleur</label>
+              <div class="cat-color-picker" id="cat-color-picker"></div>
+            </div>
+            <div class="modal-actions" style="margin-top:4px;justify-content:flex-start">
+              <button class="btn btn-primary" id="cat-save-btn" onclick="saveCat()">Ajouter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE CATALOGUE INGRÉDIENTS -->
+    <div id="view-catalogue-ingredients" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('parametres')">← Retour</button>
+          <h1 class="page-title">🧂 Catalogue Ingrédients</h1>
+        </div>
+      </header>
+      <div class="content-area">
+        <div style="max-width:720px;margin:0 auto">
+
+          <div style="display:flex;border-bottom:2px solid var(--border);margin-bottom:16px">
+            <button id="ing-tab-btn-catalogue" onclick="switchIngTab('catalogue')"
+              style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid var(--accent);margin-bottom:-2px;background:none;cursor:pointer;color:var(--accent);transition:color .15s,border-color .15s">
+              📋 Catalogue
+            </button>
+            <button id="ing-tab-btn-form" onclick="switchIngTab('form')"
+              style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;color:var(--text-3);transition:color .15s,border-color .15s">
+              ＋ Nouvel ingrédient
+            </button>
+          </div>
+
+          <!-- Vue Catalogue -->
+          <div id="ing-view-catalogue" style="display:flex;flex-direction:column">
+            <!-- Bandeau explicatif -->
+            <div style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:11.5px;color:var(--text-2);line-height:1.6;display:flex;gap:8px;align-items:flex-start">
+              <span style="font-size:15px;flex-shrink:0;margin-top:1px">💡</span>
+              <span>Le prix des matières premières est enregistré ici une seule fois. Toutes les recettes utilisant le même ingrédient se basent automatiquement sur ce prix — <strong style="color:var(--text)">aucune modification individuelle nécessaire dans chaque recette.</strong></span>
+            </div>
+            <input type="text" id="ing-cat-search" placeholder="🔍 Rechercher un ingrédient…"
+              style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;box-sizing:border-box;margin-bottom:8px"
+              oninput="filterIngCatalogue()">
+            <div id="ing-cat-count" style="font-size:11px;color:var(--text-3);margin-bottom:8px"></div>
+            <div class="cat-modal-list" id="ing-catalogue-list" style="max-height:55vh;overflow-y:auto"></div>
+            <div style="margin-top:14px;display:flex;justify-content:flex-start;align-items:center;gap:10px">
+              <button class="btn btn-danger" onclick="confirmDeleteAllCatalogue()">🗑 Vider le catalogue</button>
+            </div>
+          </div>
+
+          <!-- Vue Formulaire (ajout / modification) -->
+          <div id="ing-view-form" hidden>
+            <p style="font-size:12px;font-weight:700;color:var(--text-2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em"
+               id="ing-cat-form-label">Nouvel ingrédient</p>
+            <div id="ing-form-cascade-info" style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:7px;padding:7px 11px;margin-bottom:12px;font-size:11px;color:var(--text-2);display:none;align-items:center;gap:7px">
+              <span style="font-size:13px;flex-shrink:0">🔄</span>
+              <span>Modifier le prix ici recalculera automatiquement <strong style="color:var(--text)">toutes les recettes</strong> utilisant cet ingrédient.</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;max-width:460px">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <label style="font-size:12px;font-weight:600;color:var(--text-2)">Nom <span class="req">*</span></label>
+                <input type="text" id="ing-cat-nom" placeholder="Ex : Farine" maxlength="60"
+                  style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+                  <label style="font-size:12px;font-weight:600;color:var(--text-2)">Unité</label>
+                  <input type="text" id="ing-cat-unite" placeholder="g, kg, L…" maxlength="20"
+                    style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:4px;flex:1">
+                  <label style="font-size:12px;font-weight:600;color:var(--text-2)">Prix (Ar)</label>
+                  <input type="number" id="ing-cat-prix" min="0" step="1"
+                    style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
+                </div>
+              </div>
+            </div>
+            <div class="modal-actions" style="margin:0;justify-content:flex-start">
+              <button class="btn btn-outline" onclick="resetIngCatForm()">← Retour</button>
+              <button class="btn btn-primary" id="ing-cat-save-btn" onclick="saveIngCatalogue()">Ajouter</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- VUE ÉVOLUTION DES PRIX -->
+    <style>
+      /* Onglets principaux (Par article / Vue globale) — segmented, cohérent
+         avec le reste de l'application plutôt qu'un simple soulignement. */
+      .pxev-maintabs{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:20px}
+      .pxev-maintab{padding:8px 20px;font-size:13px;font-weight:600;border:none;border-radius:8px;background:none;cursor:pointer;color:var(--text-3);transition:background .15s,color .15s}
+      .pxev-maintab:hover:not(.active){color:var(--text-2)}
+      .pxev-maintab.active{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
+
+      /* Cartes de section — mêmes proportions que .form-card, un peu plus
+         compactes puisque cette page est dense en contrôles et données. */
+      .pxev-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:20px 22px;margin-bottom:16px}
+      .pxev-card + .pxev-card{margin-top:0}
+
+      /* Sous-onglets de Vue globale (Par période / Classement) */
+      .pxev-subtabs{display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--border);padding-bottom:10px}
+      .pxev-subtab{padding:6px 14px;font-size:12.5px;font-weight:600;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-2);cursor:pointer;transition:all .15s}
+      .pxev-subtab:hover:not(.active){background:var(--surface-2)}
+      .pxev-subtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+      /* Cartes de statistique (résumé chiffré) */
+      .pxev-stat{flex:1;min-width:130px;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:10px 14px}
+      .pxev-stat-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:4px}
+      .pxev-stat-value{font-size:16px;font-weight:700;color:var(--text)}
+      .pxev-stat-row{display:flex;gap:10px;flex-wrap:wrap}
+
+      /* Conteneur du graphique — padding interne pour que le SVG ne touche pas les bords */
+      .pxev-chart-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;padding:16px 18px 6px}
+    </style>
+    <div id="view-evolution-prix" class="view" hidden>
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="btn-hamburger" onclick="openMobileSidebar()" aria-label="Menu">☰</button>
+          <button class="btn-back" onclick="showView('parametres')">← Retour</button>
+          <h1 class="page-title">Évolution des prix</h1>
+        </div>
+      </header>
+      <div class="content-area">
+        <div style="max-width:980px">
+
+          <div class="pxev-maintabs">
+            <button id="pxev-tab-btn-article" class="pxev-maintab active" onclick="setPxevTab('article')">📦 Par article</button>
+            <button id="pxev-tab-btn-global" class="pxev-maintab" onclick="setPxevTab('global')">🌐 Vue globale</button>
+          </div>
+
+          <!-- Carte : paramètres d'affichage -->
+          <div class="pxev-card">
+            <h2 class="form-section-title">Paramètres d'affichage</h2>
+
+            <!-- Barre de contrôles : article (si onglet article) + période + plage de dates -->
+            <div style="display:flex;flex-wrap:wrap;gap:14px 18px;align-items:flex-end">
+              <div id="pxev-article-picker" style="display:flex;flex-direction:column;gap:5px;min-width:220px">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-2)">Ingrédient</label>
+                <select id="pxev-article-select" onchange="renderPrixEvolution()"
+                  style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;background:var(--surface);color:var(--text)">
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-2)">Période</label>
+                <div class="coeff-seg" id="pxev-gran-tabs" style="margin:0">
+                  <button type="button" class="coeff-seg-btn" data-g="jour"  onclick="setPxevGranularite('jour')">Jour</button>
+                  <button type="button" class="coeff-seg-btn" data-g="mois"  onclick="setPxevGranularite('mois')">Mois</button>
+                  <button type="button" class="coeff-seg-btn" data-g="annee" onclick="setPxevGranularite('annee')">Année</button>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-2)">Du</label>
+                <input type="date" id="pxev-debut" onchange="renderPrixEvolution()" class="inline-field" style="width:150px">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <label style="font-size:11.5px;font-weight:600;color:var(--text-2)">Au</label>
+                <input type="date" id="pxev-fin" onchange="renderPrixEvolution()" class="inline-field" style="width:150px">
+              </div>
+              <button type="button" class="btn btn-outline" style="padding:7px 12px;font-size:12.5px" onclick="resetPxevDates()">↺ Toute la période</button>
+            </div>
+
+            <!-- Vue globale : deux sous-onglets — évolution par période (indice +
+                 comparaison optionnelle d'ingrédients), et classement automatique
+                 des variations (tous les ingrédients avec historique, sans rien
+                 à cocher). -->
+            <div id="pxev-global-panel" style="display:none;flex-direction:column;gap:12px;margin-top:16px">
+              <div class="pxev-subtabs">
+                <button type="button" id="pxev-gsub-btn-periode" onclick="setPxevGlobalSubview('periode')"
+                  class="pxev-subtab active">📅 Par période</button>
+                <button type="button" id="pxev-gsub-btn-classement" onclick="setPxevGlobalSubview('classement')"
+                  class="pxev-subtab">📊 Classement des variations</button>
+              </div>
+
+              <div id="pxev-global-subview-periode" style="display:flex;flex-direction:column;gap:8px">
+                <label style="display:flex;align-items:center;gap:7px;padding:6px 10px;border:1.5px solid var(--accent);border-radius:7px;background:var(--accent-light,#EAF7EE);cursor:pointer;width:fit-content">
+                  <input type="checkbox" id="pxev-indice-check" checked onchange="renderPrixEvolution()">
+                  <span style="width:10px;height:10px;border-radius:50%;background:#8E44AD;display:inline-block;flex-shrink:0"></span>
+                  <span style="font-size:12.5px;font-weight:600;color:var(--text)">Indice moyen du catalogue</span>
+                </label>
+                <div id="pxev-global-checklist" style="max-height:150px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:7px 10px;display:flex;flex-direction:column;gap:1px"></div>
+              </div>
+
+              <div id="pxev-global-subview-classement" style="display:none;font-size:11.5px;color:var(--text-3)">
+                Tous les ingrédients ayant au moins 2 points sur la période choisie, classés du plus en baisse au plus en hausse.
+              </div>
+            </div>
+          </div>
+
+          <!-- Explication en langage clair — Par article uniquement -->
+          <div id="pxev-explication"></div>
+
+          <!-- Carte : graphique + résumé -->
+          <div class="pxev-card">
+            <div id="pxev-chart-container" class="pxev-chart-box"></div>
+            <div id="pxev-summary" class="pxev-stat-row" style="margin-top:14px"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -969,7 +1282,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       </div>
       <div class="form-field">
         <label>Mot de passe</label>
-        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="pwd-wrap">
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+          <button type="button" class="pwd-eye" onclick="togglePwdVisibility(this)" tabindex="-1">👁</button>
+        </div>
       </div>
       <div id="login-error" style="font-size:12.5px;color:#c0392b;text-align:center;min-height:18px"></div>
       <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:11px;font-size:14px;margin-top:4px">Se connecter</button>
@@ -1021,15 +1337,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="form-field" id="acc-oldpwd-wrap">
           <label>Ancien mot de passe</label>
-          <input type="password" id="acc-old-password" placeholder="••••••••">
+          <div class="pwd-wrap">
+            <input type="password" id="acc-old-password" placeholder="••••••••">
+            <button type="button" class="pwd-eye" onclick="togglePwdVisibility(this)" tabindex="-1">👁</button>
+          </div>
         </div>
         <div class="form-field">
           <label id="acc-pwd-label">Nouveau mot de passe</label>
-          <input type="password" id="acc-password" placeholder="Min. 4 caractères">
+          <div class="pwd-wrap">
+            <input type="password" id="acc-password" placeholder="Min. 4 caractères">
+            <button type="button" class="pwd-eye" onclick="togglePwdVisibility(this)" tabindex="-1">👁</button>
+          </div>
         </div>
         <div class="form-field">
           <label>Confirmer le mot de passe</label>
-          <input type="password" id="acc-password-confirm" placeholder="••••••••">
+          <div class="pwd-wrap">
+            <input type="password" id="acc-password-confirm" placeholder="••••••••">
+            <button type="button" class="pwd-eye" onclick="togglePwdVisibility(this)" tabindex="-1">👁</button>
+          </div>
         </div>
       </div>
 
@@ -1083,293 +1408,21 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   <div class="fiche-tip-banner-body">
     <div class="fiche-tip-banner-icon">💡</div>
     <div class="fiche-tip-banner-text">
-      <strong>Définir des limites de prix ?</strong>
-      <span>Vous pouvez fixer un prix plancher <strong>⛔ bloquant</strong> et un plafond <strong>⚠️ avertissement</strong> pour contrôler le prix de vente de cette fiche.</span>
-      <div class="fiche-tip-banner-path">Paramètres → Prix plancher / plafond</div>
+      <strong>Suivre la rentabilité de cette fiche ?</strong>
+      <span>Renseignez son <strong>prix de vente réel</strong> pour le comparer au prix conseillé et voir si elle est <strong>✓ Rentable</strong>, <strong>⚠️ en Alerte</strong> ou <strong>⛔ en Perte</strong>.</span>
+      <div class="fiche-tip-banner-path">Paramètres → Contrôle de rentabilité</div>
     </div>
   </div>
   <div class="fiche-tip-banner-actions">
     <button class="btn-tip btn-tip-close" onclick="hideFicheTipBanner()">Plus tard</button>
-    <button class="btn-tip btn-tip-primary" onclick="hideFicheTipBanner(); showView('parametres'); setTimeout(openPrixLimitesModal, 150)">Configurer →</button>
+    <button class="btn-tip btn-tip-primary" onclick="hideFicheTipBanner(); showView('controle-rentabilite')">Voir →</button>
   </div>
 </div>
 
 <!-- Modal catégories -->
-<style>
-.sr-section-title{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-.sr-field{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}
-.sr-field label{font-size:11.5px;font-weight:600;color:var(--text-2)}
-.sr-field input{padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
-.sr-field input:focus{border-color:var(--accent)}
-.sr-field span{font-size:10.5px;color:var(--text-3)}
-.sr-result-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:7px;margin-bottom:5px}
-.sr-formula-box{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-family:monospace;font-size:12px;color:var(--text-2);text-align:center;line-height:1.8}
-</style>
-<div id="seuils-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeSeuilsModal()">
-  <div class="modal" style="max-width:900px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:95vh">
 
-    <!-- En-tête -->
-    <div style="padding:16px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:36px;height:36px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📊</div>
-        <div>
-          <div style="font-size:15px;font-weight:700;color:var(--text)">Seuil de rentabilité — Point mort</div>
-          <div style="font-size:11.5px;color:var(--text-3);margin-top:1px">Calcul du Q* à partir des données de vos recettes</div>
-        </div>
-      </div>
-      <button onclick="closeSeuilsModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);padding:2px 7px;border-radius:6px" title="Fermer">✕</button>
-    </div>
-
-    <!-- Corps -->
-    <div style="display:flex;flex-direction:column;background:var(--surface-2);overflow-y:auto;flex:1;min-height:0;gap:6px;padding:8px 24px 10px">
-
-      <!-- Graphique -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;flex-shrink:0">
-        <div id="breakeven-chart" style="width:100%">
-          <div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--text-3);font-size:13px;flex-direction:column;gap:8px">
-            <span style="font-size:28px">📈</span>
-            <span style="font-weight:500">Déplacez les curseurs pour afficher le graphique</span>
-            <span style="font-size:11px">Ou cliquez sur <strong>🔗 Importer p et v</strong></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Formule + cartes : côte à côte -->
-      <div style="display:flex;gap:8px;align-items:stretch;flex-shrink:0">
-
-        <!-- Formule -->
-        <div style="flex:2;min-width:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
-          <div id="sr-formula-display" style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;font-size:15px">
-            <span style="font-style:italic;font-weight:700;color:var(--text)">Q*</span>
-            <span style="color:var(--text-3);font-size:16px">=</span>
-            <span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1.4">
-              <span style="font-style:italic;font-weight:700;color:var(--text);font-size:14px">F</span>
-              <span style="border-top:2px solid var(--text-2);padding-top:3px;min-width:40px;text-align:center;font-size:12px;color:var(--text-2)"><i>p</i> − <i>v</i></span>
-            </span>
-            <span id="sr-formula-values" style="color:var(--text-3);font-size:13px"></span>
-            <span style="color:var(--text-3);font-size:16px">=</span>
-            <span id="sr-q-star" style="font-size:22px;font-weight:800;color:#27AE60;letter-spacing:-.5px">—</span>
-          </div>
-          <!-- Lexique des abréviations -->
-          <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:2px">
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Charges fixes : coûts indépendants du volume produit (loyer, salaires, énergie…)">
-              <span style="font-style:italic;font-weight:800;color:var(--text-2)">F</span>
-              <span style="color:var(--text-3)">= Charges fixes</span>
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Prix de vente unitaire : montant facturé au client pour une recette">
-              <span style="font-style:italic;font-weight:800;color:#2980B9">p</span>
-              <span style="color:var(--text-3)">= Prix de vente</span>
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Coût variable unitaire : coût des ingrédients par recette (varie avec la production)">
-              <span style="font-style:italic;font-weight:800;color:#27AE60">v</span>
-              <span style="color:var(--text-3)">= Coût variable</span>
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--surface-2);border:1px solid var(--border);font-size:10px" title="Marge sur coût variable : ce que rapporte chaque recette vendue après avoir couvert son coût variable">
-              <span style="font-style:italic;font-weight:800;color:var(--text-2)">p−v</span>
-              <span style="color:var(--text-3)">= Marge unitaire</span>
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:#27AE6014;border:1px solid #27AE6030;font-size:10px" title="Quantité au seuil de rentabilité : nombre de recettes à vendre pour couvrir toutes les charges (CA = Coût total)">
-              <span style="font-style:italic;font-weight:800;color:#27AE60">Q*</span>
-              <span style="color:var(--text-3)">= Seuil de rentabilité</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- 3 cartes métriques empilées -->
-        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
-          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px">
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:2px">Marge (p−v)</div>
-            <div id="sr-marge" style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
-          </div>
-          <div style="flex:1;background:var(--surface);border:2px solid #27AE60;border-radius:8px;padding:7px 12px">
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#27AE60;margin-bottom:2px">Q* Point mort</div>
-            <div id="sr-q-star-card" style="font-size:15px;font-weight:700;color:#27AE60;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
-          </div>
-          <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 12px">
-            <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:2px">CA au point mort</div>
-            <div id="sr-ca-star" style="font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sliders -->
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 16px;flex-shrink:0">
-
-        <!-- Titre + import -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div>
-            <span style="font-size:12px;font-weight:700;color:var(--text)">Paramètres</span>
-            <span id="sr-import-info" style="font-size:10.5px;color:var(--text-3);margin-left:8px">Ajustez ou importez depuis vos recettes</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <select id="sr-cat-filter" style="padding:4px 8px;font-size:11px;border:1px solid var(--border);border-radius:16px;background:var(--surface);color:var(--text);outline:none">
-              <option value="">Toutes catégories</option>
-            </select>
-            <button onclick="importFromFiches()" style="display:flex;align-items:center;gap:4px;padding:5px 12px;font-size:11px;font-weight:600;background:var(--accent);color:#fff;border:none;border-radius:16px;cursor:pointer;white-space:nowrap">
-              🔗 Importer p et v
-            </button>
-          </div>
-        </div>
-
-        <!-- Aide rapide -->
-        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;margin-bottom:10px;display:flex;flex-direction:column;gap:5px">
-          <div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);margin-bottom:2px">Comment renseigner ces valeurs ?</div>
-          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
-            <span style="font-style:italic;font-weight:800;font-size:14px;color:var(--text);min-width:14px">F</span>
-            <span><strong style="color:var(--text)">Charges fixes</strong> — coûts qui ne dépendent pas du volume : loyer, salaires, électricité, assurances… Additionnez-les et <strong>saisissez le total mensuel</strong> dans la case à droite.</span>
-          </div>
-          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
-            <span style="font-style:italic;font-weight:800;font-size:14px;color:#27AE60;min-width:14px">v</span>
-            <span><strong style="color:var(--text)">Coût variable</strong> — coût moyen des ingrédients par recette. Cliquez <strong>"🔗 Importer p et v"</strong> pour le calculer automatiquement depuis vos fiches, ou saisissez-le manuellement.</span>
-          </div>
-          <div style="display:flex;align-items:baseline;gap:6px;font-size:11.5px;color:var(--text-2)">
-            <span style="font-style:italic;font-weight:800;font-size:14px;color:#2980B9;min-width:14px">p</span>
-            <span><strong style="color:var(--text)">Prix de vente</strong> — prix moyen facturé au client par recette. Importé depuis vos fiches (coût × coefficient) ou saisi manuellement.</span>
-          </div>
-        </div>
-
-        <!-- Slider F -->
-        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px;margin-bottom:5px">
-          <span style="font-style:italic;font-weight:800;font-size:14px;color:var(--text-2);cursor:help" title="F — Charges fixes : coûts indépendants du volume (loyer, salaires, électricité…)">F</span>
-          <input type="range" id="sr-F-range" min="0" max="10000000" step="50000" value="0" oninput="syncBESlider('F')" style="width:100%;accent-color:var(--accent);cursor:pointer">
-          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar fixes</span>
-          <input type="number" id="sr-F-input" min="0" step="50000" placeholder="0" oninput="syncBESlider('F',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);outline:none;text-align:right">
-        </div>
-        <!-- Slider v -->
-        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px;margin-bottom:5px">
-          <span style="font-style:italic;font-weight:800;font-size:14px;color:#27AE60;cursor:help" title="v — Coût variable unitaire : coût des ingrédients par recette, importé depuis vos fiches techniques">v</span>
-          <input type="range" id="sr-v-range" min="0" max="1000000" step="1000" value="0" oninput="syncBESlider('v')" style="width:100%;accent-color:#27AE60;cursor:pointer">
-          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar/recette</span>
-          <input type="number" id="sr-v-input" min="0" step="1000" placeholder="0" oninput="syncBESlider('v',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:#27AE60;outline:none;text-align:right">
-        </div>
-        <!-- Slider p -->
-        <div style="display:grid;grid-template-columns:16px 1fr 56px 140px;align-items:center;gap:8px">
-          <span style="font-style:italic;font-weight:800;font-size:14px;color:#2980B9;cursor:help" title="p — Prix de vente unitaire : montant facturé au client pour une recette, importé depuis vos fiches techniques">p</span>
-          <input type="range" id="sr-p-range" min="0" max="1000000" step="1000" value="0" oninput="syncBESlider('p')" style="width:100%;accent-color:#2980B9;cursor:pointer">
-          <span style="font-size:10px;color:var(--text-3);text-align:center">Ar/recette</span>
-          <input type="number" id="sr-p-input" min="0" step="1000" placeholder="0" oninput="syncBESlider('p',true)" style="width:100%;padding:4px 8px;font-size:12px;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:#2980B9;outline:none;text-align:right">
-        </div>
-      </div>
-    </div>
-
-    <!-- Pied -->
-    <div style="padding:11px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--surface);flex-shrink:0">
-      <span style="font-size:11px;color:var(--text-3)">Outil d'aide à la décision · aucune donnée enregistrée</span>
-      <button class="btn btn-primary" onclick="closeSeuilsModal()">Fermer</button>
-    </div>
-    <!-- Champs coefficients cachés pour compatibilité JS -->
-    <input type="hidden" id="s-coeff-min"     value="1.5">
-    <input type="hidden" id="s-coeff-norm"    value="2.0">
-    <input type="hidden" id="s-coeff-default" value="2.0">
-    <div id="seuils-preview" style="display:none"></div>
-  </div>
-</div>
-
-<div id="cat-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeCatModal()">
-  <div class="modal" style="max-width:500px">
-    <h3>Gérer les catégories</h3>
-    <div class="cat-modal-list" id="cat-modal-list"></div>
-    <div class="cat-add-form">
-      <p style="font-size:12.5px;font-weight:600;color:var(--text-2)" id="cat-form-label">Nouvelle catégorie</p>
-      <div class="cat-add-row">
-        <div class="form-field" style="flex:1">
-          <label style="font-size:12px">Nom</label>
-          <input type="text" id="cat-nom-input" placeholder="Ex : Amuse-bouche" maxlength="30">
-        </div>
-        <div class="form-field" style="flex:1">
-          <label style="font-size:12px">Type</label>
-          <select id="cat-groupe-input" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px">
-            <option value="PRODUCTION">Production</option>
-            <option value="PREPA">Préparation (PREPA)</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-field">
-        <label style="font-size:12px">Couleur</label>
-        <div class="cat-color-picker" id="cat-color-picker"></div>
-      </div>
-      <div class="modal-actions" style="margin-top:4px">
-        <button class="btn btn-outline" onclick="closeCatModal()">Fermer</button>
-        <button class="btn btn-primary" id="cat-save-btn" onclick="saveCat()">Ajouter</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- Modal catalogue ingrédients -->
-<div id="ing-catalogue-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeIngCatalogueModal()">
-  <div class="modal" style="max-width:560px;width:95%;padding:0;overflow:hidden">
-
-    <!-- Header + onglets -->
-    <div style="padding:20px 24px 0;background:var(--surface)">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <h3 style="margin:0;font-size:16px;font-weight:700">🧂 Ingrédients</h3>
-        <button class="btn btn-outline" style="padding:3px 11px;font-size:15px;line-height:1.4" onclick="closeIngCatalogueModal()">✕</button>
-      </div>
-      <div style="display:flex;border-bottom:2px solid var(--border);margin:0 -0px">
-        <button id="ing-tab-btn-catalogue" onclick="switchIngTab('catalogue')"
-          style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid var(--accent);margin-bottom:-2px;background:none;cursor:pointer;color:var(--accent);transition:color .15s,border-color .15s">
-          📋 Catalogue
-        </button>
-        <button id="ing-tab-btn-form" onclick="switchIngTab('form')"
-          style="padding:9px 18px;font-size:13px;font-weight:600;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;cursor:pointer;color:var(--text-3);transition:color .15s,border-color .15s">
-          ＋ Nouvel ingrédient
-        </button>
-      </div>
-    </div>
-
-    <!-- Vue Catalogue (liste + recherche) -->
-    <div id="ing-view-catalogue" style="padding:16px 24px 22px">
-      <!-- Bandeau explicatif -->
-      <div style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:11.5px;color:var(--text-2);line-height:1.6;display:flex;gap:8px;align-items:flex-start">
-        <span style="font-size:15px;flex-shrink:0;margin-top:1px">💡</span>
-        <span>Le prix des matières premières est enregistré ici une seule fois. Toutes les recettes utilisant le même ingrédient se basent automatiquement sur ce prix — <strong style="color:var(--text)">aucune modification individuelle nécessaire dans chaque recette.</strong></span>
-      </div>
-      <input type="text" id="ing-cat-search" placeholder="🔍 Rechercher un ingrédient…"
-        style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;box-sizing:border-box;margin-bottom:12px"
-        oninput="filterIngCatalogue()">
-      <div class="cat-modal-list" id="ing-catalogue-list" style="max-height:300px"></div>
-      <div style="margin-top:14px;text-align:right">
-        <button class="btn btn-outline" onclick="closeIngCatalogueModal()">Fermer</button>
-      </div>
-    </div>
-
-    <!-- Vue Formulaire (ajout / modification) -->
-    <div id="ing-view-form" style="padding:16px 24px 22px" hidden>
-      <p style="font-size:12px;font-weight:700;color:var(--text-2);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em"
-         id="ing-cat-form-label">Nouvel ingrédient</p>
-      <div id="ing-form-cascade-info" style="background:#E8F5E914;border:1px solid #27AE6030;border-radius:7px;padding:7px 11px;margin-bottom:12px;font-size:11px;color:var(--text-2);display:none;align-items:center;gap:7px">
-        <span style="font-size:13px;flex-shrink:0">🔄</span>
-        <span>Modifier le prix ici recalculera automatiquement <strong style="color:var(--text)">toutes les recettes</strong> utilisant cet ingrédient.</span>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <label style="font-size:12px;font-weight:600;color:var(--text-2)">Nom <span class="req">*</span></label>
-          <input type="text" id="ing-cat-nom" placeholder="Ex : Farine" maxlength="60"
-            style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
-        </div>
-        <div style="display:flex;gap:10px">
-          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
-            <label style="font-size:12px;font-weight:600;color:var(--text-2)">Unité</label>
-            <input type="text" id="ing-cat-unite" placeholder="g, kg, L…" maxlength="20"
-              style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;flex:1">
-            <label style="font-size:12px;font-weight:600;color:var(--text-2)">Prix (Ar)</label>
-            <input type="number" id="ing-cat-prix" min="0" step="1"
-              style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;width:100%;box-sizing:border-box">
-          </div>
-        </div>
-      </div>
-      <div class="modal-actions" style="margin:0">
-        <button class="btn btn-outline" onclick="resetIngCatForm()">← Retour</button>
-        <button class="btn btn-primary" id="ing-cat-save-btn" onclick="saveIngCatalogue()">Ajouter</button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
 <!-- Modal Aperçu Impact Prix -->
 <div id="fourn-impact-overlay" class="modal-overlay" hidden>
   <div class="modal" style="max-width:520px;width:95%;padding:24px 24px 20px">
@@ -1383,75 +1436,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
-<!-- Modal Prix plancher / plafond -->
+<!-- Modal Contrôle de rentabilité (prix plancher / plafond) -->
 <style>
 .pl-tab{padding:4px 12px;font-size:12px;border:1px solid var(--border);border-radius:20px;background:var(--surface);color:var(--text-2);cursor:pointer;transition:all .15s}
 .pl-tab:hover{background:var(--surface-2)}
 .pl-tab.pl-tab-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* Compteur porté par chaque bouton de filtre */
+.pl-tab-n{display:inline-block;min-width:17px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--surface-2);color:var(--text-3);font-size:10.5px;font-weight:700;line-height:16px;text-align:center}
+.pl-tab.pl-tab-active .pl-tab-n{background:rgba(255,255,255,.28);color:#fff}
+/* Le bouton actif reprend la couleur de son statut (3 classes = priorité sur .pl-tab.pl-tab-active) */
+.pl-tab.pl-tab-ok.pl-tab-active{background:#1a7a40;border-color:#1a7a40}
+.pl-tab.pl-tab-w.pl-tab-active {background:#B07D00;border-color:#B07D00}
+.pl-tab.pl-tab-d.pl-tab-active {background:var(--red);border-color:var(--red)}
 .pl-stat-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
 .pl-stat-ok{background:rgba(39,174,96,.12);color:#1a7a40;border:1px solid rgba(39,174,96,.25)}
 .pl-stat-danger{background:rgba(192,57,43,.1);color:var(--red);border:1px solid rgba(192,57,43,.25)}
 .pl-stat-warn{background:rgba(125,90,0,.1);color:#7D5A00;border:1px solid rgba(125,90,0,.25)}
 .pl-stat-none{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
-.pl-summary-card{flex:1;min-width:120px;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface)}
 </style>
-<div id="prix-limites-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePrixLimitesModal()">
-  <div class="modal" style="max-width:800px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:95vh">
-
-    <!-- En-tête -->
-    <div style="padding:18px 24px 14px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:38px;height:38px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🎯</div>
-          <div>
-            <div style="font-size:15px;font-weight:700;color:var(--text)">Prix plancher / plafond</div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:1px">Limites de prix de vente par recette — modifiables en ligne</div>
-          </div>
-        </div>
-        <button onclick="closePrixLimitesModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-3);line-height:1;padding:2px 6px;border-radius:6px" title="Fermer">✕</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(192,57,43,.08);color:var(--red);border:1px solid rgba(192,57,43,.2)">⛔ Plancher — bloquant à la sauvegarde</span>
-        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:500;background:rgba(125,90,0,.08);color:#7D5A00;border:1px solid rgba(125,90,0,.2)">⚠️ Plafond — confirmation demandée</span>
-      </div>
-    </div>
-
-    <!-- Cartes résumé -->
-    <div id="prix-limites-preview" style="display:flex;gap:10px;padding:12px 24px;background:var(--surface-2);border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0"></div>
-
-    <!-- Barre outils -->
-    <div style="display:flex;align-items:center;gap:8px;padding:10px 24px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap;flex-shrink:0">
-      <div id="pl-filter-tabs" style="display:flex;gap:5px">
-        <button class="pl-tab pl-tab-active" onclick="setPLFilter('all')" data-plf="all">Toutes</button>
-        <button class="pl-tab" onclick="setPLFilter('alert')" data-plf="alert">🚨 En alerte</button>
-        <button class="pl-tab" onclick="setPLFilter('set')" data-plf="set">✓ Avec limites</button>
-      </div>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-        <span id="pl-ing-count" style="font-size:11.5px;color:var(--text-3)">0 limite définie</span>
-        <input type="text" id="pl-ing-search" placeholder="Rechercher une recette…" oninput="filterPrixLimitesIng()"
-          style="padding:5px 10px;font-size:12px;border:1px solid var(--border);border-radius:20px;width:190px;background:var(--surface);color:var(--text)">
-      </div>
-    </div>
-
-    <!-- En-tête colonnes -->
-    <div style="display:grid;grid-template-columns:1fr 110px 105px 105px 130px;gap:0;padding:6px 24px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border);flex-shrink:0">
-      <div>Recette</div>
-      <div style="text-align:right">Prix vente</div>
-      <div style="text-align:right">⛔ Plancher</div>
-      <div style="text-align:right">⚠️ Plafond</div>
-      <div style="text-align:center">Statut</div>
-    </div>
-
-    <!-- Liste -->
-    <div id="pl-ing-list" style="flex:1;min-height:0;overflow-y:auto"></div>
-
-    <!-- Pied -->
-    <div style="padding:12px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;background:var(--surface);flex-shrink:0">
-      <button class="btn btn-primary" onclick="closePrixLimitesModal()">Fermer</button>
-    </div>
-  </div>
-</div>
-
 <!-- Modal import PDF -->
 <div id="pdf-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePDFModal()">
   <div class="modal" style="max-width:680px;width:95%">
@@ -1466,6 +1468,26 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 
 <!-- Modal confirmation -->
+<!-- ── Modal choix du type de fiche PDF ── -->
+<div id="pdf-mode-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePdfModeModal()">
+  <div class="modal" style="max-width:420px">
+    <h3>Télécharger la fiche PDF</h3>
+    <p>Choisissez le destinataire du document.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+      <button class="btn btn-outline" style="text-align:left;padding:12px 16px" onclick="runDownloadPDF('admin')">
+        <strong>🔐 Fiche Admin</strong><br>
+        <span style="font-size:11.5px;color:var(--text-2)">Avec les prix, coefficient et coût</span>
+      </button>
+      <button class="btn btn-outline" style="text-align:left;padding:12px 16px" onclick="runDownloadPDF('employe')">
+        <strong>👤 Fiche Employé</strong><br>
+        <span style="font-size:11.5px;color:var(--text-2)">Sans aucun chiffre de prix</span>
+      </button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closePdfModeModal()">Annuler</button>
+    </div>
+  </div>
+</div>
 <!-- ── Modal Export PDF ── -->
 <div id="pdf-export-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closePdfExportModal()">
   <div class="modal" style="max-width:620px;width:97%;padding:0;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;max-height:90vh">
@@ -1531,10 +1553,36 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
   </div>
 </div>
 
+<!-- Confirmation renforcée : suppression en masse, irréversible -->
+<div id="danger-modal-overlay" class="modal-overlay" hidden onclick="if(event.target===this)closeDangerModal()">
+  <div class="modal" style="max-width:480px">
+    <h3 id="danger-modal-title" style="color:var(--red)">Suppression définitive</h3>
+    <div id="danger-modal-msg" style="font-size:13.5px;color:var(--text-2);line-height:1.6;margin:10px 0 4px"></div>
+    <div style="background:#FDECEA;border:1px solid rgba(192,57,43,.3);border-radius:7px;padding:10px 13px;margin:12px 0;font-size:12.5px;color:var(--red);line-height:1.55">
+      ⚠️ Cette action est <strong>irréversible</strong>. Aucune sauvegarde n'est effectuée automatiquement.
+    </div>
+    <label style="font-size:12.5px;font-weight:600;color:var(--text-2);display:block;margin-bottom:5px">
+      Pour confirmer, saisissez votre <strong>mot de passe administrateur</strong> :
+    </label>
+    <div class="pwd-wrap">
+      <input type="password" id="danger-modal-input" autocomplete="current-password" spellcheck="false"
+        placeholder="Mot de passe"
+        style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:14px;box-sizing:border-box">
+      <button type="button" class="pwd-eye" onclick="togglePwdVisibility(this)" tabindex="-1">👁</button>
+    </div>
+    <div id="danger-modal-err" style="color:var(--red);font-size:12px;margin-top:6px;min-height:16px"></div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn btn-outline" onclick="closeDangerModal()">Annuler</button>
+      <button class="btn btn-danger" id="danger-modal-btn" disabled style="opacity:.45;cursor:not-allowed">Supprimer</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
 // ── ÉTAT ──────────────────────────────────────────────────────────────────────
 let fiches              = [];
@@ -1562,7 +1610,18 @@ let currentUser = null;
 
 async function handleApiResponse(r) {
   if (r.status === 401) { doLogout(); throw new Error('401'); }
-  if (!r.ok) throw r;
+  if (!r.ok) {
+    // Remonter le message du serveur : sans cela, tous les échecs
+    // s'affichaient sous le même libellé générique.
+    let msg = `Erreur ${r.status}`;
+    try {
+      const d = (await r.json())?.detail;
+      if (d) msg = typeof d === 'string' ? d : JSON.stringify(d);
+    } catch (_) {}
+    const err = new Error(msg);
+    err.status = r.status;
+    throw err;
+  }
   return r.json();
 }
 
@@ -1590,6 +1649,82 @@ async function loadSettings() {
   } catch(e) {}
 }
 
+// ── INDEX INGRÉDIENTS ─────────────────────────────────────────────────────────
+// Source unique partagée par le modal Catalogue ET la liste déroulante du
+// formulaire : même liste, même coût unitaire. Chaque entrée porte
+// { nom, unite, prix }  où prix est TOUJOURS un coût unitaire (Ar / unité).
+let ingIndex = [];
+
+function buildIngIndex() {
+  const map = {};
+  const slot = n => map[n] || (map[n] = {
+    nom: n, unite: null, prix: null, prio: -1,
+    parUnite: {},          // { UNITE: [coûts unitaires], GRAMME: [...] }
+    origine: '', unitesVues: [],
+  });
+
+  // Priorité 0 — lignes d'ingrédients des fiches.
+  // Les coûts sont regroupés PAR UNITÉ : un citron à 375 Ar/UNITE et un zeste
+  // à 5 Ar/GRAMME ne doivent jamais être moyennés ensemble, et l'unité affichée
+  // doit être celle des lignes qui ont servi à calculer le prix.
+  fiches.forEach(f => (f.ingredients || []).forEach(ing => {
+    if (!ing.nom || !ing.nom.trim()) return;
+    const e = slot(ing.nom.trim());
+    const u = (ing.unite || '').trim().toUpperCase() || '—';
+    const q = parseFloat(String(ing.qte || '').replace(',', '.')) || 0;
+    if (!e.unitesVues.includes(u)) e.unitesVues.push(u);
+    if (ing.prix > 0 && q > 0) (e.parUnite[u] = e.parUnite[u] || []).push(ing.prix / q);
+  }));
+
+  Object.values(map).forEach(e => {
+    // Unité dominante = celle qui compte le plus de lignes valorisées
+    const unites = Object.keys(e.parUnite);
+    if (unites.length) {
+      const dom = unites.sort((a, b) => e.parUnite[b].length - e.parUnite[a].length)[0];
+      const v   = e.parUnite[dom].slice().sort((a, b) => a - b);
+      e.prix   = v[Math.floor(v.length / 2)];
+      e.unite  = dom === '—' ? null : dom;
+      e.prio   = 0;
+      e.origine = `médiane de ${v.length} ligne${v.length > 1 ? 's' : ''} en ${dom}`;
+      // Unités incompatibles rencontrées pour le même nom
+      e.conflit = unites.length > 1 ? unites : null;
+    } else if (e.unitesVues.length) {
+      e.unite = e.unitesVues[0] === '—' ? null : e.unitesVues[0];
+    }
+    delete e.parUnite; delete e.unitesVues;
+  });
+
+  // Priorité 1 — catalogue : entrée manuelle ou fiche PREPA (coût ÷ quantité)
+  (ingredientsCatalogue || []).forEach(c => {
+    if (!c.nom || !c.nom.trim()) return;
+    const e  = slot(c.nom.trim());
+    const cq = parseFloat(c.qte), cp = parseFloat(c.prix);
+    if (!isNaN(cp) && cp > 0) {
+      const parLot = !isNaN(cq) && cq > 0;
+      e.prix   = parLot ? cp / cq : cp;
+      e.prio   = 1;
+      e.unite  = (c.unite || '').trim() || e.unite;
+      e.origine = parLot
+        ? `catalogue : ${Number(cp).toLocaleString('fr-FR')} Ar pour ${Number(cq).toLocaleString('fr-FR')} ${e.unite || ''}`.trim()
+        : 'catalogue (prix saisi)';
+      e.conflit = null;
+    } else if (c.unite && !e.unite) {
+      e.unite = c.unite.trim();
+    }
+  });
+
+  ingIndex = Object.values(map)
+    .map(({prio, ...e}) => e)
+    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+  return ingIndex;
+}
+
+function findIng(nom) {
+  if (!nom) return null;
+  const n = String(nom).trim().toLowerCase();
+  return ingIndex.find(e => e.nom.toLowerCase() === n) || null;
+}
+
 async function init() {
   try {
     await loadSettings();
@@ -1599,6 +1734,7 @@ async function init() {
       api.get('/api/fiches'),
       api.get('/api/ingredients/catalogue'),
     ]);
+    buildIngIndex();
     buildAllergenesForm();
     renderSidebarCats();
     renderListe();
@@ -1621,6 +1757,7 @@ async function start() {
 
 async function loadFiches() {
   fiches = await api.get('/api/fiches');
+  buildIngIndex();   // les coûts unitaires dérivent des fiches
   renderListe();
 }
 
@@ -1755,6 +1892,14 @@ function showLoginScreen() {
 
 function hideLoginScreen() {
   document.getElementById('login-screen').style.display = 'none';
+}
+
+function togglePwdVisibility(btn) {
+  const input = btn.previousElementSibling;
+  if (!input) return;
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
 }
 
 async function doLogin() {
@@ -1981,8 +2126,7 @@ async function submitAccountForm() {
     closeAccountForm();
     await refreshAccountsList();
   } catch(e) {
-    const msg = await e.json?.().then(d => d.detail).catch(() => 'Erreur.');
-    errEl.textContent = msg;
+    errEl.textContent = e.message || 'Erreur.';
   }
 }
 
@@ -1993,8 +2137,7 @@ async function deleteAccount(id, username) {
     showToast('Utilisateur supprimé ✓');
     await refreshAccountsList();
   } catch(e) {
-    const msg = await e.json?.().then(d => d.detail).catch(() => 'Erreur.');
-    showToast('Erreur : ' + msg);
+    showToast('Erreur : ' + (e.message || 'Erreur.'));
   }
 }
 
@@ -2258,17 +2401,24 @@ async function handleSyncHACCP(e) {
   );
 }
 
+
 // ── VUES ──────────────────────────────────────────────────────────────────────
+const _PARAM_SUBVIEWS = ['parametres', 'evolution-prix', 'catalogue-ingredients', 'controle-rentabilite', 'categories'];
+
 function showView(name) {
-  if (!isAdmin() && (name === 'parametres' || name === 'historique')) return;
+  if (!isAdmin() && (name === 'historique' || _PARAM_SUBVIEWS.includes(name))) return;
   closeMobileSidebar();
-  ['liste','detail','form','historique','parametres'].forEach(v =>
+  ['liste','detail','form','historique',...(_PARAM_SUBVIEWS)].forEach(v =>
     document.getElementById('view-'+v).hidden = v !== name
   );
   document.getElementById('nav-liste').classList.toggle('active', name === 'liste');
-  document.getElementById('nav-parametres').classList.toggle('active', name === 'parametres');
+  document.getElementById('nav-parametres').classList.toggle('active', _PARAM_SUBVIEWS.includes(name));
   if (name === 'liste') renderListe();
   if (name === 'historique') loadHistorique();
+  if (name === 'evolution-prix') initEvolutionPrixView();
+  if (name === 'catalogue-ingredients') initCatalogueIngredientsView();
+  if (name === 'controle-rentabilite') initControleRentabiliteView();
+  if (name === 'categories') initCategoriesView();
 }
 
 // ── MODAL EXPORT PDF ─────────────────────────────────────────────────────────
@@ -2471,7 +2621,7 @@ let ingCatalogueData  = [];   // entrées manuelles [{id, nom, unite, prix}]
 let ingTousData       = [];   // tous les noms depuis les fiches [{nom, dans_catalogue}]
 let editingIngCatId   = null;
 
-async function openIngCatalogueModal() {
+async function initCatalogueIngredientsView() {
   editingIngCatId    = null;
   editingIngFicheNom = null;
   document.getElementById('ing-cat-nom').value    = '';
@@ -2482,7 +2632,6 @@ async function openIngCatalogueModal() {
   document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
   await renderIngCatalogueList();
   switchIngTab('catalogue');
-  document.getElementById('ing-catalogue-modal-overlay').hidden = false;
 
   // Délégation d'événements sur la liste
   document.getElementById('ing-catalogue-list').onclick = function(ev) {
@@ -2507,10 +2656,6 @@ async function openIngCatalogueModal() {
   };
 }
 
-function closeIngCatalogueModal() {
-  document.getElementById('ing-catalogue-modal-overlay').hidden = true;
-}
-
 function switchIngTab(tab) {
   const isCat = tab === 'catalogue';
   document.getElementById('ing-view-catalogue').hidden = !isCat;
@@ -2529,29 +2674,8 @@ async function renderIngCatalogueList() {
     api.get('/api/ingredients/catalogue/manuel'),
     api.get('/api/ingredients/catalogue'),
   ]);
-  // Construire ingTousData depuis les fiches déjà en mémoire
-  const map = {};
-  fiches.forEach(f => {
-    (f.ingredients || []).forEach(ing => {
-      if (!ing.nom || !ing.nom.trim()) return;
-      const nom = ing.nom.trim();
-      if (!map[nom]) map[nom] = {nom, unite: null, prix: null};
-      if (ing.unite && ing.unite.trim() && !map[nom].unite) map[nom].unite = ing.unite.trim();
-      if (ing.prix && ing.prix > 0 && !map[nom].prix)      map[nom].prix  = ing.prix;
-    });
-  });
-  // Compléter unite/prix depuis le catalogue (fiches PREPA + catalogue manuel) — comparaison insensible à la casse
-  Object.values(map).forEach(item => {
-    if (!item.unite || !item.prix) {
-      const nomLow = item.nom.toLowerCase();
-      const cat = ingredientsCatalogue.find(e => e.nom.toLowerCase() === nomLow);
-      if (cat) {
-        if (!item.unite && cat.unite) item.unite = cat.unite;
-        if (!item.prix  && cat.prix)  item.prix  = cat.prix;
-      }
-    }
-  });
-  ingTousData = Object.values(map).sort((a,b) => a.nom.localeCompare(b.nom, 'fr'));
+  // Même source que la liste déroulante du formulaire — un seul calcul, un seul prix
+  ingTousData = buildIngIndex();
   filterIngCatalogue();
 }
 
@@ -2560,25 +2684,49 @@ function filterIngCatalogue() {
   const list = document.getElementById('ing-catalogue-list');
   if (!list) return;
 
-  // Fusionner : d'abord les entrées manuelles (éditables), puis les noms de fiches non encore dans catalogue
-  const manuelNoms = new Set(ingCatalogueData.map(e => e.nom));
-  const fichesSeulement = ingTousData.filter(e => !manuelNoms.has(e.nom));
+  // Fusionner : d'abord les entrées manuelles (éditables), puis les noms de fiches non
+  // encore dans le catalogue. Comparaison insensible à la casse : sans ça, "Lait" (saisi
+  // au catalogue) et "LAIT" (utilisé dans une recette) apparaissaient comme deux
+  // ingrédients distincts au lieu d'être reconnus comme le même.
+  const manuelNoms = new Set(ingCatalogueData.map(e => e.nom.toLowerCase()));
+  const fichesSeulement = ingTousData.filter(e => !manuelNoms.has(e.nom.toLowerCase()));
 
   const allItems = [
     ...ingCatalogueData.map(e => ({...e, source: 'manuel'})),
-    ...fichesSeulement.map(e => ({nom: e.nom, unite: e.unite, prix: e.prix, source: 'fiche'}))
+    ...fichesSeulement.map(e => ({nom: e.nom, unite: e.unite, prix: e.prix,
+                                  origine: e.origine, conflit: e.conflit, source: 'fiche'}))
   ].filter(e => !q || e.nom.toLowerCase().includes(q));
+
+  const countEl = document.getElementById('ing-cat-count');
+  if (countEl) {
+    countEl.textContent = q
+      ? `${allItems.length} résultat${allItems.length > 1 ? 's' : ''}`
+      : `${allItems.length} ingrédient${allItems.length > 1 ? 's' : ''} au total — faites défiler pour tout voir`;
+  }
 
   if (!allItems.length) {
     list.innerHTML = '<p style="color:var(--text-3);font-size:13px;padding:8px 0">Aucun ingrédient trouvé.</p>';
     return;
   }
 
+  // Coût unitaire : « 8,35 Ar / GRAMME » — sans l'unité, le montant ne veut rien dire.
+  // L'infobulle donne l'origine du prix ; ⚠ signale des unités incompatibles.
+  const fmtUnit = (prix, unite, col, e) => {
+    if (!(prix > 0)) return '';
+    const n   = Number(prix).toLocaleString('fr-FR', {maximumFractionDigits: 2});
+    const tip = e?.conflit
+      ? `Unités incompatibles : ${e.conflit.join(', ')} — ${e.origine || ''}`
+      : (e?.origine || '');
+    const warn = e?.conflit
+      ? ` <span style="color:#B07D00;font-size:11px" title="${esc(tip)}">⚠</span>` : '';
+    return ` — <span style="color:${col};font-size:12px"${tip ? ` title="${esc(tip)}"` : ''}>${n} Ar${unite ? ' / ' + esc(unite) : ''}</span>${warn}`;
+  };
+
   list.innerHTML = allItems.map(e => {
     if (e.source === 'manuel') {
       return `<div class="cat-modal-item">
         <span style="font-size:10px;background:var(--green-light);color:var(--green);border-radius:3px;padding:1px 5px;font-weight:600;margin-right:6px">CATALOGUE</span>
-        <span class="cat-modal-nom">${esc(e.nom)}${e.unite ? ' <span style="color:var(--text-3);font-size:12px">('+esc(e.unite)+')</span>' : ''}${e.prix ? ' — <span style="color:var(--green);font-size:12px">'+Number(e.prix).toLocaleString('fr-FR')+' Ar</span>' : ''}</span>
+        <span class="cat-modal-nom">${esc(e.nom)}${fmtUnit(e.prix, e.unite, 'var(--green)', e)}</span>
         <div class="cat-modal-actions">
           <button class="cat-modal-btn ing-edit-btn"
             data-id="${e.id}" data-nom="${esc(e.nom)}" data-unite="${esc(e.unite||'')}" data-prix="${e.prix != null ? e.prix : ''}">✏️</button>
@@ -2589,7 +2737,7 @@ function filterIngCatalogue() {
       const hasInfo = e.unite || e.prix;
       return `<div class="cat-modal-item">
         <span style="font-size:10px;background:var(--bg-2,#f0f0f0);color:var(--text-3);border-radius:3px;padding:1px 5px;font-weight:600;margin-right:6px">FICHE</span>
-        <span class="cat-modal-nom">${esc(e.nom)}${e.unite ? ' <span style="color:var(--text-3);font-size:12px">('+esc(e.unite)+')</span>' : ''}${e.prix ? ' — <span style="color:var(--text-2);font-size:12px">'+Number(e.prix).toLocaleString('fr-FR')+' Ar</span>' : ''}</span>
+        <span class="cat-modal-nom">${esc(e.nom)}${fmtUnit(e.prix, e.unite, 'var(--text-2)', e)}</span>
         <div class="cat-modal-actions">
           ${!hasInfo ? `<button class="cat-modal-btn ing-fiche-edit-btn" style="font-size:11px;color:var(--green)" data-nom="${esc(e.nom)}" data-unite="" data-prix="">+ Prix</button>` : ''}
           <button class="cat-modal-btn ing-fiche-edit-btn"
@@ -2645,9 +2793,12 @@ function startEditIngFiche(nom, unite, prix) {
 async function deleteIngFiche(nom) {
   if (!confirm(`Supprimer "${nom}" de toutes les fiches ?\nCette action est irréversible.`)) return;
   const res = await api.post('/api/ingredients/fiche/supprimer', {nom});
+  // Recharger les données AVANT de reconstruire l'index et de réafficher
+  [fiches, ingredientsCatalogue] = await Promise.all([
+    api.get('/api/fiches'),
+    api.get('/api/ingredients/catalogue'),
+  ]);
   await renderIngCatalogueList();
-  ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
-  [fiches] = await Promise.all([api.get('/api/fiches')]);
   renderListe();
 }
 
@@ -2699,14 +2850,20 @@ async function saveIngCatalogue() {
       document.getElementById('ing-cat-form-label').textContent = 'Nouvel ingrédient';
       document.getElementById('ing-cat-save-btn').textContent   = 'Ajouter';
       document.getElementById('ing-tab-btn-form').textContent   = '＋ Nouvel ingrédient';
-      // Rafraîchir ingredientsCatalogue en priorité (auto-fill fiches)
-      ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
-      // Mettre à jour l'UI du catalogue (peut échouer si le modal est fermé)
-      try { await renderIngCatalogueList(); } catch(_) {}
-      switchIngTab('catalogue');
+      // Recharger catalogue ET fiches AVANT de reconstruire l'index :
+      // les coûts unitaires dérivent des deux sources.
       const nb = result?.fiches_recalculees || 0;
+      const [_cat, _fic] = await Promise.all([
+        api.get('/api/ingredients/catalogue'),
+        nb > 0 ? api.get('/api/fiches') : Promise.resolve(null),
+      ]);
+      ingredientsCatalogue = _cat;
+      if (_fic) fiches = _fic;
+      // Met à jour l'UI du catalogue (peut échouer si le modal est fermé)
+      try { await renderIngCatalogueList(); } catch(_) { buildIngIndex(); }
+      switchIngTab('catalogue');
       if (nb > 0) {
-        fiches = await api.get('/api/fiches'); renderListe();
+        renderListe();
         showToast(`✓ Catalogue mis à jour — ${nb} fiche${nb>1?'s':''} recalculée${nb>1?'s':''} automatiquement`, 4000);
       } else {
         showToast('Ingrédient enregistré ✓');
@@ -2730,404 +2887,10 @@ async function saveIngCatalogue() {
 async function deleteIngCat(id) {
   if (!confirm('Supprimer cet ingrédient du catalogue ?')) return;
   await api.delete('/api/ingredients/catalogue/manuel/' + id);
-  await renderIngCatalogueList();
   ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+  await renderIngCatalogueList();   // reconstruit l'index depuis les données à jour
 }
 
-// ── SEUILS DE RENTABILITÉ ─────────────────────────────────────────────────────
-function openSeuilsModal() {
-  // Maintenir les valeurs dans les champs cachés
-  const _cm = document.getElementById('s-coeff-min');     if (_cm) _cm.value = COEFF_MIN;
-  const _cn = document.getElementById('s-coeff-norm');    if (_cn) _cn.value = COEFF_NORM;
-  const _cd = document.getElementById('s-coeff-default'); if (_cd) _cd.value = COEFF_DEFAULT;
-
-  // Remplir le filtre catégories
-  const catSel = document.getElementById('sr-cat-filter');
-  if (catSel) {
-    const cats = [...new Set(fiches.map(f => f.categorie).filter(Boolean))].sort();
-    catSel.innerHTML = '<option value="">Toutes les catégories</option>' +
-      cats.map(c => `<option value="${esc(c)}">${esc(c.replace(/_/g,' ').toUpperCase())}</option>`).join('');
-  }
-
-  // Restaurer sliders + inputs depuis localStorage
-  const saved = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
-  ['F','p','v'].forEach(k => {
-    const range = document.getElementById('sr-' + k + '-range');
-    const input = document.getElementById('sr-' + k + '-input');
-    if (range && saved[k]) {
-      if (saved[k] > parseFloat(range.max)) range.max = Math.ceil(saved[k] * 1.5 / 10000) * 10000;
-      range.value = saved[k];
-      if (input) input.value = saved[k];
-    }
-  });
-
-  const infoEl = document.getElementById('sr-import-info');
-  if (infoEl) infoEl.textContent = saved.importInfo || '';
-
-  updateSeuilsPreview();
-  updateBreakevenChart();
-  document.getElementById('seuils-modal-overlay').hidden = false;
-}
-
-function importFromFiches() {
-  const catFilter = document.getElementById('sr-cat-filter')?.value || '';
-
-  const valid = fiches
-    .filter(f => !catFilter || f.categorie === catFilter)
-    .map(f => {
-      const cout = (f.ingredients || []).reduce((s, ing) => s + (parseFloat(ing.prix) || 0), 0);
-      const pv   = Math.round(cout * (parseFloat(f.coefficient) || 2));
-      return { nom: f.nom, cout, pv };
-    })
-    .filter(f => f.cout > 0 && f.pv > 0);
-
-  if (!valid.length) {
-    showToast('Aucune recette avec données disponibles' + (catFilter ? ' dans cette catégorie' : ''));
-    return;
-  }
-
-  const avgV = Math.round(valid.reduce((s, f) => s + f.cout, 0) / valid.length);
-  const avgP = Math.round(valid.reduce((s, f) => s + f.pv,  0) / valid.length);
-  const maxV = Math.max(...valid.map(f => f.cout));
-  const maxP = Math.max(...valid.map(f => f.pv));
-
-  // Ajuster les max des sliders selon les données réelles
-  const vRange = document.getElementById('sr-v-range');
-  const pRange = document.getElementById('sr-p-range');
-  if (vRange) { vRange.max = Math.ceil(maxV * 1.5 / 10000) * 10000; vRange.value = avgV; }
-  if (pRange) { pRange.max = Math.ceil(maxP * 1.5 / 10000) * 10000; pRange.value = avgP; }
-  const vInput = document.getElementById('sr-v-input'); if (vInput) vInput.value = avgV;
-  const pInput = document.getElementById('sr-p-input'); if (pInput) pInput.value = avgP;
-
-  syncBESlider('v');
-  syncBESlider('p');
-
-  // Afficher info import
-  const label = catFilter ? catFilter.replace(/_/g,' ').toUpperCase() : 'toutes catégories';
-  const info  = `🔗 ${valid.length} recette${valid.length>1?'s':''} (${label}) · v moy = ${avgV.toLocaleString('fr-FR')} Ar · p moy = ${avgP.toLocaleString('fr-FR')} Ar`;
-  const infoEl = document.getElementById('sr-import-info');
-  if (infoEl) infoEl.textContent = info;
-
-  // Sauvegarder l'info import dans localStorage
-  const saved = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
-  saved.importInfo = info;
-  localStorage.setItem('sr_breakeven', JSON.stringify(saved));
-
-  showToast(`✓ p et v importés — ${valid.length} recette${valid.length>1?'s':''}`);
-}
-function closeSeuilsModal() {
-  document.getElementById('seuils-modal-overlay').hidden = true;
-}
-function updateSeuilsPreview() {
-  const min  = parseFloat(document.getElementById('s-coeff-min').value) || 1.5;
-  const norm = parseFloat(document.getElementById('s-coeff-norm').value) || 2.0;
-  const prev = document.getElementById('seuils-preview');
-  prev.innerHTML =
-    `<div style="margin-bottom:5px;font-weight:600;font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.04em">Aperçu des alertes</div>` +
-    `<div style="color:#C0392B;font-size:12px;margin-bottom:2px">⛔ Coeff &lt; <strong>${min}</strong> → Alerte danger</div>` +
-    `<div style="color:#7D5A00;font-size:12px;margin-bottom:2px">⚠️ Coeff entre <strong>${min}</strong> et <strong>${norm}</strong> → Attention</div>` +
-    `<div style="color:#1A7A3C;font-size:12px">✅ Coeff ≥ <strong>${norm}</strong> → Rentabilité OK</div>`;
-}
-
-function syncBESlider(key, fromInput) {
-  const range = document.getElementById('sr-' + key + '-range');
-  const input = document.getElementById('sr-' + key + '-input');
-  if (!range) return;
-  if (fromInput && input) {
-    const val = parseFloat(input.value) || 0;
-    if (val > parseFloat(range.max)) range.max = Math.ceil(val * 1.5 / 10000) * 10000;
-    range.value = val;
-  } else {
-    const val = parseFloat(range.value) || 0;
-    if (input && document.activeElement !== input) input.value = val > 0 ? val : '';
-  }
-  updateBreakevenChart();
-}
-
-function updateBreakevenChart() {
-  const F = parseFloat(document.getElementById('sr-F-range')?.value) || 0;
-  const p = parseFloat(document.getElementById('sr-p-range')?.value) || 0;
-  const v = parseFloat(document.getElementById('sr-v-range')?.value) || 0;
-
-  // Mettre à jour les labels
-  const setLbl = (k, val) => { const el = document.getElementById('sr-'+k+'-lbl'); if (el) el.textContent = val > 0 ? Number(val).toLocaleString('fr-FR') : '0'; };
-  setLbl('F', F); setLbl('p', p); setLbl('v', v);
-
-  const _srPrev = JSON.parse(localStorage.getItem('sr_breakeven') || '{}');
-  localStorage.setItem('sr_breakeven', JSON.stringify({ ..._srPrev, F, p, v }));
-
-  const marge = p - v;
-  const qStar = marge > 0 && F > 0 ? F / marge : 0;
-
-  // Formule développée
-  const fmtEl = document.getElementById('sr-formula-values');
-  const qEl   = document.getElementById('sr-q-star');
-  // Mise à jour des cartes métriques
-  const fmt = n => n > 0 ? Number(Math.round(n)).toLocaleString('fr-FR') + ' Ar' : '—';
-  const margeEl = document.getElementById('sr-marge');
-  const qStarCard = document.getElementById('sr-q-star-card');
-  const caStarEl  = document.getElementById('sr-ca-star');
-  if (margeEl)   { margeEl.textContent   = marge > 0 ? fmt(marge) : '—'; margeEl.style.color = marge > 0 ? '#27AE60' : 'var(--red)'; }
-  if (qStarCard) { qStarCard.textContent = qStar > 0 ? Math.ceil(qStar).toLocaleString('fr-FR') + ' unités' : '—'; }
-  if (caStarEl)  { caStarEl.textContent  = qStar > 0 ? fmt(Math.ceil(qStar) * p) : '—'; }
-
-  if (fmtEl && qEl) {
-    if (F > 0 && p > 0 && marge > 0) {
-      fmtEl.innerHTML = `<span style="color:var(--text-3);margin:0 4px">=</span>
-        <span style="display:inline-flex;flex-direction:column;align-items:center;font-weight:600;line-height:1.3;color:var(--text)">
-          <span style="color:var(--text)">${Number(F).toLocaleString('fr-FR')}</span>
-          <span style="border-top:1.5px solid var(--text-2);padding-top:3px;min-width:40px;text-align:center;font-size:13px">
-            <span style="color:#2980B9">${Number(p).toLocaleString('fr-FR')}</span><span style="color:var(--text-3)"> − </span><span style="color:#27AE60">${Number(v).toLocaleString('fr-FR')}</span>
-          </span>
-        </span>`;
-      qEl.textContent = Math.ceil(qStar).toLocaleString('fr-FR');
-      qEl.style.color = '#27AE60';
-    } else {
-      fmtEl.innerHTML = '';
-      qEl.textContent = '—';
-      qEl.style.color = 'var(--text-3)';
-    }
-  }
-
-  const container = document.getElementById('breakeven-chart');
-  if (!container) return;
-
-  if (p <= 0 || v >= p || F <= 0) {
-    container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:220px;color:var(--text-3);font-size:13px;flex-direction:column;gap:8px">
-      <span style="font-size:28px">📈</span>
-      <span style="font-weight:500">${p > 0 && v >= p ? '⛔ p doit être supérieur à v' : 'Déplacez les curseurs pour afficher le graphique'}</span>
-      ${!(p > 0 && v >= p) ? '<span style="font-size:11px">Ou cliquez sur <strong>🔗 Importer p et v</strong></span>' : ''}
-    </div>`;
-    _beChartState = null;
-    return;
-  }
-
-  const W = 680, H = 270;
-  const pad = { top: 28, right: 24, bottom: 48, left: 70 };
-  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
-
-  const maxQ = Math.ceil(qStar * 1.8 / 5) * 5 || 100;
-  const maxY  = Math.max(p * maxQ, F + v * maxQ) * 1.15;
-
-  const toX = q => pad.left + (q / maxQ) * cW;
-  const toY = y => pad.top + cH - (y / maxY) * cH;
-  const fmtY = y => {
-    if (y >= 1e6) return (y/1e6).toFixed(1).replace('.',',')+' M';
-    if (y >= 1e3) return Math.round(y/1e3)+'k';
-    return Math.round(y).toString();
-  };
-
-  _beChartState = { F, p, v, maxQ, maxY, pad, W, H };
-
-  const bx = toX(qStar), by = toY(qStar * p);
-  const x0 = toX(0), xM = toX(maxQ);
-  const yCA   = toY(p * maxQ);
-  const yCost = toY(F + v * maxQ);
-  const yF    = toY(F);
-  const yBot  = pad.top + cH;
-
-  // ── Defs ──
-  const defs = `<defs>
-    <linearGradient id="grad-ca" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2980B9" stop-opacity=".22"/>
-      <stop offset="100%" stop-color="#2980B9" stop-opacity=".02"/>
-    </linearGradient>
-    <linearGradient id="grad-cost" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#27AE60" stop-opacity=".18"/>
-      <stop offset="100%" stop-color="#27AE60" stop-opacity=".02"/>
-    </linearGradient>
-    <linearGradient id="grad-perte" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#E74C3C" stop-opacity=".13"/>
-      <stop offset="100%" stop-color="#E74C3C" stop-opacity=".04"/>
-    </linearGradient>
-    <linearGradient id="grad-benef" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#27AE60" stop-opacity=".04"/>
-      <stop offset="100%" stop-color="#27AE60" stop-opacity=".16"/>
-    </linearGradient>
-    <filter id="glow-ca">
-      <feGaussianBlur stdDeviation="1.8" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="glow-green">
-      <feGaussianBlur stdDeviation="1.8" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>`;
-
-  // ── Grille ──
-  let grid = '';
-  const nY = 5;
-  for (let i = 0; i <= nY; i++) {
-    const yv = (maxY / nY) * i, gy = toY(yv);
-    const isZero = i === 0;
-    grid += `<line x1="${pad.left}" y1="${gy}" x2="${xM}" y2="${gy}" stroke="${isZero?'#ccc':'#e8e8e8'}" stroke-width="${isZero?1.2:.7}"/>`;
-    grid += `<text x="${pad.left - 7}" y="${gy + 3.5}" text-anchor="end" font-size="9.5" fill="#bbb" font-family="Arial">${fmtY(yv)}</text>`;
-  }
-  const nX = 6;
-  for (let i = 0; i <= nX; i++) {
-    const qv = (maxQ / nX) * i, gx = toX(qv);
-    if (i > 0) grid += `<line x1="${gx}" y1="${pad.top}" x2="${gx}" y2="${yBot}" stroke="#e8e8e8" stroke-width=".7"/>`;
-    grid += `<text x="${gx}" y="${yBot + 15}" text-anchor="middle" font-size="9.5" fill="#bbb" font-family="Arial">${Math.round(qv)}</text>`;
-  }
-  // Axes labels
-  grid += `<text x="${pad.left - 40}" y="${pad.top + cH/2}" text-anchor="middle" font-size="10" fill="#aaa" font-family="Arial" transform="rotate(-90,${pad.left-40},${pad.top+cH/2})">Montant (Ar)</text>`;
-  grid += `<text x="${pad.left + cW/2}" y="${H - 6}" text-anchor="middle" font-size="10" font-weight="600" fill="#aaa" font-family="Arial">Quantité vendue</text>`;
-
-  // ── Zones colorées ──
-  let zones = '';
-  if (qStar > 0 && qStar < maxQ) {
-    // Zone perte (triangulaire)
-    zones += `<polygon points="${x0},${yBot} ${x0},${yF} ${bx},${by} ${bx},${yBot}" fill="url(#grad-perte)"/>`;
-    // Zone bénéfice
-    zones += `<polygon points="${bx},${yBot} ${bx},${by} ${xM},${yCA} ${xM},${yBot}" fill="url(#grad-benef)"/>`;
-  }
-
-  // ── Aires sous les courbes ──
-  const areaCA   = `<polygon points="${x0},${yBot} ${x0},${toY(0)} ${xM},${yCA} ${xM},${yBot}" fill="url(#grad-ca)"/>`;
-  const areaCost = `<polygon points="${x0},${yBot} ${x0},${yF} ${xM},${yCost} ${xM},${yBot}" fill="url(#grad-cost)"/>`;
-
-  // ── Ligne charges fixes F ──
-  const fLine = `
-    <line x1="${x0}" y1="${yF}" x2="${xM}" y2="${yF}" stroke="#B0B0B0" stroke-width="1.2" stroke-dasharray="6,4" opacity=".7"/>
-    <rect x="${x0+6}" y="${yF-15}" width="${Math.min(130, cW-10)}" height="13" rx="3" fill="#F5F5F5" fill-opacity=".92"/>
-    <text x="${x0+10}" y="${yF-5}" font-size="8.5" fill="#999" font-family="Arial">Charges fixes F = ${fmtY(F)} Ar</text>
-  `;
-
-  // ── Courbes principales ──
-  const revPath  = `M ${x0} ${toY(0)} L ${xM} ${yCA}`;
-  const costPath = `M ${x0} ${yF}      L ${xM} ${yCost}`;
-
-  const lq = maxQ * 0.80;
-  const lineLabels = `
-    <text x="${toX(lq)}" y="${toY(p*lq) - 9}" text-anchor="middle" font-size="10" font-weight="800" fill="#1a6fa8" font-family="Arial">CA</text>
-    <text x="${toX(lq)}" y="${toY(F+v*lq) + 15}" text-anchor="middle" font-size="10" font-weight="800" fill="#1a7a40" font-family="Arial">Coût total</text>
-  `;
-
-  // ── Labels zones Perte / Bénéfice ──
-  let zoneLabels = '';
-  if (qStar > 0 && qStar < maxQ) {
-    const lossX  = toX(qStar * 0.38);
-    const lossY  = toY((F + v*qStar*0.38 + p*qStar*0.38) / 2);
-    const benefX = toX(qStar + (maxQ - qStar) * 0.52);
-    const benefY = toY((F + v*(qStar+(maxQ-qStar)*0.52) + p*(qStar+(maxQ-qStar)*0.52)) / 2);
-    zoneLabels = `
-      <rect x="${lossX-26}" y="${lossY-11}" width="52" height="16" rx="8" fill="#E74C3C" fill-opacity=".15"/>
-      <text x="${lossX}" y="${lossY+1}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#C0392B" font-family="Arial">⬇ Perte</text>
-      <rect x="${benefX-36}" y="${benefY-11}" width="72" height="16" rx="8" fill="#27AE60" fill-opacity=".15"/>
-      <text x="${benefX}" y="${benefY+1}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#1a7a40" font-family="Arial">⬆ Bénéfice</text>
-    `;
-  }
-
-  // ── Point mort Q* ──
-  let beAnnotation = '';
-  if (qStar > 0 && qStar < maxQ) {
-    const aw = 90, ah = 28;
-    const ax = Math.max(pad.left + 4, Math.min(xM - aw - 4, bx - aw/2));
-    const ay = by < pad.top + ah + 20 ? by + 14 : by - ah - 12;
-    beAnnotation = `
-      <line x1="${bx}" y1="${pad.top}" x2="${bx}" y2="${yBot}" stroke="#5B8FD4" stroke-width="1.4" stroke-dasharray="6,4" opacity=".6"/>
-      <line x1="${x0}" y1="${by}" x2="${bx}" y2="${by}" stroke="#5B8FD4" stroke-width="1.4" stroke-dasharray="6,4" opacity=".6"/>
-      <circle cx="${bx}" cy="${by}" r="7" fill="white" stroke="#2980B9" stroke-width="2.5"/>
-      <circle cx="${bx}" cy="${by}" r="3.5" fill="#2980B9"/>
-      <rect x="${ax}" y="${ay}" width="${aw}" height="${ah}" rx="14" fill="#2980B9"/>
-      <text x="${ax+aw/2}" y="${ay+10.5}" text-anchor="middle" font-size="8" font-weight="700" fill="rgba(255,255,255,.75)" font-family="Arial">POINT MORT</text>
-      <text x="${ax+aw/2}" y="${ay+22}" text-anchor="middle" font-size="11" font-weight="800" fill="white" font-family="Arial">Q* = ${Math.ceil(qStar)}</text>
-    `;
-  }
-
-  // ── Légende ──
-  const lgX = pad.left + cW - 4, lgY = pad.top + 6;
-  const legend = `
-    <rect x="${lgX-144}" y="${lgY}" width="144" height="46" rx="7" fill="white" fill-opacity=".85" stroke="#e0e0e0" stroke-width="1"/>
-    <line x1="${lgX-134}" y1="${lgY+15}" x2="${lgX-116}" y2="${lgY+15}" stroke="#2980B9" stroke-width="2.5"/>
-    <circle cx="${lgX-125}" cy="${lgY+15}" r="2.5" fill="#2980B9"/>
-    <text x="${lgX-111}" y="${lgY+19}" font-size="9.5" fill="#2980B9" font-weight="700" font-family="Arial">Chiffre d'affaires</text>
-    <line x1="${lgX-134}" y1="${lgY+33}" x2="${lgX-116}" y2="${lgY+33}" stroke="#27AE60" stroke-width="2.5"/>
-    <circle cx="${lgX-125}" cy="${lgY+33}" r="2.5" fill="#27AE60"/>
-    <text x="${lgX-111}" y="${lgY+37}" font-size="9.5" fill="#27AE60" font-weight="700" font-family="Arial">Coût total</text>
-  `;
-
-  container.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;cursor:crosshair" onmousemove="beChartMouseMove(event)" onmouseleave="beChartMouseLeave(event)">
-    ${defs}
-    ${grid}
-    ${zones}
-    ${areaCA}
-    ${areaCost}
-    ${fLine}
-    <line x1="${x0}" y1="${pad.top}" x2="${x0}" y2="${yBot}" stroke="#CCC" stroke-width="1.5"/>
-    <line x1="${x0}" y1="${yBot}" x2="${xM}" y2="${yBot}" stroke="#CCC" stroke-width="1.5"/>
-    <path d="${costPath}" stroke="#27AE60" stroke-width="2.8" fill="none" stroke-linejoin="round" filter="url(#glow-green)"/>
-    <path d="${revPath}"  stroke="#2980B9" stroke-width="2.8" fill="none" stroke-linejoin="round" filter="url(#glow-ca)"/>
-    ${zoneLabels}
-    ${lineLabels}
-    ${beAnnotation}
-    ${legend}
-    <g id="be-hover" display="none"></g>
-  </svg>`;
-}
-
-let _beChartState = null;
-
-function beChartMouseMove(evt) {
-  if (!_beChartState) return;
-  const { F, p, v, maxQ, maxY, pad, W, H } = _beChartState;
-  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
-  const svg = evt.currentTarget;
-  const svgRect = svg.getBoundingClientRect();
-  const mouseX = ((evt.clientX - svgRect.left) / svgRect.width) * W;
-  const hg = svg.querySelector('#be-hover');
-  if (!hg) return;
-  if (mouseX < pad.left || mouseX > pad.left + cW) { hg.setAttribute('display','none'); return; }
-  hg.setAttribute('display','block');
-  const q   = Math.max(0, ((mouseX - pad.left) / cW) * maxQ);
-  const ca  = p * q;
-  const cout = F + v * q;
-  const profit = ca - cout;
-  const toY = y => pad.top + cH - (y / maxY) * cH;
-  const fmt = y => {
-    const n = Math.abs(y), sign = y < 0 ? '−' : '';
-    return sign + (n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? Math.round(n/1e3)+'k' : Math.round(n)) + ' Ar';
-  };
-  const hx = mouseX;
-  const ttW = 138, ttH = 72;
-  const ttx = hx > pad.left + cW * 0.6 ? hx - ttW - 10 : hx + 10;
-  const tty = pad.top + 4;
-  hg.innerHTML = `
-    <line x1="${hx}" y1="${pad.top}" x2="${hx}" y2="${pad.top+cH}" stroke="#666" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>
-    <circle cx="${hx}" cy="${toY(ca)}"   r="3.5" fill="#2980B9" stroke="white" stroke-width="1.5"/>
-    <circle cx="${hx}" cy="${toY(cout)}" r="3.5" fill="#27AE60" stroke="white" stroke-width="1.5"/>
-    <rect x="${ttx}" y="${tty}" width="${ttW}" height="${ttH}" rx="6" fill="white" stroke="#ddd" stroke-width="1" filter="drop-shadow(0 2px 6px rgba(0,0,0,.10))"/>
-    <text x="${ttx+9}" y="${tty+15}" font-size="9.5" font-weight="700" fill="#333">Qté : ${Math.round(q)}</text>
-    <text x="${ttx+9}" y="${tty+30}" font-size="9" fill="#2980B9">CA : ${fmt(ca)}</text>
-    <text x="${ttx+9}" y="${tty+44}" font-size="9" fill="#27AE60">Coût : ${fmt(cout)}</text>
-    <text x="${ttx+9}" y="${tty+60}" font-size="9.5" font-weight="700" fill="${profit >= 0 ? '#1a7a40' : '#C0392B'}">${profit >= 0 ? '▲ Bénéf.' : '▼ Perte'} : ${fmt(profit)}</text>
-  `;
-}
-
-function beChartMouseLeave(evt) {
-  const hg = evt.currentTarget.querySelector('#be-hover');
-  if (hg) hg.setAttribute('display','none');
-}
-async function saveSeuilsSettings() {
-  const min  = parseFloat(document.getElementById('s-coeff-min').value);
-  const norm = parseFloat(document.getElementById('s-coeff-norm').value);
-  const def  = parseFloat(document.getElementById('s-coeff-default').value);
-  if (isNaN(min) || isNaN(norm) || isNaN(def)) { showToast('Valeurs invalides'); return; }
-  if (min >= norm) { showToast('Le minimum doit être inférieur à la norme'); return; }
-  try {
-    await fetch('/api/settings', {
-      method: 'PUT',
-      headers: { ...bearerHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ coeff_min: min, coeff_norm: norm, coeff_default: def })
-    });
-    COEFF_MIN     = min;
-    COEFF_NORM    = norm;
-    COEFF_DEFAULT = def;
-    closeSeuilsModal();
-    showToast(`Seuils enregistrés : min ×${min} | norme ×${norm} ✓`);
-    updatePrixVente();
-  } catch(e) { showToast('Erreur lors de la sauvegarde'); }
-}
 
 // ── APERÇU D'IMPACT PRIX ─────────────────────────────────────────────────────
 function showImpactModal(nom, prix, preview, onConfirm) {
@@ -3157,43 +2920,22 @@ function showImpactModal(nom, prix, preview, onConfirm) {
 }
 
 // ── COMPARATEUR PRIX MULTI-SOURCE ─────────────────────────────────────────────
-async function showIngComparateur(row, nom) {
+// Comparateur de prix retiré de l'interface : on nettoie seulement un
+// éventuel bloc résiduel, sans plus rien afficher.
+function showIngComparateur(row) {
   const sibling = row.nextElementSibling;
   if (sibling && sibling.classList.contains('ing-compare')) sibling.remove();
-  if (!nom) return;
-  try {
-    const data    = await api.get('/api/prix/comparateur?nom=' + encodeURIComponent(nom));
-    const sources = Object.entries(data);
-    if (sources.length < 2) return;
-    const minPrix = Math.min(...sources.map(([, v]) => v.prix));
-    const chips   = sources.map(([src, { prix, unite }]) => {
-      const best = prix === minPrix;
-      return `<span class="compare-chip${best ? ' best' : ''}">
-        <span class="compare-chip-label">${esc(src)}</span>
-        <strong>${prix.toLocaleString('fr-FR')} Ar</strong>${unite ? `<span style="color:var(--text-3);font-size:10px"> /${esc(unite)}</span>` : ''}
-        ${best ? '&nbsp;⭐' : ''}
-      </span>`;
-    }).join('');
-    const div = document.createElement('div');
-    div.className = 'ing-compare';
-    div.innerHTML = `<div class="compare-chips">
-      <span style="font-size:10px;color:var(--text-3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-right:4px">Comparer :</span>
-      ${chips}
-    </div>`;
-    row.after(div);
-  } catch(e) { /* silencieux */ }
 }
 
 // ── PRIX PLANCHER / PLAFOND ───────────────────────────────────────────────────
 let _plIngData = [];
 let _plFilter  = 'all';
 
-function openPrixLimitesModal() {
+function initControleRentabiliteView() {
   document.getElementById('pl-ing-search').value = '';
   _plFilter = 'all';
   _syncPLTabs();
   _buildPlIngList();
-  document.getElementById('prix-limites-modal-overlay').hidden = false;
 }
 
 function setPLFilter(f) {
@@ -3212,15 +2954,18 @@ function _buildPlIngList() {
   _plIngData = fiches
     .filter(f => f.nom?.trim())
     .map(f => {
-      const cout = (f.ingredients || []).reduce((s, ing) => s + (parseFloat(ing.prix) || 0), 0);
+      const cout = ficheCoutMatiere(f);
       const prix = Math.round(cout * (parseFloat(f.coefficient) || 2));
       return {
-        id:            f.id,
-        nom:           f.nom.trim(),
-        categorie:     f.categorie || '',
-        prix_vente:    prix,
-        prix_plancher: f.prix_plancher || null,
-        prix_plafond:  f.prix_plafond  || null,
+        id:              f.id,
+        nom:             f.nom.trim(),
+        categorie:       f.categorie || '',
+        cout:            Math.round(cout),           // coût matière total
+        coefficient:     parseFloat(f.coefficient) || 2,
+        prix_vente:      prix,                       // conseillé = coût × coefficient
+        prix_vente_reel: f.prix_vente_reel || null,  // réellement pratiqué
+        prix_plancher:   f.prix_plancher || null,
+        prix_plafond:    f.prix_plafond  || null,
       };
     })
     .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
@@ -3228,13 +2973,33 @@ function _buildPlIngList() {
   updatePrixLimitesPreview();
 }
 
-function _plStatus(e) {
-  const pv = e.prix_vente, fp = e.prix_plancher || 0, fc = e.prix_plafond || 0;
-  if (fp > 0 && pv > 0 && pv < fp) return 'danger';
-  if (fc > 0 && pv > 0 && pv > fc) return 'warn';
-  if (fp > 0 || fc > 0)            return 'ok';
-  return 'none';
+// Statut de rentabilité — règle unique, utilisée par le tableau ET les cartes
+//   conseillé < réel  → Rentable   (on vend au-dessus du prix conseillé)
+//   conseillé = réel  → Alerte     (marge juste au niveau visé)
+//   conseillé > réel  → Perte      (on vend en dessous du prix conseillé)
+function rentabiliteStatus(conseille, reel) {
+  const c = parseFloat(conseille) || 0;
+  const r = parseFloat(reel)      || 0;
+  if (c <= 0 || r <= 0) return 'none';
+  if (c < r)  return 'ok';
+  if (c === r) return 'warn';
+  return 'danger';
 }
+
+// Badge visuel correspondant — rendu vide si le prix réel n'est pas renseigné
+function rentabiliteBadge(conseille, reel) {
+  const st = rentabiliteStatus(conseille, reel);
+  if (st === 'none') return '';
+  const cfg = {
+    ok:     ['#EAF7EE', '#1A7A3C', '#A8D9B5', '✓ Rentable'],
+    warn:   ['#FFF8E1', '#7D5A00', '#F5D060', '⚠️ Alerte'],
+    danger: ['#FDECEA', 'var(--red)', 'rgba(192,57,43,.3)', '⛔ Perte'],
+  }[st];
+  const tip = `Conseillé : ${Number(conseille).toLocaleString('fr-FR')} Ar — Réel : ${Number(reel).toLocaleString('fr-FR')} Ar`;
+  return `<span style="background:${cfg[0]};color:${cfg[1]};border:1px solid ${cfg[2]};border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600" title="${tip}">${cfg[3]}</span>`;
+}
+
+function _plStatus(e) { return rentabiliteStatus(e.prix_vente, e.prix_vente_reel); }
 
 function filterPrixLimitesIng() {
   const q    = (document.getElementById('pl-ing-search')?.value || '').toLowerCase();
@@ -3242,16 +3007,23 @@ function filterPrixLimitesIng() {
   if (!list) return;
 
   let rows = _plIngData.filter(e => !q || e.nom.toLowerCase().includes(q));
-  if (_plFilter === 'alert') rows = rows.filter(e => _plStatus(e) === 'danger' || _plStatus(e) === 'warn');
-  if (_plFilter === 'set')   rows = rows.filter(e => e.prix_plancher > 0 || e.prix_plafond > 0);
+  // Les filtres 'ok' / 'warn' / 'danger' / 'none' correspondent aux statuts de _plStatus
+  if (['ok','warn','danger','none'].includes(_plFilter))
+    rows = rows.filter(e => _plStatus(e) === _plFilter);
 
   _updatePlIngCount();
   updatePrixLimitesPreview();
 
   if (!rows.length) {
+    const vide = {
+      ok:     ['✅', 'Aucune recette rentable'],
+      warn:   ['⚠️', 'Aucune recette en alerte'],
+      danger: ['⛔', 'Aucune recette en perte'],
+      none:   ['🎯', 'Toutes les recettes ont un prix de vente réel'],
+    }[_plFilter] || ['🍽', 'Aucune recette trouvée'];
     list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-3)">
-      <div style="font-size:28px;margin-bottom:8px">${_plFilter==='alert'?'✅':_plFilter==='set'?'🎯':'🍽'}</div>
-      <div style="font-size:13px">${_plFilter==='alert'?'Aucune recette en alerte':_plFilter==='set'?'Aucune limite définie pour l\'instant':'Aucune recette trouvée'}</div>
+      <div style="font-size:28px;margin-bottom:8px">${vide[0]}</div>
+      <div style="font-size:13px">${vide[1]}</div>
     </div>`;
     return;
   }
@@ -3259,10 +3031,6 @@ function filterPrixLimitesIng() {
   list.innerHTML = rows.map((e, i) => {
     const status  = _plStatus(e);
     const pv      = e.prix_vente;
-    const fp      = e.prix_plancher || 0;
-    const fc      = e.prix_plafond  || 0;
-    const plVal   = fp > 0 ? fp : '';
-    const plfVal  = fc > 0 ? fc : '';
     const idEsc   = String(e.id);
 
     // Couleur de fond selon statut
@@ -3273,12 +3041,12 @@ function filterPrixLimitesIng() {
 
     // Badge statut
     const badgeHtml = status === 'danger'
-      ? `<span class="pl-stat-badge pl-stat-danger">⛔ Sous plancher</span>`
+      ? `<span class="pl-stat-badge pl-stat-danger">⛔ Perte</span>`
       : status === 'warn'
-      ? `<span class="pl-stat-badge pl-stat-warn">⚠️ Dépasse plafond</span>`
+      ? `<span class="pl-stat-badge pl-stat-warn">⚠️ Alerte</span>`
       : status === 'ok'
-      ? `<span class="pl-stat-badge pl-stat-ok">✓ Dans les limites</span>`
-      : `<span class="pl-stat-badge pl-stat-none">— Sans limite</span>`;
+      ? `<span class="pl-stat-badge pl-stat-ok">✓ Rentable</span>`
+      : `<span class="pl-stat-badge pl-stat-none">— Non renseigné</span>`;
 
     // Couleur prix vente
     const pvColor = status === 'danger' ? 'var(--red)'
@@ -3292,27 +3060,56 @@ function filterPrixLimitesIng() {
       ? `<span style="font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:10px;background:var(--surface-2);color:var(--text-3);margin-left:5px;border:1px solid var(--border)">${catLabel}</span>`
       : '';
 
-    const mkInput = (field, val, color, ph) =>
-      `<input type="number" min="0" step="100"
-         value="${val}" placeholder="${ph}"
-         data-fiche-id="${idEsc}"
-         onchange="saveLimitesFiche('${idEsc}','${field}',this)"
-         style="width:96px;padding:3px 7px;font-size:12px;border:1.5px solid ${val ? color : 'var(--border)'};border-radius:6px;text-align:right;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s"
-         onfocus="this.style.borderColor='${color}'"
-         onblur="this.style.borderColor='${val ? color : 'var(--border)'}'"
-      >`;
+    const reel     = e.prix_vente_reel || 0;
+    const reelVal  = reel > 0 ? reel : '';
+    const reelCol  = status === 'danger' ? 'var(--red)'
+                   : status === 'warn'   ? '#F0A500'
+                   : status === 'ok'     ? '#1a7a40'
+                   : 'var(--border)';
 
-    return `<div style="display:grid;grid-template-columns:1fr 110px 105px 105px 130px;align-items:center;gap:0;padding:7px 24px;background:${rowBg};border-bottom:1px solid var(--border-light)">
+    return `<div style="display:grid;grid-template-columns:1fr 118px 56px 130px 122px 122px;align-items:center;gap:0;padding:7px 24px;background:${rowBg};border-bottom:1px solid var(--border-light)">
       <div style="display:flex;align-items:center;overflow:hidden;gap:4px;min-width:0">
         <span style="font-weight:600;color:var(--text);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(e.nom)}">${esc(e.nom)}</span>
         ${catChip}
       </div>
-      <div style="text-align:right;font-weight:700;color:${pvColor};font-size:12.5px">${pv > 0 ? Number(pv).toLocaleString('fr-FR') + ' Ar' : '<span style="color:var(--text-3)">—</span>'}</div>
-      <div style="text-align:right">${mkInput('plancher', plVal, 'var(--red)', '—')}</div>
-      <div style="text-align:right">${mkInput('plafond', plfVal, '#F0A500', '—')}</div>
+      <div style="text-align:right;font-size:12.5px;color:var(--text-2);padding-right:10px">${e.cout > 0 ? Number(e.cout).toLocaleString('fr-FR') + ' Ar' : '<span style="color:var(--text-3)">—</span>'}</div>
+      <div style="text-align:center;font-size:12px;font-weight:600;color:var(--text-2)">×${e.coefficient}</div>
+      <div style="text-align:right;font-weight:700;color:${pvColor};font-size:12.5px;padding-right:10px">${pv > 0 ? Number(pv).toLocaleString('fr-FR') + ' Ar' : '<span style="color:var(--text-3)">—</span>'}</div>
+      <div style="text-align:right">
+        <input type="number" min="0" step="100"
+          value="${reelVal}" placeholder="—"
+          data-fiche-id="${idEsc}"
+          onchange="savePrixVenteReel('${idEsc}',this)"
+          style="width:108px;padding:3px 7px;font-size:12px;border:1.5px solid ${reelVal ? reelCol : 'var(--border)'};border-radius:6px;text-align:right;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='${reelVal ? reelCol : 'var(--border)'}'"
+        >
+      </div>
       <div style="text-align:center;overflow:hidden">${badgeHtml}</div>
     </div>`;
   }).join('');
+}
+
+// Enregistre le prix de vente réellement pratiqué (contrôle de rentabilité)
+async function savePrixVenteReel(ficheId, inputEl) {
+  const val   = parseFloat(inputEl.value) || null;
+  const entry = _plIngData.find(e => String(e.id) === String(ficheId));
+  if (!entry) return;
+  try {
+    await api.patch(`/api/fiches/${ficheId}/prix-vente-reel`, { prix_vente_reel: val });
+    entry.prix_vente_reel = val;
+    const fiche = fiches.find(f => String(f.id) === String(ficheId));
+    if (fiche) fiche.prix_vente_reel = val;
+    _updatePlIngCount();
+    updatePrixLimitesPreview();
+    filterPrixLimitesIng();   // redessine la ligne → statut à jour
+    showToast(val
+      ? `Prix réel ${Number(val).toLocaleString('fr-FR')} Ar enregistré pour ${entry.nom} ✓`
+      : `Prix réel supprimé pour ${entry.nom} ✓`);
+  } catch (err) {
+    showToast(err.message || 'Erreur lors de l\'enregistrement.');
+    inputEl.value = entry.prix_vente_reel || '';
+  }
 }
 
 async function saveLimitesFiche(ficheId, field, inputEl) {
@@ -3363,64 +3160,37 @@ async function saveLimitesFiche(ficheId, field, inputEl) {
 }
 
 function _updatePlIngCount() {
-  const nbP  = _plIngData.filter(e => e.prix_plancher > 0).length;
-  const nbPl = _plIngData.filter(e => e.prix_plafond  > 0).length;
-  const cntEl = document.getElementById('pl-ing-count');
+  const nbReel = _plIngData.filter(e => e.prix_vente_reel > 0).length;
+  const cntEl  = document.getElementById('pl-ing-count');
   if (!cntEl) return;
-  const parts = [];
-  if (nbP)  parts.push(`${nbP} plancher${nbP>1?'s':''}`);
-  if (nbPl) parts.push(`${nbPl} plafond${nbPl>1?'s':''}`);
-  cntEl.textContent = parts.length ? parts.join(' · ') + ' défini' + (nbP+nbPl>1?'s':'') : '0 limite définie';
+  cntEl.textContent = nbReel
+    ? `${nbReel} prix réel${nbReel>1?'s':''} renseigné${nbReel>1?'s':''}`
+    : '0 prix réel renseigné';
 }
 
-function closePrixLimitesModal() {
-  document.getElementById('prix-limites-modal-overlay').hidden = true;
-}
-
+// Alimente le compteur porté par chaque bouton de filtre
 function updatePrixLimitesPreview() {
-  const total  = _plIngData.length;
-  const nbP    = _plIngData.filter(e => e.prix_plancher > 0).length;
-  const nbPl   = _plIngData.filter(e => e.prix_plafond  > 0).length;
-  const nbDanger = _plIngData.filter(e => _plStatus(e) === 'danger').length;
-  const nbWarn   = _plIngData.filter(e => _plStatus(e) === 'warn').length;
-  const nbOk     = _plIngData.filter(e => _plStatus(e) === 'ok').length;
-  const prev = document.getElementById('prix-limites-preview');
-  if (!prev) return;
-  prev.innerHTML = `
-    <div class="pl-summary-card" style="border-color:var(--border)">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-bottom:4px">Total recettes</div>
-      <div style="font-size:20px;font-weight:700;color:var(--text)">${total}</div>
-    </div>
-    <div class="pl-summary-card" style="border-color:rgba(192,57,43,.3);background:rgba(192,57,43,.04)">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red);margin-bottom:4px">⛔ Avec plancher</div>
-      <div style="font-size:20px;font-weight:700;color:var(--red)">${nbP}</div>
-    </div>
-    <div class="pl-summary-card" style="border-color:rgba(125,90,0,.3);background:rgba(125,90,0,.04)">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#7D5A00;margin-bottom:4px">⚠️ Avec plafond</div>
-      <div style="font-size:20px;font-weight:700;color:#7D5A00">${nbPl}</div>
-    </div>
-    <div class="pl-summary-card" style="border-color:rgba(39,174,96,.3);background:rgba(39,174,96,.04)">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#1a7a40;margin-bottom:4px">✓ Dans les limites</div>
-      <div style="font-size:20px;font-weight:700;color:#1a7a40">${nbOk}</div>
-    </div>
-    ${(nbDanger + nbWarn) > 0 ? `
-    <div class="pl-summary-card" style="border-color:rgba(192,57,43,.4);background:rgba(192,57,43,.08);cursor:pointer" onclick="setPLFilter('alert')" title="Voir les recettes en alerte">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red);margin-bottom:4px">🚨 En alerte</div>
-      <div style="font-size:20px;font-weight:700;color:var(--red)">${nbDanger + nbWarn}</div>
-    </div>` : ''}
-  `;
+  const n = {
+    all:    _plIngData.length,
+    ok:     _plIngData.filter(e => _plStatus(e) === 'ok').length,
+    warn:   _plIngData.filter(e => _plStatus(e) === 'warn').length,
+    danger: _plIngData.filter(e => _plStatus(e) === 'danger').length,
+    none:   _plIngData.filter(e => _plStatus(e) === 'none').length,
+  };
+  Object.entries(n).forEach(([k, v]) => {
+    const el = document.getElementById('pl-n-' + k);
+    if (el) el.textContent = v;
+  });
 }
 
-function openCatModal() {
+function initCategoriesView() {
   editingCatId = null; selectedColor = CAT_COLORS[0];
   document.getElementById('cat-nom-input').value    = '';
   document.getElementById('cat-groupe-input').value = 'PRODUCTION';
   document.getElementById('cat-form-label').textContent = 'Nouvelle catégorie';
   document.getElementById('cat-save-btn').textContent   = 'Ajouter';
   renderCatColorPicker(); renderCatList();
-  document.getElementById('cat-modal-overlay').hidden = false;
 }
-function closeCatModal() { document.getElementById('cat-modal-overlay').hidden = true; }
 function selectColor(c) { selectedColor = c; renderCatColorPicker(); }
 function renderCatColorPicker() {
   document.getElementById('cat-color-picker').innerHTML = CAT_COLORS.map(c =>
@@ -3575,16 +3345,8 @@ function ficheCard(f) {
     else if (coeff < COEFF_NORM) badge = `<span style="background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">⚠️ Coeff ${coeff}</span>`;
     else badge = `<span style="background:#EAF7EE;color:#1A7A3C;border:1px solid #A8D9B5;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600">✅ Coeff ${coeff}</span>`;
   }
-  // Badge plancher / plafond de la fiche — prioritaire sur le badge coefficient
-  let limitBadge = '';
-  if (prix > 0) {
-    const fp = f.prix_plancher || 0, fc = f.prix_plafond || 0;
-    if (fp > 0 && prix < fp) {
-      limitBadge = `<span style="background:#FDECEA;color:var(--red);border:1px solid rgba(192,57,43,.3);border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600" title="Min autorisé : ${Number(fp).toLocaleString('fr-FR')} Ar">⛔ Plancher non atteint</span>`;
-    } else if (fc > 0 && prix > fc) {
-      limitBadge = `<span style="background:#FFF8E1;color:#7D5A00;border:1px solid #F5D060;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600" title="Max recommandé : ${Number(fc).toLocaleString('fr-FR')} Ar">⚠️ Plafond dépassé</span>`;
-    }
-  }
+  // Statut de rentabilité — prioritaire sur le badge coefficient
+  const limitBadge = rentabiliteBadge(prix, f.prix_vente_reel);
   const photo = f.photo ? `<img src="${f.photo}" class="card-photo-thumb" alt="${esc(f.nom)}">` : `<div class="card-photo-placeholder">🍽</div>`;
   return `<div class="fiche-card" onclick="showDetail('${f.id}')">
     <div style="height:4px;background:${col};flex-shrink:0"></div>
@@ -3643,14 +3405,18 @@ function showDetail(id) {
     else if (coeff < COEFF_NORM) alertHtml = `<div class="coeff-alert coeff-warn">⚠️ Coefficient <strong>${coeff}</strong> sous la norme. PV : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
     else alertHtml = `<div class="coeff-alert coeff-ok">✅ Coeff <strong>${coeff}</strong> — Prix de vente : <strong>${prix.toLocaleString('fr-FR')} Ar</strong>.</div>`;
   }
-  // Alerte plancher / plafond de la fiche — prioritaire
-  if (prix > 0) {
-    const fp = f.prix_plancher || 0, fc = f.prix_plafond || 0;
-    if (fp > 0 && prix < fp) {
-      alertHtml = `<div class="coeff-alert coeff-danger">⛔ Prix de vente (<strong>${prix.toLocaleString('fr-FR')} Ar</strong>) sous le plancher.<br><small>Prix minimum autorisé : <strong>${Number(fp).toLocaleString('fr-FR')} Ar</strong></small></div>`;
-    } else if (fc > 0 && prix > fc) {
-      alertHtml = `<div class="coeff-alert coeff-warn">⚠️ Prix de vente (<strong>${prix.toLocaleString('fr-FR')} Ar</strong>) dépasse le plafond.<br><small>Prix maximum recommandé : <strong>${Number(fc).toLocaleString('fr-FR')} Ar</strong></small></div>`;
-    }
+  // Statut de rentabilité (conseillé vs réel) — prioritaire sur l'alerte coefficient
+  const rStat = rentabiliteStatus(prix, f.prix_vente_reel);
+  if (rStat !== 'none') {
+    const reel  = Number(f.prix_vente_reel);
+    const ecart = reel - prix;
+    const detail = `<br><small>Conseillé : <strong>${prix.toLocaleString('fr-FR')} Ar</strong> · Réel : <strong>${reel.toLocaleString('fr-FR')} Ar</strong>${
+      ecart !== 0 ? ` · Écart : <strong>${ecart > 0 ? '+' : ''}${ecart.toLocaleString('fr-FR')} Ar</strong>` : ''}</small>`;
+    alertHtml = rStat === 'ok'
+      ? `<div class="coeff-alert coeff-ok">✓ <strong>Rentable</strong> — vendu au-dessus du prix conseillé.${detail}</div>`
+      : rStat === 'warn'
+      ? `<div class="coeff-alert coeff-warn">⚠️ <strong>Alerte</strong> — vendu exactement au prix conseillé.${detail}</div>`
+      : `<div class="coeff-alert coeff-danger">⛔ <strong>Perte</strong> — vendu en dessous du prix conseillé.${detail}</div>`;
   }
   const photoCol = f.photo
     ? `<div class="detail-photo-col"><img src="${f.photo}" class="detail-photo" alt="${esc(f.nom)}"></div>`
@@ -3768,9 +3534,15 @@ function showForm(id) {
 
 function buildIngOptions(selected) {
   let html = '<option value="">Choisir un ingrédient…</option>';
-  ingredientsCatalogue.forEach(i => {
+  // La déroulante n'affiche que le NOM. L'unité et le coût unitaire sont
+  // remplis dans leurs colonnes respectives à la sélection (onIngSelect).
+  // L'infobulle donne le prix/unité pour vérification, sans encombrer le libellé.
+  (ingIndex.length ? ingIndex : ingredientsCatalogue).forEach(i => {
     const sel = i.nom === selected ? 'selected' : '';
-    html += `<option value="${esc(i.nom)}" ${sel}>${esc(i.nom)}</option>`;
+    const tip = i.prix > 0
+      ? `${Number(i.prix).toLocaleString('fr-FR', {maximumFractionDigits: 2})} Ar${i.unite ? ' / ' + i.unite : ''}${i.conflit ? ' — unités incompatibles : ' + i.conflit.join(', ') : ''}`
+      : '';
+    html += `<option value="${esc(i.nom)}" ${sel}${tip ? ` title="${esc(tip)}"` : ''}>${esc(i.nom)}</option>`;
   });
   html += `<option value="__autre__" ${selected === '__autre__' ? 'selected' : ''}>✏ Saisir manuellement…</option>`;
   return html;
@@ -3795,17 +3567,65 @@ function addIngredientRow(ing) {
         style="display:${showText ? '' : 'none'}">
     </div>
     <div class="ing-field ing-qte">
-      <input type="text" placeholder="Qté" value="${esc(ing.qte||'')}">
+      <input type="text" placeholder="Qté" value="${esc(ing.qte||'')}" oninput="onIngQteChange(this)">
     </div>
     <div class="ing-field ing-unite">
       <input type="text" placeholder="Unité" value="${esc(ing.unite||'')}">
     </div>
     <div class="ing-field ing-prix">
-      <div class="ing-prix-display">${prixVal ? Number(prixVal).toLocaleString('fr-FR') + ' Ar' : '—'}</div>
+      <div class="ing-prix-display">—</div>
+    </div>
+    <div class="ing-field ing-total">
+      <div class="ing-total-display">—</div>
       <input type="hidden" class="ing-prix-val" value="${prixVal}">
     </div>
     <button type="button" class="btn-remove" onclick="this.closest('.ing-row').remove();calcCout()">×</button>`;
   document.getElementById('ingredients-list').appendChild(d);
+
+  // Coût unitaire déduit de la ligne existante (prix ÷ quantité)
+  const q0 = parseFloat(String(ing.qte||'').replace(',','.')) || 0;
+  if (prixVal !== '' && q0 > 0) d.dataset.unit = Number(prixVal) / q0;
+  refreshIngRow(d);
+  calcCout();
+}
+
+// Recalcule les deux colonnes d'une ligne à partir du coût unitaire et de la quantité
+function refreshIngRow(row) {
+  const qte    = ingQte(row);
+  const unit   = parseFloat(row.dataset.unit);
+  const hidden = row.querySelector('.ing-prix-val');
+  // Si le coût unitaire est connu, le coût de ligne suit la quantité
+  if (!isNaN(unit) && qte > 0) hidden.value = Math.round(unit * qte);
+  const ligne  = parseFloat(hidden.value) || 0;
+  const unitAff = !isNaN(unit) ? unit : (qte > 0 ? ligne / qte : 0);
+
+  const uEl = row.querySelector('.ing-prix-display');
+  const tEl = row.querySelector('.ing-total-display');
+  if (uEl) uEl.textContent = unitAff > 0
+    ? unitAff.toLocaleString('fr-FR', {maximumFractionDigits: 2}) + ' Ar'
+    : '—';
+  if (tEl) tEl.textContent = ligne > 0
+    ? Math.round(ligne).toLocaleString('fr-FR') + ' Ar'
+    : '—';
+}
+
+function onIngQteChange(input) {
+  refreshIngRow(input.closest('.ing-row'));
+  calcCout();
+}
+
+// ing.prix contient DÉJÀ le coût de la ligne (coût unitaire × quantité).
+// Le coût unitaire s'obtient donc par division, jamais par multiplication.
+function ingLineTotal(row) {
+  return parseFloat(row.querySelector('.ing-prix-val')?.value) || 0;
+}
+function ingQte(row) {
+  return parseFloat(String(row.querySelector('.ing-qte input')?.value || '').replace(',', '.')) || 0;
+}
+
+// Coût matière d'une fiche = Σ des coûts de ligne
+function ficheCoutMatiere(f) {
+  return (f?.ingredients || []).reduce((s, ing) => s + (parseFloat(ing.prix) || 0), 0);
 }
 
 function onIngSelect(sel) {
@@ -3813,13 +3633,7 @@ function onIngSelect(sel) {
   const textInput = row.querySelector('.ing-nom-text');
   const qteInput  = row.querySelector('.ing-qte input');
   const uniteInput= row.querySelector('.ing-unite input');
-  const prixDisplay = row.querySelector('.ing-prix-display');
   const prixHidden  = row.querySelector('.ing-prix-val');
-
-  function setPrix(val) {
-    prixHidden.value    = val != null ? val : '';
-    prixDisplay.textContent = val != null && val !== '' ? Number(val).toLocaleString('fr-FR') + ' Ar' : '—';
-  }
 
   if (sel.value === '__autre__') {
     textInput.style.display = '';
@@ -3827,18 +3641,25 @@ function onIngSelect(sel) {
     textInput.value  = '';
     qteInput.value   = '';
     uniteInput.value = '';
-    setPrix(null);
+    prixHidden.value = '';
+    delete row.dataset.unit;
+    refreshIngRow(row);
+    calcCout();
     showIngComparateur(row, '');
   } else {
     textInput.style.display = 'none';
     textInput.value = '';
     if (sel.value) {
-      const cat = ingredientsCatalogue.find(i => i.nom === sel.value);
+      const cat = findIng(sel.value);
       if (cat) {
-        if (cat.qte   != null) qteInput.value   = cat.qte;
-        if (cat.unite != null) uniteInput.value  = cat.unite;
-        setPrix(cat.prix != null ? cat.prix : null);
+        if (cat.unite) uniteInput.value = cat.unite;
+        // cat.prix est déjà un coût unitaire : le coût de ligne suivra la quantité saisie
+        if (cat.prix > 0) row.dataset.unit = cat.prix;
+        else delete row.dataset.unit;
+        prixHidden.value = '';
+        refreshIngRow(row);
         calcCout();
+        if (!ingQte(row)) qteInput.focus();   // la quantité reste à saisir
       }
     }
     showIngComparateur(row, sel.value);
@@ -3851,10 +3672,11 @@ function calcCout() {
   const coutInput = document.getElementById('f-cout');
   if (!autoBlock || !autoDisp || !coutInput) return;
 
-  const rows     = [...document.querySelectorAll('.ing-row')];
-  const prix     = rows.map(r => parseFloat(r.querySelector('.ing-prix-val').value) || 0);
-  const total    = prix.reduce((a, b) => a + b, 0);
-  const hasPrix  = prix.some(p => p > 0);
+  // Coût matière total = Σ des coûts de ligne (refreshIngRow tient les affichages à jour)
+  const rows    = [...document.querySelectorAll('.ing-row')];
+  const totaux  = rows.map(ingLineTotal);
+  const total   = totaux.reduce((a, b) => a + b, 0);
+  const hasPrix = totaux.some(p => p > 0);
   const cat      = categories.find(c => c.id === document.getElementById('f-categorie').value);
   const isProduction = cat && cat.groupe !== 'PREPA';
 
@@ -4016,6 +3838,693 @@ function confirmModal(title, msg, cb, confirmLabel, danger) {
 }
 function closeModal() { document.getElementById('modal-overlay').hidden = true; }
 
+// Confirmation renforcée pour les suppressions en masse : le bouton ne
+// s'active qu'une fois le mot recopié à l'identique.
+// Confirmation par mot de passe administrateur.
+// `cb(password)` reçoit le mot de passe saisi ; s'il rejette (mot de passe
+// refusé par le serveur), le modal reste ouvert et affiche l'erreur.
+function confirmDangerModal(title, htmlMsg, label, cb) {
+  const overlay = document.getElementById('danger-modal-overlay');
+  const input   = document.getElementById('danger-modal-input');
+  const errEl   = document.getElementById('danger-modal-err');
+  const btn     = document.getElementById('danger-modal-btn');
+  document.getElementById('danger-modal-title').textContent = title;
+  document.getElementById('danger-modal-msg').innerHTML     = htmlMsg;
+  btn.textContent = label;
+  input.value = '';
+  errEl.textContent = '';
+
+  const sync = () => {
+    const ok = input.value.length > 0;
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '.45';
+    btn.style.cursor  = ok ? 'pointer' : 'not-allowed';
+  };
+  sync();
+  input.oninput = () => { errEl.textContent = ''; sync(); };
+  input.onkeydown = e => { if (e.key === 'Enter' && !btn.disabled) btn.click(); };
+  btn.onclick = async () => {
+    if (btn.disabled) return;
+    const pwd = input.value;
+    btn.disabled = true; btn.textContent = 'Suppression…';
+    try {
+      await cb(pwd);            // lève une erreur si le mot de passe est refusé
+      closeDangerModal();
+    } catch (err) {
+      errEl.textContent = err.message || 'Mot de passe incorrect.';
+      btn.textContent = label; sync();
+      input.select();
+    }
+  };
+  overlay.hidden = false;
+  setTimeout(() => input.focus(), 60);
+}
+function closeDangerModal() {
+  document.getElementById('danger-modal-overlay').hidden = true;
+}
+
+// ── SUPPRESSIONS EN MASSE ─────────────────────────────────────────────────────
+function confirmDeleteAllFiches() {
+  const nb = fiches.length;
+  if (!nb) { showToast('Aucune recette à supprimer.'); return; }
+  const nbIng = fiches.reduce((s, f) => s + (f.ingredients || []).length, 0);
+  confirmDangerModal(
+    'Supprimer toutes les recettes',
+    `Vous êtes sur le point de supprimer <strong>${nb} recette${nb > 1 ? 's' : ''}</strong>,
+     avec leurs <strong>${nbIng} ligne${nbIng > 1 ? 's' : ''} d'ingrédients</strong>,
+     leurs étapes, allergènes et photos.<br><br>
+     Le catalogue des ingrédients n'est pas concerné.`,
+    `Supprimer les ${nb} recettes`,
+    async (password) => {
+      // Une erreur (mot de passe refusé) est relayée au modal, qui reste ouvert
+      const r = await api.post('/api/admin/fiches/supprimer-tout', { password });
+      await loadFiches();
+      showView('liste');
+      showToast(`${r.supprimees} recette${r.supprimees > 1 ? 's' : ''} supprimée${r.supprimees > 1 ? 's' : ''} ✓`, 4000);
+    }
+  );
+}
+
+function confirmDeleteAllCatalogue() {
+  const nb = (ingCatalogueData || []).length;
+  if (!nb) { showToast('Le catalogue manuel est déjà vide.'); return; }
+  confirmDangerModal(
+    'Vider le catalogue des ingrédients',
+    `Vous êtes sur le point de supprimer <strong>${nb} ingrédient${nb > 1 ? 's' : ''}</strong>
+     du catalogue manuel (badge <strong>CATALOGUE</strong>).<br><br>
+     Les entrées issues des recettes (badge <strong>FICHE</strong>) et les recettes
+     elles-mêmes ne sont pas touchées.`,
+    `Vider (${nb})`,
+    async (password) => {
+      const r = await api.post('/api/admin/ingredients/catalogue/supprimer-tout', { password });
+      ingredientsCatalogue = await api.get('/api/ingredients/catalogue');
+      await renderIngCatalogueList();
+      showToast(`${r.supprimees} ingrédient${r.supprimees > 1 ? 's' : ''} supprimé${r.supprimees > 1 ? 's' : ''} du catalogue ✓`, 4000);
+    }
+  );
+}
+
+// ── ÉVOLUTION DES PRIX ────────────────────────────────────────────────────────
+let _pxevTab          = 'article';   // 'article' | 'global'
+let _pxevGranularite  = 'mois';      // 'jour' | 'mois' | 'annee'
+let _pxevArticles     = [];
+let _pxevGlobalChecked = new Set();  // noms d'ingrédients cochés en Vue globale
+let _pxevColorMap      = new Map();  // nom -> couleur stable (persiste tant que le modal reste ouvert)
+let _pxevGlobalSubview = 'periode';  // 'periode' | 'classement' — sous-onglets de Vue globale
+
+// Palette catégorielle pour distinguer les courbes en Vue globale.
+const _PXEV_PALETTE = ['#2980B9','#E67E22','#16A085','#8E44AD','#D35400','#2C3E50','#C0392B','#27AE60','#F1C40F','#7F8C8D'];
+function _pxevColorFor(nom) {
+  if (!_pxevColorMap.has(nom)) _pxevColorMap.set(nom, _PXEV_PALETTE[_pxevColorMap.size % _PXEV_PALETTE.length]);
+  return _pxevColorMap.get(nom);
+}
+
+// Appelée par showView('evolution-prix') à chaque entrée sur la page —
+// même logique qu'auparavant à l'ouverture du modal, adaptée à une vue plein écran.
+async function initEvolutionPrixView() {
+  document.getElementById('pxev-debut').value = '';
+  document.getElementById('pxev-fin').value   = '';
+  _pxevGranularite = 'mois';
+  _syncPxevGranTabs();
+  _pxevGlobalChecked.clear();
+  _pxevColorMap.clear();
+  _pxevGlobalSubview = 'periode';
+  document.getElementById('pxev-gsub-btn-periode').classList.add('active');
+  document.getElementById('pxev-gsub-btn-classement').classList.remove('active');
+  document.getElementById('pxev-global-subview-periode').style.display    = 'flex';
+  document.getElementById('pxev-global-subview-classement').style.display = 'none';
+  document.getElementById('pxev-indice-check').checked = true;
+
+  // État de chargement affiché tout de suite — sans ça, la page restait
+  // silencieuse pendant tout le premier aller-retour réseau, ce qui donnait
+  // l'impression d'un graphique en retard.
+  document.getElementById('pxev-article-select').innerHTML = '<option value="">Chargement…</option>';
+  document.getElementById('pxev-global-checklist').innerHTML = '<span style="font-size:12px;color:var(--text-3)">Chargement…</span>';
+  document.getElementById('pxev-chart-container').innerHTML = _pxevEmptyState('Chargement…', '');
+  document.getElementById('pxev-summary').innerHTML = '';
+  setPxevTab('article');
+
+  try {
+    _pxevArticles = await api.get('/api/prix/historique/articles');
+  } catch (e) { _pxevArticles = []; }
+  const sel = document.getElementById('pxev-article-select');
+  sel.innerHTML = _pxevArticles.length
+    ? _pxevArticles.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('')
+    : `<option value="">Aucun historique disponible</option>`;
+  _pxevRenderGlobalChecklist();
+  renderPrixEvolution();
+}
+
+function setPxevTab(tab) {
+  _pxevTab = tab;
+  const isArticle = tab === 'article';
+  document.getElementById('pxev-tab-btn-article').classList.toggle('active', isArticle);
+  document.getElementById('pxev-tab-btn-global').classList.toggle('active', !isArticle);
+  document.getElementById('pxev-article-picker').style.display = isArticle ? '' : 'none';
+  document.getElementById('pxev-global-panel').style.display   = isArticle ? 'none' : 'flex';
+  renderPrixEvolution();
+}
+
+function setPxevGlobalSubview(sub) {
+  _pxevGlobalSubview = sub;
+  const isPeriode = sub === 'periode';
+  document.getElementById('pxev-gsub-btn-periode').classList.toggle('active', isPeriode);
+  document.getElementById('pxev-gsub-btn-classement').classList.toggle('active', !isPeriode);
+  document.getElementById('pxev-global-subview-periode').style.display    = isPeriode ? 'flex' : 'none';
+  document.getElementById('pxev-global-subview-classement').style.display = isPeriode ? 'none' : 'block';
+  renderPrixEvolution();
+}
+
+function setPxevGranularite(g) {
+  _pxevGranularite = g;
+  _syncPxevGranTabs();
+  renderPrixEvolution();
+}
+function _syncPxevGranTabs() {
+  document.querySelectorAll('#pxev-gran-tabs .coeff-seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.g === _pxevGranularite);
+  });
+}
+
+function resetPxevDates() {
+  document.getElementById('pxev-debut').value = '';
+  document.getElementById('pxev-fin').value   = '';
+  renderPrixEvolution();
+}
+
+// Liste à cocher de la Vue globale — rien n'est coché par défaut : avec 100+
+// ingrédients au catalogue, toutes les courbes affichées d'un coup seraient
+// illisibles. L'utilisateur choisit ce qu'il veut comparer.
+function _pxevRenderGlobalChecklist() {
+  const list  = document.getElementById('pxev-global-checklist');
+  const items = _pxevArticles;
+  if (!items.length) {
+    list.innerHTML = '<span style="font-size:12px;color:var(--text-3);padding:4px 0">Aucun ingrédient avec historique.</span>';
+    return;
+  }
+  list.innerHTML = items.map(n => {
+    const checked = _pxevGlobalChecked.has(n);
+    const col = checked ? _pxevColorFor(n) : 'var(--border)';
+    return `<label style="display:flex;align-items:center;gap:7px;padding:3px 2px;cursor:pointer;font-size:12.5px;color:var(--text-2)">
+      <input type="checkbox" ${checked?'checked':''} onchange="_pxevToggleGlobalCheck('${esc(n).replace(/'/g,"\\'")}', this.checked)">
+      <span style="width:9px;height:9px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0;border:1px solid rgba(0,0,0,.08)"></span>
+      ${esc(n)}
+    </label>`;
+  }).join('');
+}
+
+function _pxevToggleGlobalCheck(nom, checked) {
+  if (checked) { _pxevGlobalChecked.add(nom); _pxevColorFor(nom); }
+  else _pxevGlobalChecked.delete(nom);
+  _pxevRenderGlobalChecklist();
+  renderPrixEvolution();
+}
+
+// Jeton de requête : si l'utilisateur change d'article/onglet/période avant
+// qu'une requête précédente ne réponde, celle-ci ne doit plus toucher le DOM —
+// sans ça, deux appels qui se chevauchent peuvent afficher le résultat le plus
+// LENT au lieu du plus RÉCEMMENT demandé.
+let _pxevReqId = 0;
+
+async function renderPrixEvolution() {
+  const myReq = ++_pxevReqId;
+  const container = document.getElementById('pxev-chart-container');
+  const summaryEl = document.getElementById('pxev-summary');
+  const explEl    = document.getElementById('pxev-explication');
+  explEl.innerHTML = '';   // effacée par défaut — remplie seulement en cas de succès (Par article, une seule courbe)
+  const debut = document.getElementById('pxev-debut').value || '';
+  const fin   = document.getElementById('pxev-fin').value   || '';
+  const qs = `granularite=${_pxevGranularite}${debut ? '&debut='+debut : ''}${fin ? '&fin='+fin : ''}`;
+
+  if (_pxevTab === 'global' && _pxevGlobalSubview === 'classement') {
+    return _pxevRenderClassement(myReq, qs, container, summaryEl);
+  }
+
+  let series = [];
+
+  if (_pxevTab === 'article') {
+    const nom = document.getElementById('pxev-article-select').value;
+    if (!nom) {
+      if (myReq !== _pxevReqId) return;
+      container.innerHTML = _pxevEmptyState('Aucun ingrédient avec un historique de prix pour l\'instant.',
+        'Modifiez un prix au Catalogue Ingrédients pour commencer à suivre son évolution.');
+      summaryEl.innerHTML = '';
+      return;
+    }
+    try {
+      const data = await api.get(`/api/prix/historique?nom=${encodeURIComponent(nom)}&${qs}`);
+      const unite = data.unite || '';
+      series = [{ label: nom + (unite ? ` (Ar / ${unite})` : ' (Ar)'), color: '#2980B9', points: data.points || [] }];
+    } catch (e) { series = [{ label: nom, color: '#2980B9', points: [] }]; }
+  } else {
+    const specs = [];
+    if (document.getElementById('pxev-indice-check').checked) {
+      specs.push({ label: 'Indice moyen du catalogue', color: '#8E44AD',
+        url: `/api/prix/historique/global?${qs}` });
+    }
+    _pxevGlobalChecked.forEach(nom => {
+      specs.push({ label: nom, color: _pxevColorFor(nom),
+        url: `/api/prix/historique?nom=${encodeURIComponent(nom)}&${qs}` });
+    });
+
+    if (!specs.length) {
+      if (myReq !== _pxevReqId) return;
+      container.innerHTML = _pxevEmptyState('Aucune courbe sélectionnée.',
+        'Cochez l\'indice moyen et/ou un ou plusieurs ingrédients ci-dessus pour les comparer.');
+      summaryEl.innerHTML = '';
+      return;
+    }
+
+    const results = await Promise.all(specs.map(s => api.get(s.url).catch(() => ({ points: [] }))));
+    series = specs.map((s, i) => ({ label: s.label, color: s.color, points: results[i].points || [] }));
+  }
+
+  if (myReq !== _pxevReqId) return;   // une requête plus récente a déjà été lancée
+
+  const utilisables = series.filter(s => s.points.length >= 2);
+  const ignorees     = series.filter(s => s.points.length < 2);
+
+  if (!utilisables.length) {
+    container.innerHTML = _pxevEmptyState(
+      series.some(s => s.points.length === 1) ? 'Pas encore assez de points pour tracer une évolution.'
+                                               : 'Aucune donnée sur cette période.',
+      'Le suivi s\'enrichit à chaque modification de prix.');
+    summaryEl.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = _pxevBuildChart(utilisables, {
+    granularite: _pxevGranularite,
+    chartType: _pxevTab === 'global' ? 'bar' : 'line',
+  });
+  summaryEl.innerHTML = utilisables.length === 1
+    ? _pxevBuildSummary(utilisables[0].points, utilisables[0].label)
+    : _pxevBuildMultiSummary(utilisables)
+      + (ignorees.length ? `<div style="width:100%;font-size:11px;color:var(--text-3);padding:2px 2px 0">
+           ${esc(ignorees.map(s=>s.label).join(', '))} : pas encore assez de points, non affiché${ignorees.length>1?'s':''}.
+         </div>` : '');
+
+  // Explication en langage clair — utile surtout pour un article isolé, où l'on
+  // veut comprendre la tendance sans avoir à interpréter le graphique soi-même.
+  if (_pxevTab === 'article' && utilisables.length === 1) {
+    explEl.innerHTML = _pxevBuildExplication(document.getElementById('pxev-article-select').value, utilisables[0].points, _pxevGranularite);
+  }
+}
+
+// Phrase en langage naturel décrivant l'évolution — plutôt que de laisser
+// l'utilisateur déduire la tendance du graphique et des cartes chiffrées seul.
+function _pxevBuildExplication(nom, points, granularite) {
+  const vals   = points.map(p => p.prix);
+  const first  = vals[0], last = vals[vals.length - 1];
+  const delta  = last - first;
+  const pct    = first > 0 ? (delta / first) * 100 : 0;
+  const fmt    = n => Number(n).toLocaleString('fr-FR', {maximumFractionDigits: 2});
+  const debut  = _pxevFmtDate(points[0].date, granularite);
+  const fin    = _pxevFmtDate(points[points.length-1].date, granularite);
+
+  let phrase, bg, col, icon;
+  if (delta > 0) {
+    phrase = `Le prix de <strong>${esc(nom)}</strong> a <strong>augmenté</strong> de ${fmt(pct)} %, passant de ${fmt(first)} Ar à ${fmt(last)} Ar entre ${debut} et ${fin} (+${fmt(delta)} Ar).`;
+    bg = '#FDECEA'; col = 'var(--red)'; icon = '📈';
+  } else if (delta < 0) {
+    phrase = `Le prix de <strong>${esc(nom)}</strong> a <strong>baissé</strong> de ${fmt(Math.abs(pct))} %, passant de ${fmt(first)} Ar à ${fmt(last)} Ar entre ${debut} et ${fin} (${fmt(delta)} Ar).`;
+    bg = '#EAF7EE'; col = '#1A7A3C'; icon = '📉';
+  } else {
+    phrase = `Le prix de <strong>${esc(nom)}</strong> est resté <strong>stable</strong> à ${fmt(last)} Ar entre ${debut} et ${fin}.`;
+    bg = 'var(--surface-2)'; col = 'var(--text-2)'; icon = '➖';
+  }
+  return `<div style="background:${bg};border-radius:9px;padding:12px 16px;margin-bottom:16px;font-size:13px;line-height:1.6;color:${col};display:flex;align-items:flex-start;gap:10px">
+    <span style="font-size:16px;flex-shrink:0;line-height:1.4">${icon}</span>
+    <span>${phrase}</span>
+  </div>`;
+}
+
+// Classement des variations — tous les ingrédients avec historique, sans rien
+// à cocher (contrairement au sous-onglet "Par période"). Une barre horizontale
+// par ingrédient, ancrée sur 0 %, du plus en baisse au plus en hausse.
+async function _pxevRenderClassement(myReq, qs, container, summaryEl) {
+  if (!_pxevArticles.length) {
+    if (myReq !== _pxevReqId) return;
+    container.innerHTML = _pxevEmptyState('Aucun ingrédient avec un historique de prix pour l\'instant.',
+      'Modifiez un prix au Catalogue Ingrédients pour commencer à suivre son évolution.');
+    summaryEl.innerHTML = '';
+    return;
+  }
+
+  const results = await Promise.all(
+    _pxevArticles.map(nom => api.get(`/api/prix/historique?nom=${encodeURIComponent(nom)}&${qs}`).catch(() => ({ points: [] })))
+  );
+  if (myReq !== _pxevReqId) return;   // une requête plus récente a déjà été lancée
+
+  const items = [];
+  _pxevArticles.forEach((nom, i) => {
+    const points = results[i].points || [];
+    if (points.length < 2) return;
+    const first = points[0].prix, last = points[points.length - 1].prix;
+    const pct = first > 0 ? ((last - first) / first) * 100 : 0;
+    items.push({ nom, first, last, pct });
+  });
+
+  if (!items.length) {
+    container.innerHTML = _pxevEmptyState('Pas encore assez de points pour classer les variations.',
+      'Chaque ingrédient a besoin d\'au moins 2 points sur la période choisie.');
+    summaryEl.innerHTML = '';
+    return;
+  }
+
+  items.sort((a, b) => a.pct - b.pct);   // plus en baisse en premier, comme sur la maquette
+
+  container.innerHTML = _pxevBuildClassementChart(items);
+
+  const nbHausse = items.filter(it => it.pct > 0).length;
+  const nbBaisse = items.filter(it => it.pct < 0).length;
+  const fmt = n => Number(n).toLocaleString('fr-FR', {maximumFractionDigits: 1});
+  const card = (lbl, val, col) => `
+    <div class="pxev-stat">
+      <div class="pxev-stat-label">${lbl}</div>
+      <div class="pxev-stat-value" style="color:${col||'var(--text)'}">${val}</div>
+    </div>`;
+  summaryEl.innerHTML =
+      card('Ingrédients classés', items.length)
+    + card('En hausse', nbHausse, 'var(--red)')
+    + card('En baisse', nbBaisse, '#1a7a40')
+    + card('Plus forte hausse', items[items.length-1].pct > 0 ? `${items[items.length-1].nom} (+${fmt(items[items.length-1].pct)} %)` : '—', 'var(--red)')
+    + card('Plus forte baisse', items[0].pct < 0 ? `${items[0].nom} (${fmt(items[0].pct)} %)` : '—', '#1a7a40');
+}
+
+function _pxevBuildClassementChart(items) {
+  const W = 760;
+  const rowH = 32, labelW = 100, padTop = 16, padBottom = 30, padRight = 60;
+  const cW = W - labelW - padRight;
+  const H = padTop + items.length * rowH + padBottom;
+
+  const vals = items.map(it => it.pct);
+  const maxAbs = Math.max(Math.abs(Math.min(...vals, 0)), Math.abs(Math.max(...vals, 0))) || 1;
+  const domain = maxAbs * 1.25;   // marge pour que les étiquettes de valeur tiennent
+  const toX = pct => labelW + cW/2 + (pct / domain) * (cW/2);
+  const zeroX = toX(0);
+
+  // Graduations verticales — arrondies à un pas “propre”
+  const rawStep = domain / 3;
+  const mag = Math.pow(10, Math.floor(Math.log10(rawStep || 1)));
+  const step = Math.ceil(rawStep / mag) * mag || 10;
+  let gridHtml = '';
+  for (let v = -Math.floor(domain/step)*step; v <= domain; v += step) {
+    const x = toX(v);
+    gridHtml += `<line x1="${x.toFixed(1)}" y1="${padTop-4}" x2="${x.toFixed(1)}" y2="${H-padBottom+4}"
+      stroke="${v===0 ? '#c9c9c3' : '#e8e8e8'}" stroke-width="${v===0?1.4:1}" stroke-dasharray="${v===0?'0':'3,3'}"/>
+      <text x="${x.toFixed(1)}" y="${H-padBottom+18}" text-anchor="middle" font-size="10" fill="#8a8a84">${v>0?'+':''}${Math.round(v)}%</text>`;
+  }
+
+  let rowsHtml = '';
+  items.forEach((it, i) => {
+    const y = padTop + i * rowH;
+    const cy = y + rowH/2;
+    const x1 = toX(Math.min(0, it.pct)), x2 = toX(Math.max(0, it.pct));
+    const color = it.pct > 0 ? 'var(--red,#C0392B)' : it.pct < 0 ? '#1A7A3C' : '#9a9a94';
+    const barH = 16;
+    const fmt = n => Number(n).toLocaleString('fr-FR', {maximumFractionDigits: 1});
+    const valTxt = `${it.pct>0?'+':''}${fmt(it.pct)} %`;
+    const labelOnRight = it.pct >= 0;
+    rowsHtml += `
+      <text x="${labelW-10}" y="${(cy+4).toFixed(1)}" text-anchor="end" font-size="11.5" fill="var(--text,#1a1a1a)" title="${esc(it.nom)}">${esc(it.nom)}</text>
+      <rect x="${x1.toFixed(1)}" y="${(cy-barH/2).toFixed(1)}" width="${Math.max(2,x2-x1).toFixed(1)}" height="${barH}" rx="${barH/2}" fill="${color}">
+        <title>${esc(it.nom)} : ${fmt(it.first)} Ar → ${fmt(it.last)} Ar (${valTxt})</title>
+      </rect>
+      <text x="${(labelOnRight ? x2+6 : x1-6).toFixed(1)}" y="${(cy+4).toFixed(1)}" text-anchor="${labelOnRight?'start':'end'}" font-size="10.5" font-weight="700" fill="${color}">${esc(valTxt)}</text>`;
+  });
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    ${gridHtml}
+    ${rowsHtml}
+  </svg>`;
+}
+
+function _pxevEmptyState(titre, sousTitre) {
+  return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:260px;color:var(--text-3);padding:20px;text-align:center">
+    <span style="font-size:28px">📈</span>
+    <span style="font-weight:500;font-size:13px;max-width:360px">${esc(titre)}</span>
+    <span style="font-size:11.5px">${esc(sousTitre)}</span>
+  </div>`;
+}
+
+// Étiquette d'axe lisible selon la granularité : "2026-03" -> "Mars 2026", etc.
+function _pxevFmtDate(d, granularite) {
+  const MOIS = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Août','Sep','Oct','Nov','Déc'];
+  if (granularite === 'annee') return d;
+  if (granularite === 'mois') { const [y,m] = d.split('-'); return MOIS[parseInt(m,10)-1] + ' ' + y; }
+  const [y,m,day] = d.split('-'); return `${day}/${m}/${y.slice(2)}`;
+}
+
+function _pxevBuildSummary(points, label) {
+  const vals   = points.map(p => p.prix);
+  const first  = vals[0], last = vals[vals.length - 1];
+  const min    = Math.min(...vals), max = Math.max(...vals);
+  const delta  = last - first;
+  const pct    = first > 0 ? (delta / first) * 100 : 0;
+  const col    = delta > 0 ? 'var(--red)' : delta < 0 ? '#1a7a40' : 'var(--text-2)';
+  const arrow  = delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
+  const fmt    = n => Number(n).toLocaleString('fr-FR', {maximumFractionDigits: 2});
+  const card = (lbl, val, valCol) => `
+    <div class="pxev-stat">
+      <div class="pxev-stat-label">${lbl}</div>
+      <div class="pxev-stat-value" style="color:${valCol||'var(--text)'}">${val}</div>
+    </div>`;
+  return card('Première valeur', fmt(first) + ' Ar', 'var(--text)')
+       + card('Dernière valeur', fmt(last) + ' Ar', 'var(--text)')
+       + card('Variation', `${arrow} ${fmt(Math.abs(delta))} Ar (${pct>=0?'+':''}${fmt(pct)} %)`, col)
+       + card('Minimum', fmt(min) + ' Ar', 'var(--text)')
+       + card('Maximum', fmt(max) + ' Ar', 'var(--text)');
+}
+
+// Résumé compact, une ligne par courbe — utilisé dès que plusieurs séries
+// sont comparées (le résumé détaillé à 5 cartes ne tiendrait pas x N courbes).
+function _pxevBuildMultiSummary(series) {
+  const fmt = n => Number(n).toLocaleString('fr-FR', {maximumFractionDigits: 2});
+  return series.map(s => {
+    const vals  = s.points.map(p => p.prix);
+    const first = vals[0], last = vals[vals.length - 1];
+    const delta = last - first;
+    const pct   = first > 0 ? (delta / first) * 100 : 0;
+    const col   = delta > 0 ? 'var(--red)' : delta < 0 ? '#1a7a40' : 'var(--text-2)';
+    const arrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
+    return `<div class="pxev-stat" style="min-width:170px;display:flex;align-items:center;gap:8px">
+      <span style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></span>
+      <div style="min-width:0">
+        <div style="font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(s.label)}">${esc(s.label)}</div>
+        <div class="pxev-stat-value" style="font-size:12.5px">${fmt(last)} Ar
+          <span style="font-size:10.5px;font-weight:700;color:${col}">${arrow} ${pct>=0?'+':''}${fmt(pct)} %</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── GRAPHIQUE ─────────────────────────────────────────────────────────────────
+// Une seule courbe → gros points, valeur affichée sur chaque point (style
+// demandé : lisible d'un coup d'œil, sans avoir à survoler).
+// Plusieurs courbes → points plus discrets + survol pour lire les valeurs
+// exactes, sans quoi les étiquettes de toutes les courbes se chevaucheraient.
+let _pxevChartState = null;
+
+function _pxevBuildChart(series, opts) {
+  const W = 760, H = 300;
+  const pad = { top: 40, right: 24, bottom: 44, left: 74 };
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+  const isSingle  = series.length === 1;
+  const isBar     = opts.chartType === 'bar';
+
+  // Axe des dates commun à toutes les courbes — l'union triée de toutes les
+  // dates rencontrées, pour que deux courbes modifiées à des dates différentes
+  // restent correctement alignées dans le temps (jamais indexées 0..n en aveugle).
+  const allDates = [...new Set(series.flatMap(s => s.points.map(p => p.date)))].sort();
+
+  // En barres, chaque date occupe une largeur de groupe fixe (les barres des
+  // différentes courbes s'y répartissent côte à côte). En courbe, les dates
+  // sont positionnées le long de l'axe continu.
+  const groupW = allDates.length ? cW / allDates.length : cW;
+  const toX       = d => pad.left + (allDates.length === 1 ? cW/2 : (allDates.indexOf(d)/(allDates.length-1)) * cW);
+  const groupLeft = d => pad.left + allDates.indexOf(d) * groupW;
+  const groupMid  = d => groupLeft(d) + groupW / 2;
+
+  const allVals = series.flatMap(s => s.points.map(p => p.prix));
+  // Un graphique en barres doit toujours partir de zéro — tronquer la base
+  // fausserait visuellement les proportions entre les valeurs. La courbe, elle,
+  // peut se recentrer sur la plage réelle pour mieux voir les variations fines.
+  const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+  const span = (maxV - minV) || Math.max(maxV, 1) * 0.2;
+  const yMin = isBar ? 0 : Math.max(0, minV - span * 0.15);
+  const yMax = isBar ? maxV * 1.15 || 1 : maxV + span * 0.15;
+  const toY  = v => pad.top + cH - ((v - yMin) / (yMax - yMin || 1)) * cH;
+  const fmtY = v => v >= 1e6 ? (v/1e6).toFixed(1).replace('.',',')+'M'
+                   : v >= 1e3 ? Math.round(v/1e3)+'k' : Math.round(v).toString();
+
+  // Grille horizontale (5 niveaux)
+  let gridHtml = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = yMin + (yMax - yMin) * i / 4;
+    const y = toY(v);
+    gridHtml += `<line x1="${pad.left}" y1="${y.toFixed(1)}" x2="${pad.left+cW}" y2="${y.toFixed(1)}" stroke="#e8e8e8" stroke-width="1"/>
+      <text x="${pad.left-10}" y="${(y+3.5).toFixed(1)}" text-anchor="end" font-size="10.5" fill="#8a8a84">${fmtY(v)}</text>`;
+  }
+
+  // Étiquettes X : sous-ensemble seulement si trop de dates, pour éviter le chevauchement
+  const maxLabels = Math.max(2, Math.floor(cW / 70));
+  const step = Math.max(1, Math.ceil(allDates.length / maxLabels));
+  let xLabels = '';
+  allDates.forEach((d,i) => {
+    if (i % step !== 0 && i !== allDates.length-1) return;
+    const lx = isBar ? groupMid(d) : toX(d);
+    xLabels += `<text x="${lx.toFixed(1)}" y="${pad.top+cH+18}" text-anchor="middle" font-size="10.5" fill="#8a8a84">${esc(_pxevFmtDate(d, opts.granularite))}</text>`;
+  });
+
+  let seriesHtml = '';
+  const seriesCoords = [];   // pour le survol : [{label, color, coords:[[x,y,prix,date],...]}]
+
+  if (isBar) {
+    // Barres groupées : chaque courbe cochée occupe une tranche du groupe de
+    // la date, toutes partageant la même ligne de base à zéro.
+    const nSeries  = series.length;
+    const gapGroup = Math.min(14, groupW * 0.18);
+    const areaW    = Math.max(4, groupW - gapGroup);
+    const barW     = Math.max(2, areaW / nSeries) - 1.5;
+    const baseY    = pad.top + cH;
+
+    series.forEach((s, si) => {
+      const coords = [];
+      s.points.forEach(p => {
+        const gx = groupLeft(p.date) + gapGroup/2 + si * (areaW / nSeries);
+        const y  = toY(p.prix);
+        const h  = baseY - y;
+        seriesHtml += `<rect x="${gx.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(0,h).toFixed(1)}" rx="2" fill="${s.color}"/>`;
+        coords.push([gx + barW/2, y, p.prix, p.date]);
+      });
+      seriesCoords.push({ label: s.label, color: s.color, coords });
+    });
+  } else {
+    series.forEach((s) => {
+      const coords = s.points.map(p => [toX(p.date), toY(p.prix), p.prix, p.date]);
+      seriesCoords.push({ label: s.label, color: s.color, coords });
+      const linePath = coords.map((c,i) => (i===0?'M':'L')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
+
+      if (isSingle) {
+        // Aire remplie sous la courbe unique
+        const gradId = 'pxev-grad-' + Math.random().toString(36).slice(2,8);
+        const areaPath = linePath + ` L${coords[coords.length-1][0].toFixed(1)},${pad.top+cH} L${coords[0][0].toFixed(1)},${pad.top+cH} Z`;
+        seriesHtml += `<defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${s.color}" stop-opacity=".16"/>
+            <stop offset="100%" stop-color="${s.color}" stop-opacity=".01"/>
+          </linearGradient></defs>
+          <path d="${areaPath}" fill="url(#${gradId})"/>`;
+      }
+
+      seriesHtml += `<path d="${linePath}" fill="none" stroke="${s.color}" stroke-width="${isSingle?2.6:2.2}" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+      // Points : en mode "une seule courbe", CHAQUE point est gros et étiqueté
+      // (le style demandé). En comparaison multi-courbes, points discrets —
+      // étiqueter chaque point de chaque courbe rendrait le graphique illisible.
+      coords.forEach(([x,y,prix]) => {
+        if (isSingle) {
+          const r = 13;
+          seriesHtml += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${s.color}" stroke="#fff" stroke-width="2"/>`;
+          const lbl = Number(prix).toLocaleString('fr-FR',{maximumFractionDigits:2}) + ' Ar';
+          const above = y - r - 8 > pad.top;
+          seriesHtml += `<text x="${x.toFixed(1)}" y="${(above ? y-r-8 : y+r+14).toFixed(1)}" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--text,#1a1a1a)">${esc(lbl)}</text>`;
+        } else {
+          seriesHtml += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="${s.color}" stroke="#fff" stroke-width="1.3"/>`;
+        }
+      });
+    });
+  }
+
+  // Variation globale affichée en badge — seulement pertinente pour une courbe unique
+  let badgeHtml = '';
+  if (isSingle) {
+    const vals  = series[0].points.map(p => p.prix);
+    const delta = vals[vals.length-1] - vals[0];
+    const pct   = vals[0] > 0 ? (delta / vals[0]) * 100 : 0;
+    const trendColor = delta > 0 ? '#C0392B' : delta < 0 ? '#1A7A3C' : '#6b6b66';
+    const trendArrow = delta > 0 ? '▲' : delta < 0 ? '▼' : '—';
+    const badgeTxt = `${trendArrow} ${pct===0?'0':(pct>0?'+':'')+pct.toLocaleString('fr-FR',{maximumFractionDigits:1})+' %'}`;
+    const badgeW = 15 + badgeTxt.length * 6.6;
+    const badgeBg = delta > 0 ? '#FDECEA' : delta < 0 ? '#EAF7EE' : '#F0F0EE';
+    badgeHtml = `<rect x="${W-pad.right-badgeW}" y="6" width="${badgeW}" height="20" rx="10" fill="${badgeBg}"/>
+      <text x="${W-pad.right-badgeW/2}" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="${trendColor}">${esc(badgeTxt)}</text>`;
+  }
+
+  const title = isSingle ? series[0].label : `Comparaison de ${series.length} courbes`;
+
+  _pxevChartState = { seriesCoords, allDates, pad, W, H, cW, cH, granularite: opts.granularite, isBar, groupW };
+
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;cursor:crosshair"
+      onmousemove="_pxevChartMouseMove(event)" onmouseleave="_pxevChartMouseLeave(event)">
+    ${gridHtml}
+    ${seriesHtml}
+    ${xLabels}
+    <text x="${pad.left}" y="18" font-size="11.5" font-weight="700" fill="var(--text,#1a1a1a)">${esc(title)}</text>
+    ${badgeHtml}
+    <g id="pxev-hover" display="none"></g>
+  </svg>`;
+}
+
+function _pxevChartMouseMove(evt) {
+  const st = _pxevChartState;
+  if (!st) return;
+  const { seriesCoords, allDates, pad, W, cW, cH, granularite, isBar, groupW } = st;
+  const svg = evt.currentTarget;
+  const rect = svg.getBoundingClientRect();
+  const mouseX = ((evt.clientX - rect.left) / rect.width) * W;
+  const hg = svg.querySelector('#pxev-hover');
+  if (!hg) return;
+  if (mouseX < pad.left || mouseX > pad.left + cW || !allDates.length) { hg.setAttribute('display','none'); return; }
+
+  // Date la plus proche du curseur, sur l'axe commun (position du GROUPE en
+  // mode barres, position sur la ligne continue en mode courbe)
+  const toXofDate = d => isBar
+    ? pad.left + allDates.indexOf(d) * groupW + groupW / 2
+    : pad.left + (allDates.length===1?cW/2:(allDates.indexOf(d)/(allDates.length-1))*cW);
+  let nearestDate = allDates[0], bestDist = Infinity;
+  allDates.forEach(d => { const dist = Math.abs(toXofDate(d) - mouseX); if (dist < bestDist) { bestDist = dist; nearestDate = d; } });
+  const hx = toXofDate(nearestDate);
+
+  // Pour chaque courbe, le point exact à cette date (s'il existe)
+  const rows = [];
+  seriesCoords.forEach(sc => {
+    const hit = sc.coords.find(c => c[3] === nearestDate);
+    if (hit) rows.push({ label: sc.label, color: sc.color, prix: hit[2], x: hit[0], y: hit[1] });
+  });
+  if (!rows.length) { hg.setAttribute('display','none'); return; }
+
+  hg.setAttribute('display', 'block');
+  const dateLbl = _pxevFmtDate(nearestDate, granularite);
+  const lineW   = Math.max(dateLbl.length, ...rows.map(r => (r.label+' : '+Number(r.prix).toLocaleString('fr-FR',{maximumFractionDigits:2})+' Ar').length));
+  const ttW = 16 + lineW * 5.5, ttH = 16 + (rows.length + 1) * 14;
+  const ttx = Math.min(Math.max(hx - ttW/2, pad.left), W - pad.right - ttW);
+  const tty = pad.top + 4;
+
+  // En barres, le repère se pose sur CHAQUE barre à sa propre position ; en
+  // courbe, toutes les séries partagent le même x (celui de la ligne verticale).
+  let dots = '';
+  rows.forEach(r => dots += `<circle cx="${(isBar?r.x:hx).toFixed(1)}" cy="${r.y.toFixed(1)}" r="5" fill="${r.color}" stroke="#fff" stroke-width="1.6"/>`);
+
+  let rowsHtml = `<text x="${ttx+9}" y="${tty+15}" font-size="10" font-weight="700" fill="#333">${esc(dateLbl)}</text>`;
+  rows.forEach((r,i) => {
+    rowsHtml += `<circle cx="${ttx+13}" cy="${tty+29+i*14}" r="3.5" fill="${r.color}"/>
+      <text x="${ttx+22}" y="${(tty+33+i*14).toFixed(1)}" font-size="10" fill="#333">${esc(r.label)} : <tspan font-weight="700">${Number(r.prix).toLocaleString('fr-FR',{maximumFractionDigits:2})} Ar</tspan></text>`;
+  });
+
+  hg.innerHTML = `
+    <line x1="${hx.toFixed(1)}" y1="${pad.top}" x2="${hx.toFixed(1)}" y2="${pad.top+cH}" stroke="#888" stroke-width="1" stroke-dasharray="3,2" opacity=".5"/>
+    ${dots}
+    <rect x="${ttx.toFixed(1)}" y="${tty}" width="${ttW.toFixed(1)}" height="${ttH}" rx="6" fill="white" stroke="#ddd" stroke-width="1" filter="drop-shadow(0 2px 6px rgba(0,0,0,.12))"/>
+    ${rowsHtml}
+  `;
+}
+function _pxevChartMouseLeave(evt) {
+  const hg = evt.currentTarget.querySelector('#pxev-hover');
+  if (hg) hg.setAttribute('display', 'none');
+}
+
 function confirmDelete(id) {
   confirmModal('Confirmer la suppression', 'Supprimer cette fiche ? Action irréversible.', async () => {
     await api.delete('/api/fiches/' + id);
@@ -4023,6 +4532,198 @@ function confirmDelete(id) {
     showView('liste');
     showToast('Fiche supprimée');
   }, 'Supprimer');
+}
+
+// ── PDF A4 PAYSAGE — UNE SEULE PAGE ──────────────────────────────────────────
+// Grille encadrée inspirée du format atelier : titre, bandeaux latéraux,
+// étapes au centre, COEF + notes de services en pied de page.
+function ficheRefCode(f) {
+  const id = String((f && f.id) || '');
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return 'FT-' + String(h % 1000000).padStart(6, '0');
+}
+
+function buildPDFA4El(f, mode) {
+  const isAdmin = mode !== 'employe';
+  const coeff  = f.coefficient != null ? parseFloat(f.coefficient) : COEFF_NORM;
+  const cout   = parseFloat(f.cout) || 0;
+  const prixVente = cout > 0 && coeff > 0 ? Math.round(cout * coeff) : 0;
+  const tTotal = (f.prep||0) + (f.cuisson||0);
+  const refCode = ficheRefCode(f);
+
+  const lines = txt => String(txt||'').split('\n').map(s=>s.trim()).filter(Boolean);
+
+  // Liste ingrédients : nom à gauche, quantité + unité à droite
+  const ingRows = (f.ingredients||[]).length
+    ? (f.ingredients||[]).map(i =>
+        `<div class="ir"><span class="irn">${esc(i.nom||'')}</span><span class="irq">${esc(i.qte||'')}${esc(i.unite||'')}</span></div>`
+      ).join('')
+    : `<div class="mut">—</div>`;
+
+  // Étapes : chaque étape devient un bloc « ÉTAPES n: » avec ses lignes en puces
+  const etapesHtml = (f.etapes||[]).length
+    ? (f.etapes||[]).map((e,i) => {
+        const ls = lines(e);
+        const body = ls.length
+          ? ls.map(l=>`<li>${esc(l)}</li>`).join('')
+          : `<li>${esc(e)}</li>`;
+        return `<div class="stp"><div class="stp-h">ÉTAPES ${i+1}:</div><ul>${body}</ul></div>`;
+      }).join('')
+    : `<div class="mut">Aucune étape renseignée.</div>`;
+
+  const listOf = (txt, cls) => lines(txt).length
+    ? `<ul class="${cls||'ul'}">${lines(txt).map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`
+    : `<div class="mut">—</div>`;
+
+  const conservTxt = f.conservation_val
+    ? `Conserver ${f.conservation_val} ${esc(f.conservation_unite||'jours')}`
+    : '';
+  const tempTxt = (f.temperature != null && f.temperature !== '')
+    ? `Produit à maintenir à ${f.temperature}°C` : '';
+  const conservItems = [conservTxt, tempTxt].filter(Boolean);
+
+  const photoHtml = f.photo
+    ? `<img class="ph" src="${esc(f.photo)}" alt="">`
+    : `<div class="ph ph-empty"></div>`;
+
+  const allergHtml = (f.allergenes||[]).length
+    ? `<div class="alg">${(f.allergenes||[]).map(a=>`<span>⚠ ${esc(a)}</span>`).join('')}</div>`
+    : `<div class="mut">—</div>`;
+
+  // Bandeau d'infos rapides : chaque item n'apparaît que si la donnée existe
+  const infoItems = [
+    f.nb_personnes ? `🍽 ${f.nb_personnes} pers` : '',
+    tTotal ? `⏱ ${tTotal} min` : '',
+    f.cuisson ? `🔥 ${f.cuisson} min` : '',
+    (f.temperature != null && f.temperature !== '') ? `🌡 ${f.temperature}°C` : '',
+    f.conservation_val ? `❄ ${f.conservation_val} ${esc(f.conservation_unite||'jours')}` : '',
+    isAdmin ? `×${coeff}` : '',
+    (isAdmin && prixVente > 0) ? `${prixVente.toLocaleString('fr-FR')} Ar` : '',
+  ].filter(Boolean);
+
+  const qrId = 'qr-' + refCode.replace(/[^A-Z0-9]/gi,'');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'a4l';
+  wrap.innerHTML = `
+<style>
+.a4l,.a4l *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif;color:#111;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.a4l{width:1123px;height:794px;background:#ECEAE3;display:flex;flex-direction:column;overflow:hidden;font-size:10px;line-height:1.4;border:2px solid #111}
+.a4l ul{list-style:none}
+.a4l li{position:relative;padding-left:9px;margin-bottom:1px}
+.a4l li:before{content:"•";position:absolute;left:0;top:-1px}
+.mut{color:#8a8a80;font-style:italic}
+.hd{font-size:12px;font-weight:700;margin-bottom:4px;letter-spacing:.02em;text-transform:uppercase}
+/* En-tête — logo + titre + code fiche */
+.a4-hdr{display:flex;align-items:center;border-bottom:2px solid #111;flex-shrink:0;height:72px;padding:0 18px;gap:16px}
+.a4-hdr .lg{height:42px;max-width:140px;object-fit:contain}
+.a4-hdr .ttl{flex:1;text-align:center;font-size:24px;font-weight:800;letter-spacing:-.3px;text-transform:uppercase}
+.a4-hdr .ref{font-size:13px;font-weight:700;color:#444;white-space:nowrap}
+/* Bandeau infos rapides */
+.a4-info{display:flex;align-items:center;justify-content:center;gap:0;border-bottom:1px solid #111;flex-shrink:0;height:32px;background:#DEDCD4;font-size:11.5px;font-weight:700}
+.a4-info span{padding:0 16px;border-right:1px solid #b9b7ae}
+.a4-info span:last-child{border-right:none}
+/* Rangées à 3 colonnes (25% / 50% / 25%) — bords alignés verticalement */
+.a4-row3{display:flex;border-bottom:1px solid #111}
+.a4-row3 .c1{width:25%;border-right:1px solid #111;padding:9px 12px;overflow:hidden}
+.a4-row3 .c2{width:50%;border-right:1px solid #111;padding:9px 12px;overflow:hidden}
+.a4-row3 .c3{width:25%;padding:9px 12px;overflow:hidden}
+.rc{flex-shrink:0;height:222px}
+.rc .c2{display:flex;align-items:center;justify-content:center}
+.rd{flex-shrink:0;height:104px}
+.ir{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:10px;line-height:1.55}
+.irq{white-space:nowrap}
+.ph{max-width:100%;max-height:190px;object-fit:cover;border-radius:4px;display:block}
+.ph-empty{width:220px;height:160px;background:#DEDCD4;border:1px dashed #B5B3AA;border-radius:4px}
+.stp{margin-bottom:5px}
+.stp-h{font-size:11.5px;font-weight:700;margin-bottom:1px}
+.stp ul li{margin-bottom:.5px}
+.alg{display:flex;flex-wrap:wrap;gap:3px 6px}
+.alg span{font-size:9.5px;font-weight:700;color:#A33}
+/* Étapes — pleine largeur, prend l'espace restant */
+.a4-etapes{flex:1;min-height:0;border-bottom:1px solid #111;padding:9px 16px;overflow:hidden;column-count:2;column-gap:24px}
+/* Pied — notes préparateur / notes service / QR */
+.a4-ftr{display:flex;flex-shrink:0;height:106px}
+.a4-ftr .f1{width:42%;border-right:1px solid #111;padding:9px 14px;overflow:hidden}
+.a4-ftr .f2{width:33%;border-right:1px solid #111;padding:9px 14px;overflow:hidden}
+.a4-ftr .f3{width:25%;padding:8px 14px;display:flex;align-items:center;justify-content:center;gap:10px}
+.a4-ftr .f3 .qr{width:72px;height:72px;flex-shrink:0}
+.a4-ftr .f3 .qrlbl{font-size:9px;color:#666;text-align:center}
+</style>
+
+<div class="a4-hdr">
+  <img class="lg" src="${localStorage.getItem('brand_logo') || '/static/logo.png'}" alt="Logo">
+  <div class="ttl">${esc(f.nom||'')}</div>
+  <div class="ref">${esc(refCode)}</div>
+</div>
+
+<div class="a4-info">${infoItems.map(i=>`<span>${i}</span>`).join('')}</div>
+
+<div class="a4-row3 rc">
+  <div class="c1">
+    <div class="hd">Ingrédients</div>
+    ${ingRows}
+  </div>
+  <div class="c2">${photoHtml}</div>
+  <div class="c3">
+    <div class="hd">Matériels</div>
+    ${listOf(f.materiels)}
+  </div>
+</div>
+
+<div class="a4-row3 rd">
+  <div class="c1">
+    <div class="hd">Allergènes</div>
+    ${allergHtml}
+  </div>
+  <div class="c2">
+    <div class="hd">Description</div>
+    ${f.description ? `<div>${esc(f.description)}</div>` : `<div class="mut">—</div>`}
+  </div>
+  <div class="c3">
+    <div class="hd">Conservation</div>
+    ${conservItems.length
+      ? `<ul>${conservItems.map(l=>`<li>${l}</li>`).join('')}</ul>`
+      : `<div class="mut">—</div>`}
+  </div>
+</div>
+
+<div class="a4-etapes">
+  <div class="hd">Étapes de préparation</div>
+  ${etapesHtml}
+</div>
+
+<div class="a4-ftr">
+  <div class="f1">
+    <div class="hd">Notes préparateur</div>
+    ${f.notes_preparateur ? listOf(f.notes_preparateur) : `<div class="mut">—</div>`}
+  </div>
+  <div class="f2">
+    <div class="hd">Notes de service</div>
+    ${f.notes_services ? listOf(f.notes_services) : `<div class="mut">—</div>`}
+  </div>
+  <div class="f3">
+    <div class="qr" id="${qrId}"></div>
+    <div class="qrlbl">${esc(refCode)}</div>
+  </div>
+</div>`;
+
+  const qrEl = wrap.querySelector('#' + qrId);
+  if (qrEl && window.qrcode) {
+    const appName = localStorage.getItem('brand_name') || 'Fiche Technique';
+    // Nom de la recette d'abord, puis le nom de l'application — toujours les deux,
+    // le type 0 laisse la lib choisir automatiquement une version de QR assez grande.
+    const text = `${f.nom || ''} · ${appName}`;
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      qrEl.innerHTML = `<img src="${qr.createDataURL(4, 0)}" width="72" height="72" style="display:block">`;
+    } catch(e) { console.error('QR code error:', e); }
+  }
+
+  return wrap;
 }
 
 // ── PDF ───────────────────────────────────────────────────────────────────────
@@ -4459,28 +5160,47 @@ ${meta.length ? `<div class="mbar">${meta.map(m=>`<div class="mc"><div class="mi
   setTimeout(function() { win.print(); win.close(); }, 900);
 }
 
-async function downloadPDF() {
+function downloadPDF() {
   if (typeof html2pdf === 'undefined') { showToast('PDF non disponible : connexion internet requise.', 'error'); return; }
+  document.getElementById('pdf-mode-modal-overlay').hidden = false;
+}
+function closePdfModeModal() {
+  document.getElementById('pdf-mode-modal-overlay').hidden = true;
+}
+
+async function runDownloadPDF(mode) {
+  closePdfModeModal();
   const f = fiches.find(x => x.id === currentFicheId); if (!f) return;
-  const slug = (f.nom||'fiche').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  const slug = (f.nom||'fiche').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'')
+    + (mode === 'employe' ? '-employe' : '-admin');
   const btn  = document.getElementById('btn-dl-pdf');
   btn.textContent = '…'; btn.disabled = true;
 
-  // Conteneur hors-écran à largeur A4 (794 px ≈ 210 mm @96 dpi)
+  // Conteneur hors-écran — A4 paysage (1123 × 794 px = ratio 297/210 exact).
+  // Décalage VERTICAL uniquement : un décalage horizontal fait rogner html2canvas.
   const host = document.createElement('div');
-  host.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;background:#fff;padding:24px 28px';
-  const el = buildPDFEl(f);
+  host.style.cssText = 'position:absolute;left:0;top:-10000px;width:1123px;background:#ECEAE3';
+  const el = buildPDFA4El(f, mode);
   host.appendChild(el);
   document.body.appendChild(host);
 
+  // Auto-ajustement : réduire la police tant que le contenu déborde des cellules
+  const zones = [...el.querySelectorAll('.a4-row3 .c1, .a4-row3 .c3, .a4-etapes, .a4-ftr .f1, .a4-ftr .f2')];
+  for (let fs = 10; fs >= 6.5; fs -= 0.25) {
+    el.style.fontSize = fs + 'px';
+    if (zones.every(z => z.scrollHeight <= z.clientHeight + 1)) break;
+  }
+
   try {
     await html2pdf().set({
-      margin:      [10, 12, 10, 12],
+      margin:      0,
       filename:    slug + '.pdf',
       image:       { type: 'jpeg', quality: 0.97 },
-      html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
-      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak:   { mode: ['css', 'avoid-all'] },
+      html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false,
+                     width: 1123, height: 794, windowWidth: 1123, windowHeight: 794,
+                     scrollX: 0, scrollY: 0, x: 0, y: 0, backgroundColor: '#ECEAE3' },
+      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'landscape' },
+      pagebreak:   { mode: 'avoid-all' },
     }).from(el).save();
     showToast('PDF téléchargé ✓');
   } catch(e) { console.error(e); showToast('Erreur PDF'); }

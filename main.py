@@ -99,6 +99,9 @@ class Fiche(Base):
     temperature        = Column(Integer)
     description        = Column(Text)
     photo              = Column(Text)
+    prix_plancher      = Column(Float, nullable=True)
+    prix_plafond       = Column(Float, nullable=True)
+    prix_vente_reel    = Column(Float, nullable=True)   # prix réellement pratiqué
     apparence_normale  = Column(Text)
     apparence_anormale = Column(Text)
     materiels          = Column(Text)   # séparé par \n
@@ -138,10 +141,43 @@ class UserSession(Base):
 
 class IngredientCatalogue(Base):
     __tablename__ = "ingredients_catalogue"
-    id    = Column(Integer, primary_key=True, autoincrement=True)
-    nom   = Column(String, nullable=False, unique=True)
-    unite = Column(String)
-    prix  = Column(Float)
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    nom           = Column(String, nullable=False, unique=True)
+    unite         = Column(String)
+    prix          = Column(Float)
+    prix_plancher = Column(Float, nullable=True)
+    prix_plafond  = Column(Float, nullable=True)
+
+class PrixHistorique(Base):
+    """Un point par ARTICLE à chaque changement de prix au catalogue."""
+    __tablename__ = "prix_historique"
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    nom        = Column(String, nullable=False)
+    prix       = Column(Float, nullable=False)
+    unite      = Column(String)
+    horodatage = Column(String, nullable=False)   # ISO datetime UTC
+
+class PrixGlobalHistorique(Base):
+    """Indice global : moyenne des coûts unitaires du catalogue à un instant T."""
+    __tablename__ = "prix_global_historique"
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    moyenne       = Column(Float, nullable=False)
+    nb_ingredients = Column(Integer, nullable=False)
+    horodatage    = Column(String, nullable=False)
+
+class AppSettings(Base):
+    __tablename__ = "app_settings"
+    key   = Column(String, primary_key=True)
+    value = Column(String)
+
+class FournisseurPrix(Base):
+    __tablename__ = "fournisseur_prix"
+    id             = Column(Integer, primary_key=True, autoincrement=True)
+    fournisseur    = Column(String, nullable=False)   # "BILL_UBS" | "C2A"
+    nom_ingredient = Column(String, nullable=False)
+    prix           = Column(Float)
+    unite          = Column(String)
+    updated_at     = Column(String)
 
 Base.metadata.create_all(bind=engine)
 
@@ -178,6 +214,112 @@ def migrate():
         ing_cols = {row[1] for row in ing_info}
         if 'prix' not in ing_cols:
             conn.execute(text('ALTER TABLE ingredients ADD COLUMN prix REAL'))
+        # Paramètres application
+        settings_info = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='app_settings'"))
+        if not settings_info.fetchone():
+            conn.execute(text("CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT)"))
+            conn.execute(text("INSERT INTO app_settings VALUES ('coeff_min','1.5'),('coeff_norm','2.0'),('coeff_default','2.0')"))
+        # Migration fiches — colonnes prix_plancher / prix_plafond
+        _f_cols = {row[1] for row in conn.execute(text("PRAGMA table_info(fiches)"))}
+        if 'prix_plancher' not in _f_cols:
+            conn.execute(text("ALTER TABLE fiches ADD COLUMN prix_plancher REAL"))
+            conn.commit()
+        if 'prix_plafond' not in _f_cols:
+            conn.execute(text("ALTER TABLE fiches ADD COLUMN prix_plafond REAL"))
+            conn.commit()
+        # Migration fiches — prix de vente réellement pratiqué (contrôle de rentabilité)
+        if 'prix_vente_reel' not in _f_cols:
+            conn.execute(text("ALTER TABLE fiches ADD COLUMN prix_vente_reel REAL"))
+            conn.commit()
+        # Migration ingredients_catalogue — colonnes prix_plancher / prix_plafond
+        _ic_cols = {row[1] for row in conn.execute(text("PRAGMA table_info(ingredients_catalogue)"))}
+        if 'prix_plancher' not in _ic_cols:
+            conn.execute(text("ALTER TABLE ingredients_catalogue ADD COLUMN prix_plancher REAL"))
+            conn.commit()
+        if 'prix_plafond' not in _ic_cols:
+            conn.execute(text("ALTER TABLE ingredients_catalogue ADD COLUMN prix_plafond REAL"))
+            conn.commit()
+        # Nouveaux settings prix limites
+        for _k in ('prix_plancher', 'prix_plafond'):
+            _r = conn.execute(text("SELECT value FROM app_settings WHERE key=:k"), {"k": _k})
+            if not _r.fetchone():
+                conn.execute(text("INSERT INTO app_settings (key,value) VALUES (:k,'')"), {"k": _k})
+        # Table fournisseur_prix
+        fp_check = conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='fournisseur_prix'"))
+        if not fp_check.fetchone():
+            conn.execute(text("""
+                CREATE TABLE fournisseur_prix (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    fournisseur TEXT NOT NULL,
+                    nom_ingredient TEXT NOT NULL,
+                    prix REAL,
+                    unite TEXT,
+                    updated_at TEXT
+                )
+            """))
+        # Backfill unique de prix_historique depuis le Journal d'activité :
+        # les changements de prix catalogue déjà tracés y figurent (champ "prix"
+        # dans details.changes). On ne réinvente rien — seuls les points réels
+        # déjà enregistrés sont récupérés, une seule fois (table vide au départ).
+        _ph_count = conn.execute(text("SELECT COUNT(*) FROM prix_historique")).scalar()
+        if _ph_count == 0:
+            _rows = conn.execute(text(
+                "SELECT fiche_nom, horodatage, details FROM historique "
+                "WHERE details LIKE '%\"type\": \"catalogue\"%' AND details LIKE '%\"champ\": \"prix\"%' "
+                "ORDER BY id"
+            )).fetchall()
+            for _nom, _horo, _details in _rows:
+                try:
+                    _d = json.loads(_details or "{}")
+                except (TypeError, ValueError):
+                    continue
+                for _ch in _d.get("changes", []):
+                    if _ch.get("champ") == "prix" and _ch.get("apres") is not None:
+                        conn.execute(text(
+                            "INSERT INTO prix_historique (nom, prix, unite, horodatage) VALUES (:n,:p,:u,:h)"
+                        ), {"n": _nom, "p": _ch["apres"], "u": None, "h": _horo or datetime.utcnow().isoformat()})
+            conn.commit()
+
+        # Réconciliation à chaque démarrage : le catalogue fait foi pour le prix
+        # ACTUEL d'un article. Si son dernier point d'historique ne correspond pas
+        # à ce prix courant (ou s'il n'a aucun point), on ajoute un point "maintenant".
+        # Comble les écarts dus à des mutations passées non enregistrées (avant
+        # l'ajout de ce suivi, ou après une opération qui l'aurait manqué) — sans
+        # jamais toucher aux points déjà existants.
+        _cat_rows = conn.execute(text(
+            "SELECT nom, prix, unite FROM ingredients_catalogue WHERE prix IS NOT NULL AND prix > 0"
+        )).fetchall()
+        _now_iso = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        _added = 0
+        for _nom, _prix, _unite in _cat_rows:
+            _last = conn.execute(text(
+                "SELECT prix FROM prix_historique WHERE nom = :n ORDER BY id DESC LIMIT 1"
+            ), {"n": _nom}).scalar()
+            if _last is None or abs(_last - _prix) > 1e-9:
+                conn.execute(text(
+                    "INSERT INTO prix_historique (nom, prix, unite, horodatage) VALUES (:n,:p,:u,:h)"
+                ), {"n": _nom, "p": _prix, "u": _unite, "h": _now_iso})
+                _added += 1
+        if _added:
+            conn.commit()
+
+        # Même réconciliation pour l'indice GLOBAL : si le dernier point ne
+        # correspond pas à la moyenne réelle actuelle du catalogue, on ajoute
+        # un point "maintenant" avec la valeur exacte.
+        _avg_row = conn.execute(text(
+            "SELECT AVG(prix), COUNT(*) FROM ingredients_catalogue WHERE prix IS NOT NULL AND prix > 0"
+        )).fetchone()
+        if _avg_row and _avg_row[1]:
+            _cur_avg, _cur_n = round(_avg_row[0], 4), _avg_row[1]
+            _last_g = conn.execute(text(
+                "SELECT moyenne, nb_ingredients FROM prix_global_historique ORDER BY id DESC LIMIT 1"
+            )).fetchone()
+            if _last_g is None or abs(_last_g[0] - _cur_avg) > 1e-6 or _last_g[1] != _cur_n:
+                conn.execute(text(
+                    "INSERT INTO prix_global_historique (moyenne, nb_ingredients, horodatage) VALUES (:m,:n,:h)"
+                ), {"m": _cur_avg, "n": _cur_n, "h": _now_iso})
+                conn.commit()
+
         conn.commit()
 
 migrate()
@@ -187,9 +329,31 @@ class IngredientIn(BaseModel):
     nom: str; qte: str; unite: str; prix: Optional[float] = None
 
 class IngredientCatalogueIn(BaseModel):
-    nom: str
+    nom:   str
+    unite: Optional[str]   = None
+    prix:  Optional[float] = None
+
+class LimitesIngIn(BaseModel):
+    prix_plancher: Optional[float] = None
+    prix_plafond:  Optional[float] = None
+
+class LimitesNomIn(BaseModel):
+    nom:           str
+    prix_plancher: Optional[float] = None
+    prix_plafond:  Optional[float] = None
     unite: Optional[str] = None
     prix: Optional[float] = None
+
+class PrixVenteReelIn(BaseModel):
+    prix_vente_reel: Optional[float] = None
+
+class MotDePasseIn(BaseModel):
+    password: str
+
+class FournisseurPrixIn(BaseModel):
+    nom_ingredient: str
+    prix: Optional[float] = None
+    unite: Optional[str] = None
 
 class FicheIn(BaseModel):
     id:                 Optional[str]   = None
@@ -215,6 +379,9 @@ class FicheIn(BaseModel):
     utilisations:       Optional[str]       = None
     notes_preparateur:  Optional[str]       = None
     notes_services:     Optional[str]       = None
+    prix_plancher:      Optional[float]     = None
+    prix_plafond:       Optional[float]     = None
+    prix_vente_reel:    Optional[float]     = None
 
 class CategorieIn(BaseModel):
     id:      Optional[str] = None
@@ -320,6 +487,9 @@ def fiche_to_dict(f):
         "utilisations":       f.utilisations,
         "notes_preparateur":  f.notes_preparateur,
         "notes_services":     f.notes_services,
+        "prix_plancher":      f.prix_plancher,
+        "prix_plafond":       f.prix_plafond,
+        "prix_vente_reel":    f.prix_vente_reel,
         "createdAt": f.created_at, "updatedAt": f.updated_at,
     }
 
@@ -343,6 +513,26 @@ def log_history(db, action: str, fiche_id: str, fiche_nom: str, details: dict = 
     db.add(Historique(action=action, fiche_id=str(fiche_id), fiche_nom=fiche_nom,
                       horodatage=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
                       details=json.dumps(d, ensure_ascii=False)))
+
+def record_prix_historique(db, nom: str, prix: float, unite: str = None):
+    """Ajoute un point d'historique pour un article — un par changement de prix."""
+    if prix is None or prix <= 0:
+        return
+    db.add(PrixHistorique(nom=nom, prix=prix, unite=unite,
+                           horodatage=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")))
+
+def record_prix_global(db):
+    """Recalcule l'indice global (moyenne des coûts unitaires du catalogue)
+    et ajoute un point d'historique — appelé après toute mutation de prix."""
+    prix = [e.prix for e in db.query(IngredientCatalogue)
+            .filter(IngredientCatalogue.prix.isnot(None), IngredientCatalogue.prix > 0).all()]
+    if not prix:
+        return
+    db.add(PrixGlobalHistorique(
+        moyenne=round(sum(prix) / len(prix), 4),
+        nb_ingredients=len(prix),
+        horodatage=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),
+    ))
 
 def require_admin(request: Request, db=None):
     user = getattr(request.state, "current_user", None)
@@ -481,6 +671,8 @@ def create_fiche(data: FicheIn, request: Request, db: Session = Depends(get_db))
         utilisations=data.utilisations,
         notes_preparateur=data.notes_preparateur,
         notes_services=data.notes_services,
+        prix_plancher=data.prix_plancher if (data.prix_plancher and data.prix_plancher > 0) else None,
+        prix_plafond=data.prix_plafond   if (data.prix_plafond  and data.prix_plafond  > 0) else None,
         created_at=now, updated_at=now
     )
     actor = getattr(request.state, "current_user", None)
@@ -532,6 +724,8 @@ def update_fiche(fiche_id: str, data: FicheIn, request: Request, db: Session = D
         ("Utilisations",  f.utilisations,      data.utilisations),
         ("Notes prép.",   f.notes_preparateur, data.notes_preparateur),
         ("Notes service", f.notes_services,    data.notes_services),
+        ("Prix plancher", f.prix_plancher,     data.prix_plancher),
+        ("Prix plafond",  f.prix_plafond,      data.prix_plafond),
     ]
     changes = [{"champ": lbl, "avant": _fmt(old, lbl), "apres": _fmt(new, lbl)}
                for lbl, old, new in _checks if old != new]
@@ -553,6 +747,8 @@ def update_fiche(fiche_id: str, data: FicheIn, request: Request, db: Session = D
                   "utilisations": data.utilisations,
                   "notes_preparateur": data.notes_preparateur,
                   "notes_services": data.notes_services,
+                  "prix_plancher": data.prix_plancher if (data.prix_plancher and data.prix_plancher > 0) else None,
+                  "prix_plafond":  data.prix_plafond  if (data.prix_plafond  and data.prix_plafond  > 0) else None,
                   "updated_at": datetime.utcnow().isoformat()}.items():
         setattr(f, k, v)
     actor = getattr(request.state, "current_user", None)
@@ -574,6 +770,52 @@ def delete_fiche(fiche_id: str, request: Request, db: Session = Depends(get_db))
     }, par=actor.username if actor else None)
     db.delete(f); db.commit()
     return {"ok": True}
+
+# ── ROUTES : SUPPRESSIONS EN MASSE ───────────────────────────────────────────
+# Chemins préfixés /api/admin/ pour qu'ils ne puissent jamais entrer en
+# collision avec /api/fiches/{fiche_id}.
+# En POST (et non DELETE) car ces routes portent un corps : le mot de passe
+# de l'administrateur, revérifié à chaque appel.
+
+def _verifier_mdp_admin(request: Request, password: str):
+    """Rejoue la vérification du mot de passe de l'utilisateur courant."""
+    require_admin(request)
+    user = getattr(request.state, "current_user", None)
+    if not password or not user or not verify_password(password, user.password_hash):
+        raise HTTPException(403, "Mot de passe incorrect")
+    return user
+
+@app.post("/api/admin/fiches/supprimer-tout")
+def delete_toutes_fiches(data: MotDePasseIn, request: Request, db: Session = Depends(get_db)):
+    """Supprime TOUTES les fiches (cascade ingrédients/étapes). Mot de passe requis."""
+    actor  = _verifier_mdp_admin(request, data.password)
+    fiches = db.query(Fiche).all()
+    nb     = len(fiches)
+    if nb == 0:
+        return {"ok": True, "supprimees": 0}
+    log_history(db, "supprimer", "-", f"{nb} fiche(s)",
+                {"operation": "suppression totale des fiches", "nb": nb},
+                par=actor.username)
+    for f in fiches:
+        db.delete(f)
+    db.commit()
+    return {"ok": True, "supprimees": nb}
+
+@app.post("/api/admin/ingredients/catalogue/supprimer-tout")
+def delete_tout_catalogue(data: MotDePasseIn, request: Request, db: Session = Depends(get_db)):
+    """Vide le catalogue manuel. Les fiches ne sont pas touchées. Mot de passe requis."""
+    actor   = _verifier_mdp_admin(request, data.password)
+    entries = db.query(IngredientCatalogue).all()
+    nb      = len(entries)
+    if nb == 0:
+        return {"ok": True, "supprimees": 0}
+    log_history(db, "supprimer", "-", f"{nb} ingrédient(s) du catalogue",
+                {"operation": "vidage du catalogue manuel", "nb": nb},
+                par=actor.username, type_="catalogue")
+    for e in entries:
+        db.delete(e)
+    db.commit()
+    return {"ok": True, "supprimees": nb}
 
 # ── ROUTES : HISTORIQUE ──────────────────────────────────────────────────────
 @app.get("/api/historique")
@@ -633,6 +875,51 @@ def delete_categorie(cat_id: str, request: Request, db: Session = Depends(get_db
     return {"ok": True}
 
 # ── ROUTE : CATALOGUE INGRÉDIENTS (fiches PREPA uniquement) ──────────────────
+# ── SETTINGS ─────────────────────────────────────────────────────────────────
+_SETTINGS_DEFAULTS = {"coeff_min": "1.5", "coeff_norm": "2.0", "coeff_default": "2.0",
+                      "prix_plancher": "", "prix_plafond": ""}
+
+@app.get("/api/settings")
+def get_settings(db: Session = Depends(get_db)):
+    rows = {r.key: r.value for r in db.query(AppSettings).all()}
+    return {**_SETTINGS_DEFAULTS, **rows}
+
+@app.put("/api/settings")
+async def update_settings(request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    data = await request.json()
+    allowed = set(_SETTINGS_DEFAULTS.keys())
+    for key, value in data.items():
+        if key not in allowed:
+            continue
+        row = db.query(AppSettings).filter(AppSettings.key == key).first()
+        if row:
+            row.value = str(value)
+        else:
+            db.add(AppSettings(key=key, value=str(value)))
+    db.commit()
+    return {"ok": True}
+
+# ── RECALCUL COÛT EN CASCADE ──────────────────────────────────────────────────
+def recalc_fiche_cout(db: Session, fiche_id: str):
+    """Recalcule le coût matière d'une fiche = Σ des coûts de ligne.
+
+    ATTENTION : Ingredient.prix contient déjà le coût de la ligne
+    (coût unitaire × quantité), pas un coût unitaire. Ne pas remultiplier
+    par la quantité — cela gonflerait le total d'un facteur « quantité ».
+    """
+    ings = db.query(Ingredient).filter(Ingredient.fiche_id == fiche_id).all()
+    total, has_prix = 0.0, False
+    for ing in ings:
+        if ing.prix is not None:
+            total += ing.prix
+            has_prix = True
+    if has_prix:
+        fiche = db.query(Fiche).filter(Fiche.id == fiche_id).first()
+        if fiche:
+            fiche.cout = round(total, 2)
+            fiche.updated_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
 @app.get("/api/ingredients/catalogue")
 def get_ingredients_catalogue(db: Session = Depends(get_db)):
     prepa_ids = [c.id for c in db.query(Categorie).filter(Categorie.groupe == "PREPA").all()]
@@ -642,18 +929,43 @@ def get_ingredients_catalogue(db: Session = Depends(get_db)):
         .order_by(Fiche.nom)
         .all()
     )
-    from_prepa = [{"nom": f.nom, "prix": f.cout, "qte": f.quantite, "unite": f.unite} for f in fiches]
-    from_manuel = [{"nom": e.nom, "prix": e.prix, "qte": None, "unite": e.unite}
-                   for e in db.query(IngredientCatalogue).order_by(IngredientCatalogue.nom).all()]
-    # Fusionner sans doublons (prepa prioritaire)
-    noms_prepa = {e["nom"] for e in from_prepa}
-    merged = from_prepa + [e for e in from_manuel if e["nom"] not in noms_prepa]
-    return sorted(merged, key=lambda x: x["nom"].lower())
+    _ic_all     = db.query(IngredientCatalogue).all()
+    plancher_map = {e.nom: (e.prix_plancher, e.prix_plafond) for e in _ic_all}
+    from_prepa  = [{"nom": f.nom, "prix": f.cout, "qte": f.quantite, "unite": f.unite,
+                    "prix_plancher": plancher_map.get(f.nom, (None,None))[0],
+                    "prix_plafond":  plancher_map.get(f.nom, (None,None))[1]} for f in fiches]
+    from_manuel = [{"nom": e.nom, "prix": e.prix, "qte": None, "unite": e.unite,
+                    "prix_plancher": e.prix_plancher, "prix_plafond": e.prix_plafond}
+                   for e in sorted(_ic_all, key=lambda x: x.nom)]
+    # Fusion CHAMP PAR CHAMP, insensible à la casse.
+    # Une entrée manuelle est une saisie explicite de l'utilisateur : elle prime
+    # sur le coût calculé de la fiche PREPA de même nom. Auparavant la fiche
+    # PREPA écrasait l'entrée manuelle en bloc — même sans coût — et le prix
+    # saisi au catalogue n'apparaissait jamais dans le formulaire.
+    merged = {}
+    for e in from_prepa:
+        merged[e["nom"].strip().lower()] = dict(e)
+    for e in from_manuel:
+        k = e["nom"].strip().lower()
+        if k not in merged:
+            merged[k] = dict(e)
+            continue
+        base = merged[k]
+        if e["prix"] is not None:
+            base["prix"] = e["prix"]
+            base["qte"]  = None          # un prix manuel est DÉJÀ unitaire
+        if e["unite"]:
+            base["unite"] = e["unite"]
+        for champ in ("prix_plancher", "prix_plafond"):
+            if e[champ] is not None:
+                base[champ] = e[champ]
+    return sorted(merged.values(), key=lambda x: x["nom"].lower())
 
 
 @app.get("/api/ingredients/catalogue/manuel")
 def list_catalogue_manuel(db: Session = Depends(get_db)):
-    return [{"id": e.id, "nom": e.nom, "unite": e.unite, "prix": e.prix}
+    return [{"id": e.id, "nom": e.nom, "unite": e.unite, "prix": e.prix,
+             "prix_plancher": e.prix_plancher, "prix_plafond": e.prix_plafond}
             for e in db.query(IngredientCatalogue).order_by(IngredientCatalogue.nom).all()]
 
 @app.post("/api/ingredients/catalogue/manuel", status_code=201)
@@ -664,7 +976,13 @@ def create_catalogue_manuel(data: IngredientCatalogueIn, request: Request, db: S
     if db.query(IngredientCatalogue).filter(IngredientCatalogue.nom == nom).first():
         raise HTTPException(409, "Cet ingrédient existe déjà")
     entry = IngredientCatalogue(nom=nom, unite=data.unite, prix=data.prix)
-    db.add(entry)
+    db.add(entry); db.flush()
+    actor = getattr(request.state, "current_user", None)
+    log_history(db, "créer", str(entry.id), nom,
+                {"prix": data.prix, "unite": data.unite},
+                par=actor.username if actor else None, type_="catalogue")
+    record_prix_historique(db, nom, data.prix, data.unite)
+    record_prix_global(db)
     db.commit()
     db.refresh(entry)
     return {"id": entry.id, "nom": entry.nom, "unite": entry.unite, "prix": entry.prix}
@@ -674,20 +992,348 @@ def update_catalogue_manuel(entry_id: int, data: IngredientCatalogueIn, request:
     require_admin(request)
     entry = db.query(IngredientCatalogue).filter(IngredientCatalogue.id == entry_id).first()
     if not entry: raise HTTPException(404, "Introuvable")
-    entry.nom = data.nom.strip()
+    old_nom  = entry.nom
+    old_prix = entry.prix
+    new_nom  = data.nom.strip()
+    entry.nom   = new_nom
     entry.unite = data.unite
-    entry.prix = data.prix
+    entry.prix  = data.prix
+    # ── Cascade : répercuter le nouveau coût unitaire sur toutes les lignes ───
+    # data.prix est un coût UNITAIRE ; Ingredient.prix est un coût de LIGNE.
+    # Le coût de ligne vaut donc coût unitaire × quantité de la ligne : l'écraser
+    # par le coût unitaire donnerait 9,5 Ar aussi bien pour 22 g que pour 1000 g.
+    fiches_affectees: set = set()
+    if data.prix is not None:
+        ings = db.query(Ingredient).filter(
+            Ingredient.nom.ilike(old_nom)
+        ).all()
+        for ing in ings:
+            try:
+                qte = float(str(ing.qte or "").replace(",", ".").strip())
+            except (TypeError, ValueError):
+                qte = 0.0
+            ing.prix = round(data.prix * qte, 2) if qte > 0 else None
+            if new_nom != old_nom:
+                ing.nom = new_nom
+            fiches_affectees.add(ing.fiche_id)
+    actor = getattr(request.state, "current_user", None)
+    changes = []
+    if old_nom != new_nom:     changes.append({"champ": "nom",   "avant": old_nom,  "apres": new_nom})
+    if old_prix != data.prix:  changes.append({"champ": "prix",  "avant": old_prix, "apres": data.prix})
+    if entry.unite != (entry.unite or data.unite): pass  # unite change already in changes if needed
+    log_history(db, "modifier", str(entry.id), new_nom,
+                {"changes": changes, "fiches_recalculees": len(fiches_affectees)},
+                par=actor.username if actor else None, type_="catalogue")
+    if old_prix != data.prix and data.prix is not None:
+        record_prix_historique(db, new_nom, data.prix, data.unite)
+        record_prix_global(db)
     db.commit()
-    return {"id": entry.id, "nom": entry.nom, "unite": entry.unite, "prix": entry.prix}
+    for fiche_id in fiches_affectees:
+        recalc_fiche_cout(db, fiche_id)
+    if fiches_affectees:
+        db.commit()
+    return {"id": entry.id, "nom": entry.nom, "unite": entry.unite, "prix": entry.prix,
+            "fiches_recalculees": len(fiches_affectees)}
 
 @app.delete("/api/ingredients/catalogue/manuel/{entry_id}")
 def delete_catalogue_manuel(entry_id: int, request: Request, db: Session = Depends(get_db)):
     require_admin(request)
     entry = db.query(IngredientCatalogue).filter(IngredientCatalogue.id == entry_id).first()
     if not entry: raise HTTPException(404, "Introuvable")
+    actor = getattr(request.state, "current_user", None)
+    log_history(db, "supprimer", str(entry.id), entry.nom,
+                {"prix": entry.prix, "unite": entry.unite},
+                par=actor.username if actor else None, type_="catalogue")
     db.delete(entry)
     db.commit()
     return {"ok": True}
+
+@app.patch("/api/ingredients/catalogue/manuel/{entry_id}/limites")
+def set_limites_ing(entry_id: int, data: LimitesIngIn, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    entry = db.query(IngredientCatalogue).filter(IngredientCatalogue.id == entry_id).first()
+    if not entry: raise HTTPException(404, "Introuvable")
+    entry.prix_plancher = data.prix_plancher if (data.prix_plancher and data.prix_plancher > 0) else None
+    entry.prix_plafond  = data.prix_plafond  if (data.prix_plafond  and data.prix_plafond  > 0) else None
+    db.commit()
+    return {"ok": True, "id": entry.id, "prix_plancher": entry.prix_plancher, "prix_plafond": entry.prix_plafond}
+
+@app.patch("/api/ingredients/limites")
+def set_limites_by_nom(data: LimitesNomIn, request: Request, db: Session = Depends(get_db)):
+    """Définit plancher/plafond par nom — crée l'entrée catalogue si inexistante."""
+    require_admin(request)
+    nom = data.nom.strip()
+    if not nom: raise HTTPException(400, "Nom vide")
+    entry = db.query(IngredientCatalogue).filter(IngredientCatalogue.nom == nom).first()
+    if not entry:
+        entry = IngredientCatalogue(nom=nom, unite="", prix=None)
+        db.add(entry)
+        db.flush()
+    entry.prix_plancher = data.prix_plancher if (data.prix_plancher and data.prix_plancher > 0) else None
+    entry.prix_plafond  = data.prix_plafond  if (data.prix_plafond  and data.prix_plafond  > 0) else None
+    db.commit()
+    return {"ok": True, "id": entry.id, "prix_plancher": entry.prix_plancher, "prix_plafond": entry.prix_plafond}
+
+@app.patch("/api/fiches/{fiche_id}/prix-vente-reel")
+def set_prix_vente_reel(fiche_id: str, data: PrixVenteReelIn, request: Request, db: Session = Depends(get_db)):
+    """Enregistre le prix de vente réellement pratiqué pour une fiche.
+
+    Pas de require_admin : c'est une modification de fiche, alignée sur les droits
+    de PUT /api/fiches/{id} qui n'exige pas non plus le rôle admin.
+    """
+    fiche = db.query(Fiche).filter(Fiche.id == fiche_id).first()
+    if not fiche: raise HTTPException(404, "Fiche introuvable")
+    val = data.prix_vente_reel if (data.prix_vente_reel and data.prix_vente_reel > 0) else None
+    ancien = fiche.prix_vente_reel
+    fiche.prix_vente_reel = val
+    fiche.updated_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    actor = getattr(request.state, "current_user", None)
+    log_history(db, "modifier", fiche.id, fiche.nom,
+                {"changes": [{"champ": "prix_vente_reel", "avant": ancien, "apres": val}]},
+                par=actor.username if actor else None, type_="fiche")
+    db.commit()
+    return {"ok": True, "id": fiche.id, "prix_vente_reel": fiche.prix_vente_reel}
+
+FOURNISSEURS_VALIDES = {"BILL_UBS", "C2A"}
+
+@app.get("/api/fournisseurs/{fournisseur}/prix")
+def get_fournisseur_prix(fournisseur: str, db: Session = Depends(get_db)):
+    if fournisseur not in FOURNISSEURS_VALIDES:
+        raise HTTPException(400, "Fournisseur invalide")
+    rows = db.query(FournisseurPrix).filter(FournisseurPrix.fournisseur == fournisseur)\
+              .order_by(FournisseurPrix.nom_ingredient).all()
+    return [{"id": r.id, "nom_ingredient": r.nom_ingredient, "prix": r.prix, "unite": r.unite} for r in rows]
+
+@app.post("/api/fournisseurs/{fournisseur}/prix", status_code=201)
+def create_fournisseur_prix(fournisseur: str, data: FournisseurPrixIn, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    if fournisseur not in FOURNISSEURS_VALIDES:
+        raise HTTPException(400, "Fournisseur invalide")
+    nom = data.nom_ingredient.strip()
+    if not nom: raise HTTPException(400, "Nom vide")
+    if db.query(FournisseurPrix).filter(FournisseurPrix.fournisseur == fournisseur,
+                                         FournisseurPrix.nom_ingredient.ilike(nom)).first():
+        raise HTTPException(409, "Cet ingrédient existe déjà pour ce fournisseur")
+    entry = FournisseurPrix(fournisseur=fournisseur, nom_ingredient=nom, prix=data.prix, unite=data.unite,
+                             updated_at=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    db.add(entry); db.commit(); db.refresh(entry)
+
+    # ── Cascade initiale : propager le prix aux fiches existantes ────────────
+    fiches_affectees: set = set()
+    if data.prix is not None:
+        ings = db.query(Ingredient).filter(Ingredient.nom.ilike(nom)).all()
+        for ing in ings:
+            ing.prix = data.prix
+            fiches_affectees.add(ing.fiche_id)
+        if fiches_affectees:
+            db.commit()
+            for fiche_id in fiches_affectees:
+                recalc_fiche_cout(db, fiche_id)
+            db.commit()
+
+    return {"id": entry.id, "nom_ingredient": entry.nom_ingredient, "prix": entry.prix,
+            "unite": entry.unite, "fiches_recalculees": len(fiches_affectees)}
+
+@app.put("/api/fournisseurs/{fournisseur}/prix/{entry_id}")
+def update_fournisseur_prix(fournisseur: str, entry_id: int, data: FournisseurPrixIn, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    if fournisseur not in FOURNISSEURS_VALIDES:
+        raise HTTPException(400, "Fournisseur invalide")
+    entry = db.query(FournisseurPrix).filter(FournisseurPrix.id == entry_id,
+                                              FournisseurPrix.fournisseur == fournisseur).first()
+    if not entry: raise HTTPException(404, "Introuvable")
+    nom = data.nom_ingredient.strip()
+    if not nom: raise HTTPException(400, "Nom vide")
+    old_nom = entry.nom_ingredient
+    entry.nom_ingredient = nom
+    entry.prix  = data.prix
+    entry.unite = data.unite
+    entry.updated_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # ── Cascade : propager le nouveau prix dans toutes les fiches ────────────
+    fiches_affectees: set = set()
+    if data.prix is not None:
+        ings = db.query(Ingredient).filter(Ingredient.nom.ilike(old_nom)).all()
+        for ing in ings:
+            ing.prix = data.prix
+            if nom != old_nom:
+                ing.nom = nom
+            fiches_affectees.add(ing.fiche_id)
+    db.commit()
+    for fiche_id in fiches_affectees:
+        recalc_fiche_cout(db, fiche_id)
+    if fiches_affectees:
+        db.commit()
+
+    return {"id": entry.id, "nom_ingredient": entry.nom_ingredient, "prix": entry.prix,
+            "unite": entry.unite, "fiches_recalculees": len(fiches_affectees)}
+
+@app.delete("/api/fournisseurs/{fournisseur}/prix/{entry_id}")
+def delete_fournisseur_prix(fournisseur: str, entry_id: int, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    if fournisseur not in FOURNISSEURS_VALIDES:
+        raise HTTPException(400, "Fournisseur invalide")
+    entry = db.query(FournisseurPrix).filter(FournisseurPrix.id == entry_id,
+                                              FournisseurPrix.fournisseur == fournisseur).first()
+    if not entry: raise HTTPException(404, "Introuvable")
+    db.delete(entry); db.commit()
+    return {"ok": True}
+
+@app.get("/api/fournisseurs/preview")
+def preview_impact_prix(nom: str, prix: float, db: Session = Depends(get_db)):
+    """Calcule l'impact d'un changement de prix sur toutes les fiches concernées."""
+    ings_affectees = db.query(Ingredient).filter(Ingredient.nom.ilike(nom)).all()
+    fiche_ids = list({ing.fiche_id for ing in ings_affectees})
+    result = []
+    for fiche_id in fiche_ids:
+        fiche = db.query(Fiche).filter(Fiche.id == fiche_id).first()
+        if not fiche: continue
+        fiche_ings = db.query(Ingredient).filter(Ingredient.fiche_id == fiche_id).all()
+        new_total, has_prix = 0.0, False
+        for fi in fiche_ings:
+            fi_prix = prix if fi.nom.lower() == nom.lower() else (fi.prix or 0)
+            try:
+                qte = float(str(fi.qte).replace(',', '.').strip())
+                new_total += fi_prix * qte
+                has_prix = True
+            except (ValueError, TypeError):
+                pass
+        result.append({
+            "fiche_id":    fiche.id,
+            "fiche_nom":   fiche.nom,
+            "cout_actuel": fiche.cout,
+            "cout_nouveau": round(new_total, 2) if has_prix else fiche.cout,
+        })
+    result.sort(key=lambda x: x["fiche_nom"])
+    return {"fiches": result, "nb": len(result)}
+
+# ── Base de prix unifiée (sans distinction fournisseur) ─────────────────────
+@app.get("/api/prix-ref")
+def get_prix_ref(db: Session = Depends(get_db)):
+    entries = db.query(FournisseurPrix).order_by(FournisseurPrix.nom_ingredient).all()
+    return [{"id": e.id, "nom_ingredient": e.nom_ingredient, "prix": e.prix, "unite": e.unite}
+            for e in entries]
+
+@app.post("/api/prix-ref", status_code=201)
+def create_prix_ref(data: FournisseurPrixIn, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    nom = data.nom_ingredient.strip()
+    if not nom: raise HTTPException(400, "Nom vide")
+    existing = db.query(FournisseurPrix).filter(FournisseurPrix.nom_ingredient.ilike(nom)).first()
+    if existing: raise HTTPException(409, "Ingrédient déjà enregistré")
+    entry = FournisseurPrix(fournisseur="REF", nom_ingredient=nom, prix=data.prix,
+                            unite=data.unite, updated_at=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"))
+    db.add(entry); db.commit(); db.refresh(entry)
+    fiches_affectees: set = set()
+    if data.prix is not None:
+        for ing in db.query(Ingredient).filter(Ingredient.nom.ilike(nom)).all():
+            ing.prix = data.prix; fiches_affectees.add(ing.fiche_id)
+        if fiches_affectees:
+            db.commit()
+            for fid in fiches_affectees: recalc_fiche_cout(db, fid)
+            db.commit()
+    return {"id": entry.id, "nom_ingredient": entry.nom_ingredient, "prix": entry.prix,
+            "unite": entry.unite, "fiches_recalculees": len(fiches_affectees)}
+
+@app.put("/api/prix-ref/{entry_id}")
+def update_prix_ref(entry_id: int, data: FournisseurPrixIn, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    entry = db.query(FournisseurPrix).filter(FournisseurPrix.id == entry_id).first()
+    if not entry: raise HTTPException(404, "Introuvable")
+    nom = data.nom_ingredient.strip()
+    old_nom = entry.nom_ingredient
+    entry.nom_ingredient = nom; entry.prix = data.prix; entry.unite = data.unite
+    entry.updated_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    fiches_affectees: set = set()
+    if data.prix is not None:
+        for ing in db.query(Ingredient).filter(Ingredient.nom.ilike(old_nom)).all():
+            ing.prix = data.prix
+            if nom.lower() != old_nom.lower(): ing.nom = nom
+            fiches_affectees.add(ing.fiche_id)
+    db.commit()
+    for fid in fiches_affectees: recalc_fiche_cout(db, fid)
+    if fiches_affectees: db.commit()
+    return {"id": entry.id, "nom_ingredient": entry.nom_ingredient, "prix": entry.prix,
+            "unite": entry.unite, "fiches_recalculees": len(fiches_affectees)}
+
+@app.delete("/api/prix-ref/{entry_id}")
+def delete_prix_ref(entry_id: int, request: Request, db: Session = Depends(get_db)):
+    require_admin(request)
+    entry = db.query(FournisseurPrix).filter(FournisseurPrix.id == entry_id).first()
+    if not entry: raise HTTPException(404, "Introuvable")
+    db.delete(entry); db.commit()
+    return {"ok": True}
+
+@app.get("/api/prix/comparateur")
+def get_prix_comparateur(nom: str, db: Session = Depends(get_db)):
+    """Compare les prix d'un ingrédient parmi toutes les sources disponibles."""
+    result = {}
+    # Catalogue manuel
+    cat_e = db.query(IngredientCatalogue).filter(IngredientCatalogue.nom.ilike(nom)).first()
+    if cat_e and cat_e.prix is not None:
+        result["Catalogue manuel"] = {"prix": cat_e.prix, "unite": cat_e.unite or ""}
+    # Fiches PREPA (semi-finies)
+    prepa_ids = [c.id for c in db.query(Categorie).filter(Categorie.groupe == "PREPA").all()]
+    prepa_f = db.query(Fiche).filter(Fiche.nom.ilike(nom), Fiche.categorie.in_(prepa_ids)).first()
+    if prepa_f and prepa_f.cout is not None:
+        result["Semi-fini (PREPA)"] = {"prix": prepa_f.cout, "unite": prepa_f.unite or ""}
+    # Fournisseurs
+    for fourn_key, fourn_label in [("BILL_UBS", "Bill UBS"), ("C2A", "C2A")]:
+        e = db.query(FournisseurPrix).filter(FournisseurPrix.fournisseur == fourn_key,
+                                              FournisseurPrix.nom_ingredient.ilike(nom)).first()
+        if e and e.prix is not None:
+            result[fourn_label] = {"prix": e.prix, "unite": e.unite or ""}
+    return result
+
+# ── ROUTES : ÉVOLUTION DES PRIX ──────────────────────────────────────────────
+def _bucket_key(horodatage: str, granularite: str) -> str:
+    d = (horodatage or "")[:10]   # YYYY-MM-DD
+    if granularite == "annee": return d[:4]
+    if granularite == "mois":  return d[:7]
+    return d                       # jour
+
+def _bucketize(rows, granularite: str, debut: str = None, fin: str = None):
+    """rows : liste de (horodatage, valeur) triée par horodatage croissant.
+    Ne garde qu'un point par période (le dernier connu) — logique standard
+    d'indice de prix : la valeur en fin de période."""
+    out = {}
+    for horo, val in rows:
+        d = (horo or "")[:10]
+        if debut and d < debut: continue
+        if fin and d > fin: continue
+        out[_bucket_key(horo, granularite)] = val
+    return [{"date": k, "prix": v} for k, v in sorted(out.items())]
+
+@app.get("/api/prix/historique/articles")
+def get_prix_historique_articles(db: Session = Depends(get_db)):
+    """Noms d'ingrédients disposant d'un historique de prix (pour le sélecteur)."""
+    noms = [r[0] for r in db.query(PrixHistorique.nom).distinct().order_by(PrixHistorique.nom).all()]
+    return noms
+
+@app.get("/api/prix/historique")
+def get_prix_historique(nom: str, granularite: str = "mois",
+                         debut: str = None, fin: str = None,
+                         db: Session = Depends(get_db)):
+    """Évolution du prix d'UN article, agrégée par jour/mois/année."""
+    if granularite not in ("jour", "mois", "annee"):
+        raise HTTPException(400, "granularite invalide (jour, mois, annee)")
+    rows = db.query(PrixHistorique.horodatage, PrixHistorique.prix) \
+             .filter(PrixHistorique.nom.ilike(nom)) \
+             .order_by(PrixHistorique.horodatage.asc()).all()
+    unite = db.query(PrixHistorique.unite).filter(PrixHistorique.nom.ilike(nom)) \
+              .order_by(PrixHistorique.id.desc()).limit(1).scalar()
+    return {"nom": nom, "unite": unite, "points": _bucketize(rows, granularite, debut, fin)}
+
+@app.get("/api/prix/historique/global")
+def get_prix_historique_global(granularite: str = "mois",
+                                debut: str = None, fin: str = None,
+                                db: Session = Depends(get_db)):
+    """Évolution de l'indice global (moyenne des coûts unitaires du catalogue)."""
+    if granularite not in ("jour", "mois", "annee"):
+        raise HTTPException(400, "granularite invalide (jour, mois, annee)")
+    rows = db.query(PrixGlobalHistorique.horodatage, PrixGlobalHistorique.moyenne) \
+             .order_by(PrixGlobalHistorique.horodatage.asc()).all()
+    return {"points": _bucketize(rows, granularite, debut, fin)}
 
 class RenommerIngredientIn(BaseModel):
     ancien: str
@@ -988,7 +1634,9 @@ def parse_fiche_pdf(text: str):
 
 # ── ROUTE : IMPORT PDF ────────────────────────────────────────────────────────
 @app.post("/api/import/pdf")
-async def import_pdf_route(file: UploadFile = File(...)):
+async def import_pdf_route(request: Request, file: UploadFile = File(...)):
+    if not getattr(request.state, "current_user", None):
+        raise HTTPException(401, "Authentification requise")
     if not HAS_FITZ:
         raise HTTPException(400, "pymupdf non installé — lancez : pip install pymupdf")
     content = await file.read()
@@ -1245,6 +1893,8 @@ async def sync_haccp(file: UploadFile = File(...), request: Request = None, db: 
 
     db.commit()
     return {"created": created, "updated": updated, "skipped": skipped}
+
+
 
 
 # ── STATIC + FRONTEND ────────────────────────────────────────────────────────

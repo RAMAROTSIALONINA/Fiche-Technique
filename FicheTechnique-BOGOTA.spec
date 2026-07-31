@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_all
 
-datas = [('D:\\DSI\\Fiche Technique\\static', 'static')]
+datas = [('static', 'static')]
 binaries = []
 hiddenimports = ['uvicorn.logging', 'uvicorn.loops', 'uvicorn.loops.auto', 'uvicorn.protocols', 'uvicorn.protocols.http', 'uvicorn.protocols.http.auto', 'uvicorn.protocols.websockets', 'uvicorn.protocols.websockets.auto', 'uvicorn.lifespan', 'uvicorn.lifespan.on', 'sqlalchemy.dialects.sqlite', 'multipart']
 tmp_ret = collect_all('fitz')
@@ -9,7 +9,7 @@ datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
-    ['D:\\DSI\\Fiche Technique\\main.py'],
+    ['main.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -39,7 +39,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['D:\\DSI\\Fiche Technique\\static\\logo.ico'],
+    icon=['static\\logo.ico'],
 )
 coll = COLLECT(
     exe,
