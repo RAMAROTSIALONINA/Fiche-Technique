@@ -143,7 +143,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .empty-state p  { color: var(--text-3); margin-bottom: 24px; }
 
 /* ── DETAIL ── */
-.fiche-detail-wrapper { max-width: 820px; }
+.fiche-detail-wrapper { max-width: 820px; margin: 0 auto; }
 .detail-hero { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; margin-bottom: 14px; display: flex; align-items: stretch; }
 .detail-photo-col { width: 260px; flex-shrink: 0; }
 .detail-photo { width: 100%; height: 100%; min-height: 200px; object-fit: cover; display: block; }
@@ -180,7 +180,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .allergene-tag  { background: #FFF8E1; color: #7D5A00; border: 1px solid #F5D060; font-size: 12px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
 
 /* ── FORMULAIRE ── */
-.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 26px 30px; margin-bottom: 16px; max-width: 840px; box-shadow: var(--shadow-sm); }
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 26px 30px; margin: 0 auto 16px; max-width: 840px; box-shadow: var(--shadow-sm); }
 .form-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-2); margin-bottom: 22px; padding-left: 10px; border-left: 3px solid var(--accent); }
 .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
 .form-row:last-child { margin-bottom: 0; }
@@ -271,21 +271,40 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .apparence-tag-ok  { background: #D4EDDA; color: #1A7A3C; }
 .apparence-tag-err { background: #FDECEA; color: var(--red); }
 
-/* ── MODAL CATÉGORIES ── */
-.cat-modal-list { margin-bottom: 20px; display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; }
-.cat-modal-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); }
-.cat-modal-dot  { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.cat-modal-nom  { flex: 1; font-size: 13.5px; font-weight: 500; }
+/* ── VUE CATÉGORIES ── */
+.cat-page   { max-width: 1160px; margin: 0 auto; }
+.cat-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.cat-form-card { position: sticky; top: 0; }
+@media (max-width: 860px) { .cat-layout { grid-template-columns: 1fr; } .cat-form-card { position: static; } }
+
+.cat-modal-list { display: flex; flex-direction: column; gap: 6px; max-height: 60vh; overflow-y: auto; }
+.cat-modal-item { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); background: var(--surface-2); transition: border-color .15s, background .15s; }
+.cat-modal-item:hover { background: var(--surface); border-color: var(--text-3); }
+.cat-modal-dot  { width: 15px; height: 15px; border-radius: 5px; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.cat-modal-nom  { flex: 1; font-size: 13.5px; font-weight: 600; }
 .cat-modal-actions { display: flex; gap: 4px; }
-.cat-modal-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; padding: 3px 8px; font-size: 12px; color: var(--text-2); transition: background .15s; }
+.cat-modal-btn { background: none; border: 1px solid var(--border); border-radius: var(--r-sm); cursor: pointer; padding: 4px 9px; font-size: 12px; color: var(--text-2); transition: background .15s; }
 .cat-modal-btn:hover     { background: var(--bg); }
 .cat-modal-btn.del:hover { background: var(--red-light); color: var(--red); border-color: var(--red); }
+.cat-modal-empty { text-align: center; padding: 30px 10px; color: var(--text-3); font-size: 13px; }
+
+/* Aperçu en direct dans le formulaire d'ajout/modification */
+.cat-preview {
+  display: flex; align-items: center; gap: 9px;
+  padding: 12px 14px; margin-bottom: 16px;
+  border: 1px dashed var(--border); border-radius: var(--r-sm);
+  background: var(--surface-2); font-size: 13.5px; font-weight: 600; color: var(--text);
+}
+.cat-preview-dot { width: 16px; height: 16px; border-radius: 5px; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); transition: background .15s; }
+.cat-preview-nom { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cat-preview-tag { font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: var(--bg-2); color: var(--text-3); letter-spacing: .03em; }
+
 .cat-add-form { border-top: 1px solid var(--border); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
 .cat-add-row  { display: flex; gap: 10px; align-items: flex-end; }
-.cat-color-picker { display: flex; gap: 6px; flex-wrap: wrap; }
-.color-swatch { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s, border-color .15s; }
-.color-swatch:hover  { transform: scale(1.15); }
-.color-swatch.active { border-color: var(--text); transform: scale(1.15); }
+.cat-color-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+.color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.06); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; font-weight: 700; transition: transform .15s, box-shadow .15s; }
+.color-swatch:hover  { transform: scale(1.12); }
+.color-swatch.active { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); transform: scale(1.12); }
 
 /* ── COEFFICIENT / PRIX ── */
 /* Tarification : rangée de colonnes « libellé au-dessus, champ en dessous » */
@@ -355,7 +374,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
 /* ── PARAMÈTRES ── */
-.param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; max-width: 900px; }
+.param-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
 .param-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 28px 24px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: box-shadow .18s, border-color .18s, transform .15s; }
 .param-card:hover { box-shadow: 0 4px 18px rgba(0,0,0,.09); border-color: var(--accent); transform: translateY(-2px); }
 .param-card-icon { font-size: 32px; line-height: 1; }
@@ -395,7 +414,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 
 /* ── HISTORIQUE ── */
 .hist-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-.hist-timeline { display: flex; flex-direction: column; gap: 0; max-width: 700px; }
+.hist-timeline { display: flex; flex-direction: column; gap: 0; max-width: 700px; margin: 0 auto; }
 .hist-item { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-bottom: 1px solid var(--border-light); }
 .hist-item:last-child { border-bottom: none; }
 .hist-icon { width: 36px; height: 36px; min-width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; margin-top: 2px; }
@@ -1002,7 +1021,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
           </div>
         </div>
 
-        <div style="max-width:1100px;border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <div style="max-width:1100px;margin:0 auto;border:1px solid var(--border);border-radius:10px;overflow:hidden">
           <!-- En-tête colonnes -->
           <div style="display:grid;grid-template-columns:1fr 118px 56px 130px 122px 122px;gap:0;padding:8px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border)">
             <div>Recette</div>
@@ -1033,35 +1052,58 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
       </header>
       <div class="content-area">
-        <div style="max-width:640px;margin:0 auto">
-          <div class="pxev-card">
-            <h2 class="form-section-title">Catégories existantes</h2>
-            <div class="cat-modal-list" id="cat-modal-list"></div>
+        <div class="cat-page">
+
+          <div class="pxev-stat-row" style="margin-bottom:18px">
+            <div class="pxev-stat"><div class="pxev-stat-value" id="cat-stat-total">0</div><div class="pxev-stat-label">Catégories</div></div>
+            <div class="pxev-stat"><div class="pxev-stat-value" id="cat-stat-prod">0</div><div class="pxev-stat-label">Production</div></div>
+            <div class="pxev-stat"><div class="pxev-stat-value" id="cat-stat-prepa">0</div><div class="pxev-stat-label">Préparation</div></div>
           </div>
 
-          <div class="pxev-card">
-            <h2 class="form-section-title" id="cat-form-label">Nouvelle catégorie</h2>
-            <div class="cat-add-row">
-              <div class="form-field" style="flex:1">
-                <label style="font-size:12px">Nom</label>
-                <input type="text" id="cat-nom-input" placeholder="Ex : Amuse-bouche" maxlength="30">
+          <div class="cat-layout">
+            <div class="pxev-card">
+              <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+                <h2 class="form-section-title" style="margin:0">Catégories existantes</h2>
+                <div id="cat-filter-tabs" style="display:flex;gap:5px;flex-wrap:wrap">
+                  <button class="pl-tab pl-tab-active" data-catf="all" onclick="setCatFilter('all')">Toutes</button>
+                  <button class="pl-tab" data-catf="PRODUCTION" onclick="setCatFilter('PRODUCTION')">Production</button>
+                  <button class="pl-tab" data-catf="PREPA" onclick="setCatFilter('PREPA')">Préparation</button>
+                </div>
               </div>
-              <div class="form-field" style="flex:1">
+              <div class="cat-modal-list" id="cat-modal-list"></div>
+            </div>
+
+            <div class="pxev-card cat-form-card">
+              <h2 class="form-section-title" id="cat-form-label">Nouvelle catégorie</h2>
+
+              <div class="cat-preview" id="cat-preview">
+                <span class="cat-preview-dot" id="cat-preview-dot"></span>
+                <span id="cat-preview-nom">Nom de la catégorie</span>
+                <span class="cat-preview-tag" id="cat-preview-tag">PROD</span>
+              </div>
+
+              <div class="form-field">
+                <label style="font-size:12px">Nom</label>
+                <input type="text" id="cat-nom-input" placeholder="Ex : Amuse-bouche" maxlength="30" oninput="updateCatPreview()">
+              </div>
+              <div class="form-field">
                 <label style="font-size:12px">Type</label>
-                <select id="cat-groupe-input" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px">
+                <select id="cat-groupe-input" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;background:var(--surface);color:var(--text)" onchange="updateCatPreview()">
                   <option value="PRODUCTION">Production</option>
                   <option value="PREPA">Préparation (PREPA)</option>
                 </select>
               </div>
-            </div>
-            <div class="form-field">
-              <label style="font-size:12px">Couleur</label>
-              <div class="cat-color-picker" id="cat-color-picker"></div>
-            </div>
-            <div class="modal-actions" style="margin-top:4px;justify-content:flex-start">
-              <button class="btn btn-primary" id="cat-save-btn" onclick="saveCat()">Ajouter</button>
+              <div class="form-field">
+                <label style="font-size:12px">Couleur</label>
+                <div class="cat-color-picker" id="cat-color-picker"></div>
+              </div>
+              <div class="modal-actions" style="margin-top:4px;justify-content:flex-start">
+                <button class="btn btn-primary" id="cat-save-btn" onclick="saveCat()">Ajouter</button>
+                <button class="btn btn-outline" id="cat-cancel-btn" onclick="cancelEditCat()" hidden>Annuler</button>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -1181,7 +1223,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
         </div>
       </header>
       <div class="content-area">
-        <div style="max-width:980px">
+        <div style="max-width:980px;margin:0 auto">
 
           <div class="pxev-maintabs">
             <button id="pxev-tab-btn-article" class="pxev-maintab active" onclick="setPxevTab('article')">📦 Par article</button>
@@ -3183,21 +3225,54 @@ function updatePrixLimitesPreview() {
   });
 }
 
+let _catFilter = 'all';
+
 function initCategoriesView() {
-  editingCatId = null; selectedColor = CAT_COLORS[0];
+  editingCatId = null; selectedColor = CAT_COLORS[0]; _catFilter = 'all';
   document.getElementById('cat-nom-input').value    = '';
   document.getElementById('cat-groupe-input').value = 'PRODUCTION';
   document.getElementById('cat-form-label').textContent = 'Nouvelle catégorie';
   document.getElementById('cat-save-btn').textContent   = 'Ajouter';
-  renderCatColorPicker(); renderCatList();
+  document.getElementById('cat-cancel-btn').hidden = true;
+  document.querySelectorAll('#cat-filter-tabs .pl-tab').forEach(btn =>
+    btn.classList.toggle('pl-tab-active', btn.dataset.catf === 'all'));
+  renderCatColorPicker(); renderCatList(); updateCatPreview();
 }
-function selectColor(c) { selectedColor = c; renderCatColorPicker(); }
+function setCatFilter(f) {
+  _catFilter = f;
+  document.querySelectorAll('#cat-filter-tabs .pl-tab').forEach(btn =>
+    btn.classList.toggle('pl-tab-active', btn.dataset.catf === f));
+  renderCatList();
+}
+function selectColor(c) { selectedColor = c; renderCatColorPicker(); updateCatPreview(); }
 function renderCatColorPicker() {
   document.getElementById('cat-color-picker').innerHTML = CAT_COLORS.map(c =>
-    `<div class="color-swatch ${c===selectedColor?'active':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+    `<div class="color-swatch ${c===selectedColor?'active':''}" style="background:${c}" onclick="selectColor('${c}')">${c===selectedColor?'✓':''}</div>`).join('');
+}
+function updateCatPreview() {
+  const nom    = document.getElementById('cat-nom-input').value.trim();
+  const groupe = document.getElementById('cat-groupe-input').value || 'PRODUCTION';
+  document.getElementById('cat-preview-dot').style.background = selectedColor;
+  document.getElementById('cat-preview-nom').textContent = nom || 'Nom de la catégorie';
+  document.getElementById('cat-preview-tag').textContent = groupe === 'PREPA' ? 'PREPA' : 'PROD';
 }
 function renderCatList() {
-  document.getElementById('cat-modal-list').innerHTML = categories.map(c =>
+  const stats = {
+    total: categories.length,
+    prod:  categories.filter(c => c.groupe !== 'PREPA').length,
+    prepa: categories.filter(c => c.groupe === 'PREPA').length,
+  };
+  document.getElementById('cat-stat-total').textContent = stats.total;
+  document.getElementById('cat-stat-prod').textContent  = stats.prod;
+  document.getElementById('cat-stat-prepa').textContent = stats.prepa;
+
+  const rows = _catFilter === 'all' ? categories : categories.filter(c => (c.groupe || 'PRODUCTION') === _catFilter);
+  const list = document.getElementById('cat-modal-list');
+  if (!rows.length) {
+    list.innerHTML = `<div class="cat-modal-empty">📂 Aucune catégorie ${_catFilter === 'all' ? '' : 'dans ce type '}pour le moment.</div>`;
+    return;
+  }
+  list.innerHTML = rows.map(c =>
     `<div class="cat-modal-item">
       <span class="cat-modal-dot" style="background:${c.couleur}"></span>
       <span class="cat-modal-nom">${esc(c.nom)}</span>
@@ -3215,7 +3290,17 @@ function startEditCat(id) {
   document.getElementById('cat-groupe-input').value = cat.groupe || 'PRODUCTION';
   document.getElementById('cat-form-label').textContent = 'Modifier la catégorie';
   document.getElementById('cat-save-btn').textContent   = 'Enregistrer';
-  renderCatColorPicker();
+  document.getElementById('cat-cancel-btn').hidden = false;
+  renderCatColorPicker(); updateCatPreview();
+}
+function cancelEditCat() {
+  editingCatId = null; selectedColor = CAT_COLORS[0];
+  document.getElementById('cat-nom-input').value    = '';
+  document.getElementById('cat-groupe-input').value = 'PRODUCTION';
+  document.getElementById('cat-form-label').textContent = 'Nouvelle catégorie';
+  document.getElementById('cat-save-btn').textContent   = 'Ajouter';
+  document.getElementById('cat-cancel-btn').hidden = true;
+  renderCatColorPicker(); updateCatPreview();
 }
 async function saveCat() {
   const nom    = document.getElementById('cat-nom-input').value.trim();
@@ -3237,8 +3322,9 @@ async function saveCat() {
     }
     document.getElementById('cat-nom-input').value    = '';
     document.getElementById('cat-groupe-input').value = 'PRODUCTION';
+    document.getElementById('cat-cancel-btn').hidden = true;
     selectedColor = CAT_COLORS[0];
-    renderCatColorPicker(); renderCatList(); renderSidebarCats(); updateFormCategories();
+    renderCatColorPicker(); renderCatList(); renderSidebarCats(); updateFormCategories(); updateCatPreview();
   } catch(e) { showToast('Erreur lors de la sauvegarde'); }
 }
 function deleteCat(id) {
