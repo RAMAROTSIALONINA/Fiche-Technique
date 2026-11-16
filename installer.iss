@@ -33,6 +33,11 @@ UninstallDisplayIcon={app}\FicheTechnique-BOGOTA.exe
 WizardStyle=modern
 WizardSizePercent=100
 
+; Ferme automatiquement le logiciel s'il est encore ouvert (évite l'erreur
+; "Accès refusé" lors du remplacement du .exe pendant une mise à jour)
+CloseApplications=force
+RestartApplications=no
+
 [Languages]
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"
 
